@@ -10,6 +10,8 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- visitor counts (GoatCounter: no cookies, no personal data; it skips localhost, so local testing isn't counted) -->
+<script data-goatcounter="https://omerv85.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <meta name="description" content="A night-vision rat sniping game for touch screens."><title>Rat Sniper</title>
 <!-- link previews (WhatsApp, Telegram, Facebook, X...): title, line and the big picture -->
 <meta property="og:type" content="website">
@@ -326,7 +328,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.20</div>
+    <div class="ver" id="ver">version 0.0.21</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -430,7 +432,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.20';
+const VERSION = '0.0.21';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -584,6 +586,11 @@ const mod = (a, n) => ((a % n) + n) % n;
 const wrapD = d => mod(d + W / 2, W) - W / 2;
 const rand = (a, b) => a + Math.random() * (b - a);
 const $ = s => document.querySelector(s);
+// game events for the owner's GoatCounter dashboard (shown there as paths like "event/game-start").
+// Nothing identifies the player; if the counter script didn't load (blocked, offline) this does nothing.
+function track(name) {
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'event/' + name, title: name, event: true }); } catch (e) {}
+}
 function rng(seed) {
   return function () {
     seed |= 0; seed = seed + 0x6D2B79F5 | 0;
@@ -1793,7 +1800,7 @@ function buyPack(i) {
   const price = packPrice(i);
   if (G.coins < price) { $('#shop-msg').textContent = tr('poor'); $('#shop-msg').hidden = false; return; }
   G.coins -= price; $('#shop-msg').hidden = true;
-  if (i === 'nade') { G.grenades++; sfxPin(); } else { G.ammo += PACKS[i][0]; sfxPing(0, false); }
+  if (i === 'nade') { G.grenades++; sfxPin(); track('grenade-bought'); } else { G.ammo += PACKS[i][0]; sfxPing(0, false); }
   updateAmmo(); renderShop();
   for (const id of [i === 'nade' ? '#shop-nades' : '#shop-ammo', '#shop-coins']) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
 }
@@ -1821,6 +1828,7 @@ function setShareLink() {
   const msg = tr('shareMsg', { n: G.lastResult.nights, k: G.lastResult.kills, url: GAME_URL });
   $('#ov-share').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
 }
+$('#ov-share').addEventListener('click', () => track('share-whatsapp'));
 $('#ov-again').addEventListener('click', () => { $('#over').hidden = true; startGame(1); });
 $('#ov-home').addEventListener('click', () => { $('#over').hidden = true; goHome(); });
 function renderSpecials() {
@@ -1875,7 +1883,8 @@ function endRound(early = false) {
   $('#sp-boss').hidden = !G.boss;
   setMusic('night');
   elSplash.hidden = false;
-  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(early ? 'noAmmo' : G.boss ? null : 'noTime'); }
+  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(early ? 'noAmmo' : G.boss ? null : 'noTime');
+    if ([5, 10, 15, 20, 30, 40, 50].includes(G.night)) track('cleared-night-' + G.night); }
   // surviving the night pays a few bullets; then the shop is open until the next night
   // a full night pays a few bullets; running dry forfeits it. Broke with no bullets means the game is over.
   if (!early) G.ammo += NIGHT_BONUS;
@@ -1930,6 +1939,8 @@ function startGame(night) {
   elPauseBtn.hidden = false;
   G.ammo = AMMO_START; G.coins = 0; G.gameSpecial = {}; G.outT = 0; G.pops = []; updateAmmo();
   G.grenades = 0; G.armed = false; G.nade = null; G.nadeHinted = false;
+  track('game-start');
+  try { if (!localStorage.getItem('rs-played')) { localStorage.setItem('rs-played', '1'); track('new-player'); } } catch (e) {}   // first game on this device
   G.kills = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
   startRound(night);
 }
@@ -2050,8 +2061,9 @@ function updateInstallBtn() {
   if ($('#install').hidden) $('#install-help').hidden = true;
 }
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; updateInstallBtn(); });
-window.addEventListener('appinstalled', () => { installEvt = null; updateInstallBtn(); });
+window.addEventListener('appinstalled', () => { installEvt = null; updateInstallBtn(); track('installed'); });
 $('#install').addEventListener('click', () => {
+  track('install-tapped');
   if (installEvt) {
     const ev = installEvt; installEvt = null;
     ev.prompt();
@@ -2063,6 +2075,8 @@ $('#install').addEventListener('click', () => {
   $('#start .fine').hidden = true;   // make room on short landscape screens
 });
 updateInstallBtn();
+// opened from the home-screen icon: counted once the counter script has loaded
+if (installed()) window.addEventListener('load', () => setTimeout(() => track('opened-from-home-screen'), 1500));
 
 // Update check: a page left open (or the home-screen app) keeps running the version it loaded. While the main menu
 // is showing in the foreground, at most once a minute, ask GitHub for version.json (a few bytes, never the cached
@@ -2087,7 +2101,7 @@ function checkUpdate() {
     if (j && j.v && newer(j.v, VERSION)) { G.newVersion = j.v; if (G.mode === 'menu') showUpdate(); }
   }).catch(() => {});
 }
-$('#update').addEventListener('click', () => location.reload());
+$('#update').addEventListener('click', () => { track('update-tapped'); setTimeout(() => location.reload(), 150); });
 setInterval(checkUpdate, 5000);
 document.addEventListener('visibilitychange', checkUpdate);
 document.addEventListener('visibilitychange', applyPause);

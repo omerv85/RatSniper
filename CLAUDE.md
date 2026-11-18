@@ -19,7 +19,13 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
 - `index.html`: **the entire game** in one file: HTML, CSS and one inline script (canvas 2D graphics,
   Web Audio sound, everything generated in code). Recorded voice clips are embedded as base64 WAV in
   `VOICE_DATA`. No build step, no dependencies besides Google Fonts
-  (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew).
+  (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew) and the GoatCounter script.
+- Analytics (v0.0.21): GoatCounter, dashboard at https://omerv85.goatcounter.com (the owner's account). No cookies,
+  no personal data; it ignores localhost, so local tests aren't counted. Page views count automatically; game events go
+  through `track(name)` and show up as `event/<name>`: `new-player` (first game on a device, from a `rs-played`
+  flag in localStorage, so the total is distinct devices), `game-start`, `cleared-night-N` (5, 10, 15, 20, 30, 40,
+  50), `grenade-bought`, `share-whatsapp`, `install-tapped`, `installed`, `opened-from-home-screen`, `update-tapped`.
+  Keep events few and never send anything that identifies a player.
 - `README.md`: short public description.
 - `manifest.webmanifest`, `icon-192.png`, `icon-512.png` (also used as the maskable icon), `apple-touch-icon.png` (180):
   "Add to home screen" support (v0.0.17). The installed game opens full screen in landscape. The icon is a green
