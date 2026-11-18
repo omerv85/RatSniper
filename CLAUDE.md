@@ -127,6 +127,11 @@ Presentation
   character codes in PowerShell 5 scripts). Played slightly slowed (0.9 / 0.86) with bass boost and echo.
   Russian, Spanish and French fall back to the device's speech voice until those Windows voices are installed
   and recorded the same way. Phone speech voices sound metallic at very low pitch, which is why clips are recorded.
+  Exact recipe (matches the existing clips sample for sample): English = System.Speech, "Microsoft David Desktop", Rate -3,
+  SSML prosody pitch x-low, 22050 Hz 16-bit mono. Hebrew = WinRT SpeechSynthesizer, Asaf, Options.SpeakingRate 0.8,
+  Options.AudioPitch 0.5, 16 kHz 16-bit mono. Both trimmed to the voiced part plus 0.05 s before and 0.1 s after.
+  Clips: round, head, king, noAmmo, noTime. The end of a night says "Round cleared" then why it ended
+  ("Ran out of ammo" / "Ran out of time"; nothing extra when the king dies).
 
 ## Ideas discussed but not built
 - Cap on rats visible on screen at once (owner noticed crowding; options were offered, none chosen yet).
