@@ -51,11 +51,18 @@ html, body {
 #hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); transform: translateX(-50%); font-family: var(--f-mono); font-size: 14px; letter-spacing: .12em; color: var(--phos); white-space: nowrap; pointer-events: none; z-index: 5; transition: opacity .8s; }
 #hint.gone { opacity: 0; }
 
-#mute { position: fixed; z-index: 30; bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); left: calc(env(safe-area-inset-left, 0px) + 8px);
-  width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid rgba(228,233,230,.25); border-radius: 50%;
-  background: rgba(5,8,7,.45); color: var(--ink); cursor: pointer; padding: 0; }
-#mute svg { width: 20px; height: 20px; }
-#mute:focus-visible, .btn:focus-visible, .opt input:focus-visible { outline: 2px solid var(--phos); outline-offset: 3px; }
+.round-btn { position: fixed; z-index: 30; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(228,233,230,.3); border-radius: 50%;
+  background: rgba(5,8,7,.5); color: var(--ink); cursor: pointer; padding: 0; touch-action: manipulation; }
+.round-btn svg { width: 22px; height: 22px; }
+.round-btn:active { background: rgba(69,255,122,.18); }
+#fs-btn { left: calc(env(safe-area-inset-left, 0px) + 10px); }
+#pause-btn { right: calc(env(safe-area-inset-right, 0px) + 10px); }
+#pause { z-index: 25; background: rgba(5,8,7,.82); }
+#pause .night { font-family: var(--f-display); font-weight: 900; font-size: clamp(3rem, 14vmin, 6rem); letter-spacing: .06em; line-height: 1; margin: 0; color: var(--ink); }
+.btn.btn-quiet { color: var(--ink); border-color: rgba(228,233,230,.45); background: rgba(228,233,230,.06); box-shadow: none; display: inline-flex; align-items: center; gap: 10px; }
+.btn-quiet svg { width: 20px; height: 20px; }
+.round-btn:focus-visible, .btn:focus-visible, .opt input:focus-visible { outline: 2px solid var(--phos); outline-offset: 3px; }
 
 .screen { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; overflow-y: auto;
   padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
@@ -162,18 +169,36 @@ html, body {
 <div id="hint" hidden>DRAG TO AIM · LIFT TO FIRE</div>
 <div id="headshot" hidden aria-live="polite">HEAD SHOT</div>
 
-<button id="mute" type="button" aria-label="Mute sound" aria-pressed="false">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" stroke="none"/>
-    <path id="mute-waves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>
-    <path id="mute-x" d="M16 9l6 6M22 9l-6 6" style="display:none"/>
+<button class="round-btn" id="fs-btn" type="button" aria-label="Go full screen" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>
   </svg>
 </button>
+<button class="round-btn" id="pause-btn" type="button" aria-label="Pause" hidden>
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+</button>
+
+<section class="screen" id="pause" hidden>
+  <div class="stack">
+    <p class="night">PAUSED</p>
+    <div class="btns">
+      <button class="btn" id="resume" type="button">Back to the game</button>
+      <button class="btn btn-quiet" id="sound" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" stroke="none"/>
+          <path id="mute-waves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>
+          <path id="mute-x" d="M16 9l6 6M22 9l-6 6" style="display:none"/>
+        </svg>
+        <span id="sound-label">Sound on</span>
+      </button>
+    </div>
+  </div>
+</section>
 
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.4</div>
+    <div class="ver" id="ver">version 0.0.5</div>
     <p class="lede">Let's go get them rats!</p>
     <div class="rules">
       <span><b>DRAG</b> to aim</span>
@@ -902,8 +927,8 @@ function setMuted(m) {
   A.muted = m;
   try { localStorage.setItem('nw-muted', m ? '1' : '0'); } catch (e) {}
   if (A.master) A.master.gain.setTargetAtTime(m ? 0 : 0.9, A.ctx.currentTime, 0.05);
-  $('#mute').setAttribute('aria-pressed', String(m));
-  $('#mute').setAttribute('aria-label', m ? 'Unmute sound' : 'Mute sound');
+  $('#sound').setAttribute('aria-pressed', String(m));
+  $('#sound-label').textContent = m ? 'Sound off' : 'Sound on';
   $('#mute-waves').style.display = m ? 'none' : '';
   $('#mute-x').style.display = m ? '' : 'none';
 }
@@ -912,7 +937,7 @@ function setMuted(m) {
 const G = {
   mode: 'menu', night: 1, time: ROUND_TIME, breakT: 0, kills: 0, nightKills: 0,
   aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [],
-  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, firstNight: 1, hintTO: 0,
+  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, firstNight: 1, hintTO: 0,
 };
 const diff = () => Math.min(1.75, 1 + 0.09 * (G.night - 1));
 const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
@@ -1244,19 +1269,29 @@ function endRound() {
 }
 
 /* ---------- input ---------- */
-const drag = { id: null, x: 0, y: 0 };
+// Joystick aiming: the view turns continuously, faster the further the finger is from where it first touched.
+// A small dead zone keeps a resting finger still; near the centre it creeps for fine aiming.
+const drag = { id: null, ox: 0, oy: 0, x: 0, y: 0 };
+const JOY_DEAD = 6, JOY_MAX = 1800;   // css px; css px per second
+function joySpeed(d) {
+  const a = Math.abs(d) - JOY_DEAD;
+  if (a <= 0) return 0;
+  return Math.sign(d) * Math.min(JOY_MAX, a * 3.2 + a * a * 0.02);
+}
+function steer(dt) {
+  if (drag.id === null || G.mode !== 'play') return;
+  G.aimX += joySpeed(drag.x - drag.ox) / S * dt;
+  G.aimY = Math.min(AIM_MAX, Math.max(AIM_MIN, G.aimY + joySpeed(drag.y - drag.oy) / S * dt));
+}
 cv.addEventListener('pointerdown', e => {
   if (G.mode !== 'play' || G.paused || drag.id !== null) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
-  drag.id = e.pointerId; drag.x = e.clientX; drag.y = e.clientY;
+  drag.id = e.pointerId; drag.ox = drag.x = e.clientX; drag.oy = drag.y = e.clientY;
   try { cv.setPointerCapture(e.pointerId); } catch (err) {}
   e.preventDefault();
 });
 cv.addEventListener('pointermove', e => {
   if (e.pointerId !== drag.id) return;
-  const k = 0.85 / S;
-  G.aimX = G.aimX + (e.clientX - drag.x) * k;
-  G.aimY = Math.min(AIM_MAX, Math.max(AIM_MIN, G.aimY + (e.clientY - drag.y) * k));
   drag.x = e.clientX; drag.y = e.clientY;
   e.preventDefault();
 });
@@ -1274,19 +1309,55 @@ function startGame(night) {
   try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
   elStart.hidden = true;
   elHudL.hidden = elHudR.hidden = elHudB.hidden = false;
+  elPauseBtn.hidden = false;
   G.kills = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
   startRound(night);
 }
 $('#go').addEventListener('click', () => startGame(1));
 $('#go-boss').addEventListener('click', () => startGame(BOSS_EVERY));
-$('#mute').addEventListener('click', () => setMuted(!A.muted));
+// Pause: button bottom right during a game; the pause screen holds the sound toggle and the way back.
+const elPauseBtn = $('#pause-btn'), elPause = $('#pause');
+function setUserPause(p) {
+  if (p && G.mode === 'menu') return;
+  G.userPaused = p;
+  elPause.hidden = !p;
+  elPauseBtn.hidden = p || G.mode === 'menu';
+  drag.id = null;
+  applyPause();
+  if (p) $('#resume').focus();
+}
+elPauseBtn.addEventListener('click', () => setUserPause(true));
+$('#resume').addEventListener('click', () => setUserPause(false));
+$('#sound').addEventListener('click', () => setMuted(!A.muted));
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Escape' || e.key === 'p' || e.key === 'P') && G.mode !== 'menu') setUserPause(!G.userPaused);
+});
 setMuted(A.muted);
+
+// Full screen: the button bottom left shows only while the game isn't full screen and the browser allows it.
+const elFs = $('#fs-btn');
+const fsSupported = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+function updateFsBtn() { elFs.hidden = !fsSupported() || isFs(); }
+function goFullscreen() {
+  try {
+    const el = document.documentElement, fs = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!fs || isFs()) return;
+    const p = fs.call(el, { navigationUI: 'hide' });
+    // Android browsers can lock rotation, but only in full screen
+    if (p && p.then) p.then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape')).catch(() => {});
+  } catch (e) {}
+}
+elFs.addEventListener('click', goFullscreen);
+document.addEventListener('fullscreenchange', updateFsBtn);
+document.addEventListener('webkitfullscreenchange', updateFsBtn);
+
 // Phones must be held sideways: in portrait a full-screen notice covers the game and everything pauses.
 const elRotate = $('#rotate');
 let needRotate = false;
 const touchDevice = () => (window.matchMedia && matchMedia('(pointer: coarse)').matches) || 'ontouchstart' in window;
 function applyPause() {
-  const p = document.hidden || needRotate;
+  const p = document.hidden || needRotate || G.userPaused;
   G.paused = p;
   if (A.ctx) (p ? A.ctx.suspend() : A.ctx.resume()).catch(() => {});
 }
@@ -1297,14 +1368,8 @@ function checkOrientation() {
   applyPause();
 }
 function tryLandscapeLock() {
-  // Android browsers can lock rotation, but only in full screen; iPhones can't, so the notice covers them
-  if (!touchDevice()) return;
-  try {
-    const el = document.documentElement, fs = el.requestFullscreen || el.webkitRequestFullscreen;
-    if (!fs || document.fullscreenElement) return;
-    const p = fs.call(el, { navigationUI: 'hide' });
-    if (p && p.then) p.then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape')).catch(() => {});
-  } catch (e) {}
+  // on phones, starting a game also goes full screen; iPhones can't, so the rotate notice covers them
+  if (touchDevice()) goFullscreen();
 }
 document.addEventListener('visibilitychange', applyPause);
 window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 250));
@@ -1313,6 +1378,7 @@ window.addEventListener('resize', checkOrientation);
 /* ---------- update ---------- */
 function update(dt) {
   G.clock += dt;
+  steer(dt);
   if (G.mode === 'play') {
     if (!G.boss) {
       G.time -= dt;
@@ -2060,8 +2126,21 @@ function render() {
   if (G.flash > 0.02) { ctx.fillStyle = `rgba(235,245,240,${(0.42 * G.flash).toFixed(3)})`; ctx.fillRect(0, 0, cv.width, cv.height); }
 
   if (G.mode !== 'menu') drawCrosshair();
+  if (drag.id !== null && G.mode === 'play') drawStick();
 }
 
+// faint joystick under the finger: a ring where it first touched and a dot where it is now
+function drawStick() {
+  const u = dpr, ox = drag.ox * u, oy = drag.oy * u, R = 46 * u;
+  let dx = (drag.x - drag.ox) * u, dy = (drag.y - drag.oy) * u;
+  const L = Math.hypot(dx, dy); if (L > R) { dx *= R / L; dy *= R / L; }
+  ctx.save();
+  ctx.strokeStyle = 'rgba(69,255,122,.35)'; ctx.lineWidth = 1.5 * u;
+  ctx.beginPath(); ctx.arc(ox, oy, R, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(ox, oy, JOY_DEAD * u, 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = 'rgba(69,255,122,.45)'; ctx.beginPath(); ctx.arc(ox + dx, oy + dy, 9 * u, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
 function drawCrosshair() {
   const u = dpr, cx = Math.round(cv.width / 2) + 0.5, cy = Math.round(cv.height / 2) + 0.5;
   const ready = G.clock - G.lastShot >= SHOT_COOLDOWN;
@@ -2089,6 +2168,7 @@ function frame(now) {
 function boot() {
   resize();
   checkOrientation();
+  updateFsBtn();
   G.obs = makeObstacles();
   for (let i = 0; i < 4; i++) spawnRat(true);
   window.addEventListener('resize', resize);
