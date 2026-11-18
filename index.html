@@ -87,7 +87,7 @@ html, body {
 #hud-boss .boss-name { font-family: var(--f-display); font-weight: 900; font-size: 20px; letter-spacing: .14em; line-height: 1; color: #ff5a48; text-shadow: 0 0 12px rgba(255,60,40,.5); }
 .boss-bar { position: relative; width: 100%; height: 12px; border: 1px solid rgba(255,90,72,.7); background: rgba(40,6,6,.7); padding: 1px; box-sizing: border-box; }
 .boss-bar i { display: block; height: 100%; background: linear-gradient(#ff6a52, #c3121a); transform-origin: left; transition: transform .25s ease-out; }
-.boss-bar::after { content: ""; position: absolute; inset: 1px; background: repeating-linear-gradient(90deg, transparent 0 calc(5% - 1px), rgba(0,0,0,.6) calc(5% - 1px) 5%); pointer-events: none; }
+.boss-bar::after { content: ""; position: absolute; inset: 1px; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(0,0,0,.6) calc(10% - 1px) 10%); pointer-events: none; }
 #hud-boss.low .boss-bar { animation: pulse .35s ease-in-out infinite alternate; }
 @media (max-width: 600px) { #hud-boss { top: calc(env(safe-area-inset-top, 0px) + 74px); width: min(70vw, 320px); } }
 #splash .boss-slain { color: #ff5a48; font-size: clamp(16px, 4vmin, 22px); letter-spacing: .22em; margin: 0; text-shadow: 0 0 12px rgba(255,60,40,.45); }
@@ -277,7 +277,7 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.13</div>
+    <div class="ver" id="ver">version 0.0.14</div>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
       <span data-i18n-html="ruleAim"><b>DRAG</b> to aim</span>
@@ -326,8 +326,8 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
         <span class="pill coin" title="Coins"><svg aria-hidden="true"><use href="#coin"/></svg><b id="shop-coins">0</b></span>
       </div>
       <div class="btns">
-        <button class="btn btn-quiet btn-buy" id="buy5" type="button" data-pack="0" data-i18n="buy5">5 bullets · 4 coins</button>
-        <button class="btn btn-quiet btn-buy" id="buy15" type="button" data-pack="1" data-i18n="buy15">15 bullets · 10 coins</button>
+        <button class="btn btn-quiet btn-buy" id="buy5" type="button" data-pack="0">5 bullets · 4 coins</button>
+        <button class="btn btn-quiet btn-buy" id="buy15" type="button" data-pack="1">15 bullets · 10 coins</button>
       </div>
       <div class="sub poor" id="shop-msg" hidden data-i18n="poor">Not enough coins</div>
       <div class="next">
@@ -367,13 +367,13 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.13';
+const VERSION = '0.0.14';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
     tagline: "Let's go get them rats!", ruleAim: '<b>DRAG</b> to aim', ruleFire: '<b>LIFT</b> to fire', ruleNight: '<b>30 s</b> a night',
     start: 'Start night 1', bossRound: 'Boss round', fine: 'Best in landscape · sound on', version: 'version', language: 'Language',
-    night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 20 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
+    night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 10 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
     headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
     paused: 'PAUSED', resume: 'Back to the game', soundOn: 'Sound on', soundOff: 'Sound off', rifleShown: 'Rifle shown', rifleHidden: 'Rifle hidden',
     mainMenu: 'Main menu', rotateTitle: 'TURN YOUR PHONE SIDEWAYS', rotateBody: 'Rat Sniper plays in landscape. The game is paused until you rotate.',
@@ -383,12 +383,13 @@ const STR = {
     bullets: 'Bullets', coins: 'Coins', shopTitle: 'Restock', bonusLine: '+{n} bullets for surviving the night', buy5: '5 bullets · 4 coins', buy15: '15 bullets · 10 coins',
     poor: 'Not enough coins', startNow: 'Start now', gameOver: 'GAME OVER', outOfAmmo: 'You ran out of bullets', nightsSurvived: 'Nights survived', ratsKilled: 'Rats killed',
     best: 'Best', newBest: 'New best!', shareWa: 'Share on WhatsApp', playAgain: 'Play again',
+    noBonus: 'Out of bullets: no night bonus', needAmmo: 'Buy bullets to start the next night', words: { bullet: ['bullet', 'bullets'], coin: ['coin', 'coins'] },
     shareMsg: 'My Rat Sniper score: {k} rats killed, {n} nights survived. Can you beat that? {url}',
   },
   ru: {
     tagline: 'Вперёд, за крысами!', ruleAim: '<b>ТЯНИ</b>, чтобы целиться', ruleFire: '<b>ОТПУСТИ</b>, чтобы стрелять', ruleNight: '<b>30 с</b> на ночь',
     start: 'Начать ночь 1', bossRound: 'Битва с боссом', fine: 'Лучше горизонтально · со звуком', version: 'версия', language: 'Язык',
-    night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 20 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
+    night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 10 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
     headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
     paused: 'ПАУЗА', resume: 'Вернуться в игру', soundOn: 'Звук вкл.', soundOff: 'Звук выкл.', rifleShown: 'Винтовка видна', rifleHidden: 'Винтовка скрыта',
     mainMenu: 'Главное меню', rotateTitle: 'ПОВЕРНИТЕ ТЕЛЕФОН', rotateBody: 'Rat Sniper играется в горизонтальном режиме. Игра на паузе, пока вы не повернёте телефон.',
@@ -398,12 +399,13 @@ const STR = {
     bullets: 'Патроны', coins: 'Монеты', shopTitle: 'Пополнение', bonusLine: '+{n} патрона за пережитую ночь', buy5: '5 патронов · 4 монеты', buy15: '15 патронов · 10 монет',
     poor: 'Не хватает монет', startNow: 'Начать сейчас', gameOver: 'ИГРА ОКОНЧЕНА', outOfAmmo: 'Закончились патроны', nightsSurvived: 'Ночей пережито', ratsKilled: 'Крыс убито',
     best: 'Рекорд', newBest: 'Новый рекорд!', shareWa: 'Поделиться в WhatsApp', playAgain: 'Играть снова',
+    noBonus: 'Патроны кончились: без бонуса за ночь', needAmmo: 'Купите патроны, чтобы начать следующую ночь', words: { bullet: ['патрон', 'патрона', 'патронов'], coin: ['монета', 'монеты', 'монет'] },
     shareMsg: 'Мой результат в Rat Sniper: ночей пережито — {n}, крыс убито — {k}. Сможешь лучше? {url}',
   },
   es: {
     tagline: '¡Vamos a por esas ratas!', ruleAim: '<b>ARRASTRA</b> para apuntar', ruleFire: '<b>SUELTA</b> para disparar', ruleNight: '<b>30 s</b> por noche',
     start: 'Empezar noche 1', bossRound: 'Ronda del jefe', fine: 'Mejor en horizontal · con sonido', version: 'versión', language: 'Idioma',
-    night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 20 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
+    night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 10 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
     headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
     paused: 'PAUSA', resume: 'Volver al juego', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', rifleShown: 'Rifle visible', rifleHidden: 'Rifle oculto',
     mainMenu: 'Menú principal', rotateTitle: 'GIRA EL TELÉFONO', rotateBody: 'Rat Sniper se juega en horizontal. El juego está en pausa hasta que lo gires.',
@@ -413,12 +415,13 @@ const STR = {
     bullets: 'Balas', coins: 'Monedas', shopTitle: 'Recarga', bonusLine: '+{n} balas por sobrevivir la noche', buy5: '5 balas · 4 monedas', buy15: '15 balas · 10 monedas',
     poor: 'No tienes monedas suficientes', startNow: 'Empezar ya', gameOver: 'FIN DEL JUEGO', outOfAmmo: 'Te quedaste sin balas', nightsSurvived: 'Noches superadas', ratsKilled: 'Ratas abatidas',
     best: 'Récord', newBest: '¡Nuevo récord!', shareWa: 'Compartir por WhatsApp', playAgain: 'Jugar de nuevo',
+    noBonus: 'Sin balas: no hay bonificación de la noche', needAmmo: 'Compra balas para empezar la siguiente noche', words: { bullet: ['bala', 'balas'], coin: ['moneda', 'monedas'] },
     shareMsg: 'Sobreviví {n} noches y abatí {k} ratas en Rat Sniper. ¿Puedes superarlo? {url}',
   },
   fr: {
     tagline: 'Allez, on chope ces rats !', ruleAim: '<b>GLISSE</b> pour viser', ruleFire: '<b>RELÂCHE</b> pour tirer', ruleNight: '<b>30 s</b> par nuit',
     start: 'Commencer la nuit 1', bossRound: 'Manche du boss', fine: 'Mieux en paysage · avec le son', version: 'version', language: 'Langue',
-    night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 20 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
+    night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 10 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
     headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
     paused: 'PAUSE', resume: 'Retour au jeu', soundOn: 'Son activé', soundOff: 'Son coupé', rifleShown: 'Fusil visible', rifleHidden: 'Fusil masqué',
     mainMenu: 'Menu principal', rotateTitle: 'TOURNE TON TÉLÉPHONE', rotateBody: 'Rat Sniper se joue en paysage. Le jeu est en pause jusqu’à ce que tu le tournes.',
@@ -428,12 +431,13 @@ const STR = {
     bullets: 'Balles', coins: 'Pièces', shopTitle: 'Ravitaillement', bonusLine: '+{n} balles pour avoir survécu à la nuit', buy5: '5 balles · 4 pièces', buy15: '15 balles · 10 pièces',
     poor: 'Pas assez de pièces', startNow: 'Commencer', gameOver: 'PARTIE TERMINÉE', outOfAmmo: 'Tu n’as plus de balles', nightsSurvived: 'Nuits survécues', ratsKilled: 'Rats abattus',
     best: 'Record', newBest: 'Nouveau record !', shareWa: 'Partager sur WhatsApp', playAgain: 'Rejouer',
+    noBonus: 'Plus de balles : pas de bonus de nuit', needAmmo: 'Achète des balles pour commencer la nuit suivante', words: { bullet: ['balle', 'balles'], coin: ['pièce', 'pièces'] },
     shareMsg: 'J’ai survécu {n} nuits et abattu {k} rats dans Rat Sniper. Tu fais mieux ? {url}',
   },
   he: {
     tagline: 'בואו נתפוס את העכברושים!', ruleAim: '<b>גררו</b> כדי לכוון', ruleFire: '<b>שחררו</b> כדי לירות', ruleNight: '<b>30 שניות</b> ללילה',
     start: 'התחלת לילה 1', bossRound: 'סיבוב בוס', fine: 'הכי טוב לרוחב · עם סאונד', version: 'גרסה', language: 'שפה',
-    night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 20 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
+    night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 10 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
     headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
     paused: 'מושהה', resume: 'חזרה למשחק', soundOn: 'סאונד פועל', soundOff: 'סאונד כבוי', rifleShown: 'הרובה מוצג', rifleHidden: 'הרובה מוסתר',
     mainMenu: 'תפריט ראשי', rotateTitle: 'סובבו את הטלפון לרוחב', rotateBody: 'משחקים ב-Rat Sniper לרוחב. המשחק מושהה עד שתסובבו את הטלפון.',
@@ -443,6 +447,7 @@ const STR = {
     bullets: 'כדורים', coins: 'מטבעות', shopTitle: 'חידוש תחמושת', bonusLine: '+{n} כדורים על שרידת הלילה', buy5: '5 כדורים · 4 מטבעות', buy15: '15 כדורים · 10 מטבעות',
     poor: 'אין מספיק מטבעות', startNow: 'להתחיל עכשיו', gameOver: 'המשחק נגמר', outOfAmmo: 'נגמרו לך הכדורים', nightsSurvived: 'לילות ששרדת', ratsKilled: 'עכברושים שחוסלו',
     best: 'שיא', newBest: 'שיא חדש!', shareWa: 'שיתוף בוואטסאפ', playAgain: 'לשחק שוב',
+    noBonus: 'נגמרו הכדורים: אין בונוס לילה', needAmmo: 'קנו כדורים כדי להתחיל את הלילה הבא', words: { bullet: ['כדור', 'כדורים'], coin: ['מטבע', 'מטבעות'] },
     shareMsg: 'שרדתי {n} לילות וחיסלתי {k} עכברושים ב-Rat Sniper. מסוגלים יותר? {url}',
   },
 };
@@ -487,9 +492,10 @@ const AIM_MIN = 430, AIM_MAX = 950;
 const ROUND_TIME = 30, BREAK_TIME = 15;   // the break is longer now: it's also the shop
 /* economy: every shot costs a bullet; kills pay coins; coins buy bullets between nights.
    Running out of bullets during a night ends the game. */
-const AMMO_START = 10, NIGHT_BONUS = 3, HEAD_BONUS = 1;
+const AMMO_START = 15, NIGHT_BONUS = 5, HEAD_BONUS = 1;
+const PRICE_STEP = 5;                                      // packs cost 1 coin more every 5 nights
 const PACKS = [[5, 4], [15, 10]];                          // [bullets, price in coins]
-const BOUNTY = { rat: 1, alpha: 2, rare: 3, ufo: 5, king: 20 };
+const BOUNTY = { rat: 1, alpha: 2, rare: 3, ufo: 5, king: 10 };
 const GAME_URL = 'https://omerv85.github.io/RatSniper/';
 /* difficulty: each grows a little every night (night 1 = 0) up to a cap */
 const LVL = () => Math.max(0, G.night - 1);
@@ -1257,7 +1263,7 @@ const diff = () => DIFF.speed();
 const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
 const stopDur = () => Math.max(0.55, rand(1.3, 2.8) - 0.13 * (G.night - 1));
 const ratSpeed = r => 72 * r.ls * (VAR_SPEED[r.variant] || 1) * (r.king ? 1.5 * (r.hp <= r.maxHp / 2 ? 1.5 : 1) : diff()) * (r.state === 'scurry' ? 2.3 * DIFF.flee() : r.state === 'rage' ? 1.9 : 1);
-const BOSS_EVERY = 5, KING_HP = 20, KING_SIZE = 3.2;
+const BOSS_EVERY = 5, KING_HP = 10, KING_SIZE = 3.2;   // 10 hits: there are no other rats on boss nights to pay for bullets
 function makeKing() {
   const lane = Math.random() < 0.5 ? 2 : 3, side = Math.random() < 0.5 ? -1 : 1;
   const r = makeRat(G.aimX + side * viewW * 0.18, lane, -side, true);
@@ -1566,21 +1572,40 @@ function countSpecial(k) { if (k) { G.nightSpecial[k] = (G.nightSpecial[k] || 0)
 function payBounty(kind, head, x, y) {
   const n = BOUNTY[kind] + (head ? HEAD_BONUS : 0);
   G.coins += n;
-  G.pops.push({ x, y, txt: `+${n}`, t: 0 });
+  // one coin per coin earned, each floating up and fading at its own pace
+  for (let i = 0; i < n; i++) {
+    G.pops.push({ x: x + rand(-8, 8), y, t: -i * 0.07, life: rand(0.9, 1.5), vx: rand(-28, 28), rise: rand(45, 80), spin: rand(4, 9) });
+  }
 }
 function updateAmmo() {
   $('#hud-ammo-n').textContent = G.ammo;
   $('#hud-ammo').classList.toggle('low', G.ammo <= 3);
 }
 // between nights: the night bonus, wallet and the two packs
+// "15 bullets · 11 coins" in the current language, with the right plural forms
+function plural(n, forms) {
+  if (forms.length === 3) {   // Russian: one / few / many
+    const m10 = n % 10, m100 = n % 100;
+    return forms[m10 === 1 && m100 !== 11 ? 0 : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? 1 : 2];
+  }
+  return forms[n === 1 ? 0 : 1];
+}
+const packLabel = (b, c) => `${b} ${plural(b, STR[LANG].words.bullet)} · ${c} ${plural(c, STR[LANG].words.coin)}`;
+const packPrice = i => PACKS[i][1] + Math.floor(G.night / PRICE_STEP);
+const cheapest = () => Math.min(...PACKS.map((_, i) => packPrice(i)));
 function renderShop() {
-  $('#shop-bonus').textContent = tr('bonusLine', { n: NIGHT_BONUS });
+  $('#shop-bonus').textContent = G.earlyEnd ? tr('noBonus') : tr('bonusLine', { n: NIGHT_BONUS });
+  $('#shop-bonus').classList.toggle('poor', !!G.earlyEnd);
   $('#shop-ammo').textContent = G.ammo; $('#shop-coins').textContent = G.coins;
-  document.querySelectorAll('.btn-buy').forEach(b => b.classList.toggle('cant', G.coins < PACKS[+b.dataset.pack][1]));
+  document.querySelectorAll('.btn-buy').forEach(b => {
+    const i = +b.dataset.pack;
+    b.textContent = packLabel(PACKS[i][0], packPrice(i));
+    b.classList.toggle('cant', G.coins < packPrice(i));
+  });
 }
 function buyPack(i) {
-  const [bullets, price] = PACKS[i];
-  if (G.coins < price) { $('#shop-msg').hidden = false; return; }
+  const bullets = PACKS[i][0], price = packPrice(i);
+  if (G.coins < price) { $('#shop-msg').textContent = tr('poor'); $('#shop-msg').hidden = false; return; }
   G.coins -= price; G.ammo += bullets; $('#shop-msg').hidden = true;
   sfxPing(0, false); updateAmmo(); renderShop();
   for (const id of ['#shop-ammo', '#shop-coins']) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
@@ -1588,7 +1613,7 @@ function buyPack(i) {
 document.querySelectorAll('.btn-buy').forEach(b => b.addEventListener('click', () => buyPack(+b.dataset.pack)));
 // the end: out of bullets mid-night
 function gameOver() {
-  if (G.mode !== 'play') return;
+  if (G.mode !== 'play' && G.mode !== 'cleared') return;
   G.mode = 'over'; drag.id = null; G.ufo = null; ufoHumStop();
   const nights = G.night - 1, kills = G.kills;
   let best = 0; try { best = +localStorage.getItem('rs-best') || 0; } catch (e) {}
@@ -1646,8 +1671,11 @@ function startRound(n) {
   elNight.textContent = n;
   elKills.textContent = G.kills;
 }
-function endRound() {
+function endRound(early = false) {
   if (G.mode !== 'play') return;
+  G.earlyEnd = early;
+  // ran dry and can't afford even the small pack: straight to game over, no cleared screen
+  if (early && G.ammo <= 0 && G.coins < cheapest()) { G.mode = 'cleared'; gameOver(); return; }
   G.mode = 'cleared'; G.breakT = BREAK_TIME; drag.id = null;
   $('#sp-night').textContent = G.night;
   $('#sp-kills').textContent = G.nightKills;
@@ -1661,7 +1689,10 @@ function endRound() {
   elSplash.hidden = false;
   if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(); }
   // surviving the night pays a few bullets; then the shop is open until the next night
-  G.ammo += NIGHT_BONUS; G.outT = 0; updateAmmo(); $('#shop-msg').hidden = true; renderShop();
+  // a full night pays a few bullets; running dry forfeits it. Broke with no bullets means the game is over.
+  if (!early) G.ammo += NIGHT_BONUS;
+  G.outT = 0; updateAmmo(); $('#shop-msg').hidden = true; renderShop();
+  if (G.ammo <= 0 && G.coins < cheapest()) gameOver();
 }
 
 /* ---------- input ---------- */
@@ -1742,7 +1773,11 @@ function goHome() {
   elPauseBtn.hidden = true;
 }
 $('#home').addEventListener('click', goHome);
-$('#start-now').addEventListener('click', () => { if (G.mode === 'cleared') startRound(G.night + 1); });
+$('#start-now').addEventListener('click', () => {
+  if (G.mode !== 'cleared') return;
+  if (G.ammo <= 0) { $('#shop-msg').textContent = tr('needAmmo'); $('#shop-msg').hidden = false; return; }
+  startRound(G.night + 1);
+});
 // some players prefer a clear view: the rifle can be hidden from the pause screen, and the choice is remembered
 let showRifle = true;
 try { showRifle = localStorage.getItem('rs-rifle') !== '0'; } catch (e) {}
@@ -1821,10 +1856,11 @@ function update(dt) {
   if (G.mode === 'play' && G.outT > 0) {
     // the last bullet has been fired: end the game once it has landed, unless that shot just won the boss night
     G.outT -= dt;
-    if (G.outT <= 0 && !(G.boss && G.bossEndT > 0)) gameOver();
+    // the last bullet has landed: the night ends early (unless that shot just won the boss night)
+    if (G.outT <= 0 && !(G.boss && G.bossEndT > 0)) endRound(true);
   }
   for (const p of G.pops) p.t += dt;
-  G.pops = G.pops.filter(p => p.t < 1.3);
+  G.pops = G.pops.filter(p => p.t < p.life);
   if (G.mode === 'play') {
     if (!G.boss) {
       G.time -= dt;
@@ -1837,7 +1873,7 @@ function update(dt) {
     G.breakT -= dt;
     $('#sp-count').textContent = Math.max(1, Math.ceil(G.breakT));
     elRing.style.strokeDashoffset = (276.46 * (1 - Math.max(0, G.breakT) / BREAK_TIME)).toFixed(2);
-    if (G.breakT <= 0) startRound(G.night + 1);
+    if (G.breakT <= 0) { if (G.ammo > 0) startRound(G.night + 1); else gameOver(); }
   } else if (G.mode === 'menu') {
     G.aimX += dt * 16;
   }
@@ -2778,13 +2814,18 @@ function render() {
   // coin rewards rising from each kill
   if (G.pops.length) {
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.font = `700 ${Math.round(22 * dpr)}px 'Share Tech Mono', monospace`; ctx.textAlign = 'center';
     for (const p of G.pops) {
+      if (p.t < 0) continue;                                   // staggered: coins pop out one after another
       const x = rel(p.x); if (!vis(x)) continue;
-      const k = p.t / 1.3, sx = x * P, sy = (p.y - top) * P - k * 40 * dpr;
-      ctx.globalAlpha = Math.min(1, (1 - k) * 2);
-      ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillText(p.txt, sx + 1.5 * dpr, sy + 1.5 * dpr);
-      ctx.fillStyle = '#ffbe4a'; ctx.fillText(p.txt, sx, sy);
+      const k = p.t / p.life, ease = 1 - (1 - k) * (1 - k);
+      const sx = x * P + p.vx * p.t * dpr, sy = (p.y - top) * P - ease * p.rise * dpr;
+      const r = 10 * dpr, w = Math.abs(Math.cos(p.t * p.spin)) * 0.75 + 0.25;   // turning coin
+      ctx.globalAlpha = k < 0.55 ? 1 : Math.max(0, 1 - (k - 0.55) / 0.45);
+      const cg = ctx.createRadialGradient(sx - r * 0.3, sy - r * 0.35, r * 0.1, sx, sy, r);
+      cg.addColorStop(0, '#fff2b8'); cg.addColorStop(0.5, '#ffbe4a'); cg.addColorStop(1, '#a8701a');
+      ctx.fillStyle = cg; ctx.beginPath(); ctx.ellipse(sx, sy, r * w, r, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(90,55,10,.9)'; ctx.lineWidth = 1.2 * dpr; ctx.stroke();
+      ctx.strokeStyle = 'rgba(120,75,15,.7)'; ctx.beginPath(); ctx.ellipse(sx, sy, r * w * 0.6, r * 0.6, 0, 0, Math.PI * 2); ctx.stroke();
     }
     ctx.restore();
   }
