@@ -27,6 +27,9 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
   round masks don't cut it. The start screen's install button opens Android Chrome's prompt (`beforeinstallprompt`),
   or shows a how-to line on iPhone and other browsers; it's hidden once the game runs from the home screen.
   The start screen has no "Boss round" button any more (removed in v0.0.17 at the owner's request).
+- `share.jpg` (1200×630): the link-preview picture WhatsApp and others show (Open Graph tags in `<head>`, v0.0.19).
+  It's a staged frame of the real game (rats, the rifle, the crosshair on a staring rat) with the RAT SNIPER title
+  drawn on top. WhatsApp caches previews per link, so a change can take a while to show up.
 - `CLAUDE.md`: this file.
 
 The game was first developed as a claude.ai artifact (https://claude.ai/artifact/3pFadoARRyjL2661NMdVh5,

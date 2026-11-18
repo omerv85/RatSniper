@@ -11,6 +11,18 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="description" content="A night-vision rat sniping game for touch screens."><title>Rat Sniper</title>
+<!-- link previews (WhatsApp, Telegram, Facebook, X...): title, line and the big picture -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rat Sniper">
+<meta property="og:title" content="Rat Sniper">
+<meta property="og:description" content="Night-vision sniper game: defend the farmyard from rats. How many nights can you last?">
+<meta property="og:url" content="https://omerv85.github.io/RatSniper/">
+<meta property="og:image" content="https://omerv85.github.io/RatSniper/share.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Night-vision view of a farmyard with rats, a rifle and a green crosshair; title Rat Sniper">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -313,7 +325,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.18</div>
+    <div class="ver" id="ver">version 0.0.19</div>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
       <span data-i18n-html="ruleAim"><b>DRAG</b> to aim</span>
@@ -416,7 +428,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.18';
+const VERSION = '0.0.19';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
