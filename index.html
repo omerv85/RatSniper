@@ -117,6 +117,24 @@ html, body {
 #rotate .sub { max-width: 28ch; line-height: 1.6; text-transform: none; letter-spacing: .06em; }
 @keyframes turn { 0%, 25% { transform: rotate(0deg); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
 @media (prefers-reduced-motion: reduce) { #rotate .phone { animation: none; transform: rotate(-90deg); } }
+@media (max-height: 500px) {
+  /* phones held sideways: tighten the cleared screen so it fits without scrolling */
+  #splash .stack { gap: 4px; }
+  #splash .brand { font-size: 1.4rem; margin: 0; }
+  #splash .night { font-size: 1.4rem; }
+  #splash .cleared { font-size: 3rem; }
+  .tally { font-size: 1.6rem; } .tally svg { width: 52px; }
+  .ring { width: 48px; } .ring span { font-size: 1.2rem; }
+  .chip { font-size: 13px; padding: 3px 9px; }
+}
+.specials { display: grid; justify-items: center; gap: 6px; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 34rem; }
+.chip { font-family: var(--f-mono); font-size: 15px; letter-spacing: .08em; padding: 5px 12px; border: 1px solid rgba(228,233,230,.4); color: var(--ink);
+  background: rgba(228,233,230,.06); font-variant-numeric: tabular-nums; animation: chip .5s cubic-bezier(.2,.9,.3,1.4) both; }
+.chip b { font-weight: 400; text-transform: uppercase; }
+.chip.rare { color: var(--amber); border-color: var(--amber); background: rgba(255,190,74,.1); box-shadow: 0 0 14px rgba(255,190,74,.3); }
+@keyframes chip { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .chip { animation: none; } }
 .next { display: grid; justify-items: center; gap: 8px; }
 .ring { position: relative; width: clamp(64px, 15vmin, 96px); aspect-ratio: 1; max-width: 100%; }
 .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
@@ -200,7 +218,7 @@ html, body {
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.9</div>
+    <div class="ver" id="ver">version 0.0.10</div>
     <p class="lede">Let's go get them rats!</p>
     <div class="rules">
       <span><b>DRAG</b> to aim</span>
@@ -233,6 +251,10 @@ html, body {
     <p class="cleared">CLEARED</p>
     <p class="sub boss-slain" id="sp-boss" hidden>King rat slain</p>
     <div class="tally"><svg aria-hidden="true"><use href="#deadrat"/></svg><span>× <span id="sp-kills">0</span></span></div>
+    <div class="specials" id="sp-special" hidden>
+      <div class="sub">Special kills</div>
+      <div class="chips" id="sp-special-list"></div>
+    </div>
     <div class="sub">Total <b id="sp-total">0</b></div>
     <div class="next">
       <div class="ring" aria-hidden="true">
@@ -989,7 +1011,7 @@ function setMuted(m) {
 const G = {
   mode: 'menu', night: 1, time: ROUND_TIME, breakT: 0, kills: 0, nightKills: 0,
   aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [],
-  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, firstNight: 1, hintTO: 0,
+  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, nightSpecial: {}, firstNight: 1, hintTO: 0,
 };
 const diff = () => Math.min(1.75, 1 + 0.09 * (G.night - 1));
 const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
@@ -1217,6 +1239,7 @@ function hitRat(r, hit, ax, ay) {
 function kill(r, ax, ay, head, delay) {
   r.alive = false; r.deadT = 0; r.rage = false; r.jx = r.jy = 0;
   G.kills++; G.nightKills++;
+  countSpecial(r.king ? 'king' : r.variant || (r.alpha ? 'alpha' : null));
   elKills.textContent = G.kills;
   elKillBox.classList.remove('bump'); void elKillBox.offsetWidth; elKillBox.classList.add('bump');
   const s = r.sc;
@@ -1283,8 +1306,19 @@ const elHudL = $('#hud-l'), elHudR = $('#hud-r'), elHudB = $('#hud-b'), elKillBo
 const elNight = $('#hud-night'), elTime = $('#hud-time'), elBar = $('#hud-bar'), elKills = $('#hud-kills');
 const elSplash = $('#splash'), elStart = $('#start'), elHint = $('#hint'), elRing = $('#sp-ring'), elBarWrap = $('#hud-l .bar');
 
+// special kills this night, shown on the cleared screen (rarest first)
+const SPECIALS = [['king', 'King rat'], ['ufo', 'UFO rat'], ['zombie', 'Zombie'], ['clown', 'Clown'], ['xmas', 'X-mas'], ['pirate', 'Pirate'],
+  ['drunk', 'Drunk'], ['albino', 'Albino'], ['mohawk', 'Mohawk'], ['french', 'French'], ['blind', 'Blind'], ['alpha', 'Alpha']];
+function countSpecial(k) { if (k) G.nightSpecial[k] = (G.nightSpecial[k] || 0) + 1; }
+function renderSpecials() {
+  const el = $('#sp-special'), list = $('#sp-special-list');
+  const got = SPECIALS.filter(([k]) => G.nightSpecial[k]);
+  el.hidden = !got.length;
+  list.innerHTML = got.map(([k, label], i) =>
+    `<span class="chip${k === 'alpha' ? '' : ' rare'}" style="animation-delay:${0.35 + i * 0.12}s"><b>${label}</b> ×${G.nightSpecial[k]}</span>`).join('');
+}
 function startRound(n) {
-  G.night = n; G.nightKills = 0; G.time = ROUND_TIME;
+  G.night = n; G.nightKills = 0; G.time = ROUND_TIME; G.nightSpecial = {};
   G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
   G.spawnT = 1.2; G.lastShot = -9;
   for (const o of G.obs) o.broken = false;   // a fresh empty bottle each night
@@ -1316,6 +1350,7 @@ function endRound() {
   $('#sp-night').textContent = G.night;
   $('#sp-kills').textContent = G.nightKills;
   $('#sp-total').textContent = G.kills;
+  renderSpecials();
   $('#sp-next').textContent = G.night + 1;
   $('#sp-count').textContent = BREAK_TIME;
   elRing.style.strokeDashoffset = '0';
@@ -2128,6 +2163,7 @@ function ufoHit(u, ax, ay) {
 function shootUfo(u, zone) {
   u.state = 'fall'; u.vy = -60;
   G.kills++; G.nightKills++;
+  countSpecial('ufo');
   elKills.textContent = G.kills;
   elKillBox.classList.remove('bump'); void elKillBox.offsetWidth; elKillBox.classList.add('bump');
   for (let i = 0; i < 14; i++) G.parts.push({ kind: 'blood', col: 'rgba(255,240,200,.95)', dcol: 'rgba(0,0,0,0)', x: u.x, y: u.y, vx: rand(-200, 200), vy: rand(-220, 40), ground: UFO_GROUND, size: rand(0.8, 1.6), life: 1.2, sc: 0.7 });
