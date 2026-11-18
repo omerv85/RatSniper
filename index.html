@@ -191,6 +191,7 @@ html, body {
         </svg>
         <span id="sound-label">Sound on</span>
       </button>
+      <button class="btn btn-quiet" id="rifle-toggle" type="button" aria-pressed="true">Rifle shown</button>
       <button class="btn btn-quiet" id="home" type="button">Main menu</button>
     </div>
   </div>
@@ -199,7 +200,7 @@ html, body {
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.8</div>
+    <div class="ver" id="ver">version 0.0.9</div>
     <p class="lede">Let's go get them rats!</p>
     <div class="rules">
       <span><b>DRAG</b> to aim</span>
@@ -1165,7 +1166,7 @@ function fire() {
   for (const o of G.obs) if (obsHit(o, ax, ay) && (!blocker || o.y > blocker.y)) blocker = o;
   if (blocker && best && blocker.y < best.y) blocker = null;
   sfxShot();
-  G.kick = 1; G.kickX = rand(-1, 1); G.flash = 1;
+  G.kick = 1; G.kickX = rand(-1, 1); G.flash = 1; G.rifleKick = 1;
   if (blocker) { best = null; hitObstacle(blocker, ax, ay); }
   else if (best) hitRat(best, hit, ax, ay);
   else if (G.ufo && (ufoZone = ufoHit(G.ufo, ax, ay))) shootUfo(G.ufo, ufoZone);
@@ -1398,6 +1399,17 @@ function goHome() {
   elPauseBtn.hidden = true;
 }
 $('#home').addEventListener('click', goHome);
+// some players prefer a clear view: the rifle can be hidden from the pause screen, and the choice is remembered
+let showRifle = true;
+try { showRifle = localStorage.getItem('rs-rifle') !== '0'; } catch (e) {}
+function setShowRifle(v) {
+  showRifle = v;
+  try { localStorage.setItem('rs-rifle', v ? '1' : '0'); } catch (e) {}
+  $('#rifle-toggle').textContent = v ? 'Rifle shown' : 'Rifle hidden';
+  $('#rifle-toggle').setAttribute('aria-pressed', String(v));
+}
+$('#rifle-toggle').addEventListener('click', () => setShowRifle(!showRifle));
+setShowRifle(showRifle);
 document.addEventListener('keydown', e => {
   if ((e.key === 'Escape' || e.key === 'p' || e.key === 'P') && G.mode !== 'menu') setUserPause(!G.userPaused);
 });
@@ -1494,7 +1506,8 @@ function update(dt) {
   for (const f of G.puffs) f.t += dt;
   G.puffs = G.puffs.filter(f => f.t < f.life);
   for (const d of G.decals) if (d.target && d.rx < d.target) d.rx = Math.min(d.target, d.rx + dt * 14 * (d.target / 28));
-  G.kick *= Math.exp(-dt * 9); G.flash *= Math.exp(-dt * 22);
+  G.kick *= Math.exp(-dt * 9);
+  G.rifleKick = (G.rifleKick || 0) * Math.exp(-dt * 7); G.flash *= Math.exp(-dt * 22);
 
   if (G.mode === 'play' || G.mode === 'cleared') {
     const s = Math.ceil(G.time);
@@ -2395,10 +2408,114 @@ function render() {
   ctx.fillStyle = vignette; ctx.fillRect(0, 0, cv.width, cv.height);
   if (G.flash > 0.02) { ctx.fillStyle = `rgba(235,245,240,${(0.42 * G.flash).toFixed(3)})`; ctx.fillRect(0, 0, cv.width, cv.height); }
 
-  if (G.mode !== 'menu') drawCrosshair();
+  if (G.mode !== 'menu') { if (showRifle) drawRifle(); drawCrosshair(); }
   if (drag.id !== null && G.mode === 'play') drawStick();
 }
 
+/* ---------- the player's rifle: first-person bolt action with a big scope, held at the right shoulder ---------- */
+// A small solid 3D model (metres: x right, y down, z into the screen) projected with real perspective:
+// the stock and bolt knob come in from the bottom-right corner, the scope's eyepiece sits big and close
+// on the right, and the barrel runs to the middle with the muzzle just under the crosshair.
+const RIFLE_CHAMBER = [0.135, 0.09, 0.22], RIFLE_MUZZLE = [0.02, 0.05, 1.3], SCOPE_UP = 0.066;
+function drawRifle() {
+  const Wc = cv.width, Hc = cv.height, cx = Wc / 2, cy = Hc / 2, f = Hc * 0.9;
+  const rec = G.rifleKick || 0, since = G.clock - G.lastShot;
+  const bolt = since > 0.3 && since < 0.62 ? Math.sin((since - 0.3) / 0.32 * Math.PI) : 0;   // matches the bolt sounds
+  const D = RIFLE_MUZZLE.map((v, i) => v - RIFLE_CHAMBER[i]);
+  // a point along the rifle (t: 0 at the chamber, 1 at the muzzle, negative toward the stock), offset up / right
+  const at = (t, up = 0, right = 0) => {
+    const p = [RIFLE_CHAMBER[0] + D[0] * t + right, RIFLE_CHAMBER[1] + D[1] * t - up, RIFLE_CHAMBER[2] + D[2] * t];
+    p[2] -= rec * 0.05;                      // recoil pushes it back into the shoulder...
+    p[1] += rec * (0.02 - 0.05 * t);         // ...and the muzzle climbs
+    return p;
+  };
+  const P = p => [cx + f * p[0] / Math.max(0.03, p[2]), cy + f * p[1] / Math.max(0.03, p[2])];
+  const R = (p, r) => f * r / Math.max(0.03, p[2]);
+  const quad = (pts, fill) => {
+    ctx.beginPath(); pts.forEach((p, i) => { const [x, y] = P(p); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath();
+    ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = 1.2 * dpr; ctx.stroke();
+  };
+  // a box section along the rifle: we see its top face and its right side
+  const box = (t0, t1, w, h, top, side, lift = 0) => {
+    const c = (t, sx, sy) => at(t, lift - sy * h, sx * w);
+    quad([c(t0, 1, -1), c(t0, 1, 1), c(t1, 1, 1), c(t1, 1, -1)], side);
+    quad([c(t0, -1, -1), c(t0, 1, -1), c(t1, 1, -1), c(t1, -1, -1)], top);
+  };
+  // a round tube along the rifle, shaded with a light top edge; optional cap drawn at the near end
+  const tube = (t0, t1, r0, r1, up, cols, cap, capRatio = 0.85) => {
+    const p0 = at(t0, up), p1 = at(t1, up), [ax, ay] = P(p0), [bx, by] = P(p1), ra = R(p0, r0), rb = R(p1, r1);
+    let dx = bx - ax, dy = by - ay; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+    let nx = -dy, ny = dx; if (ny > 0) { nx = -nx; ny = -ny; }
+    ctx.beginPath();
+    ctx.moveTo(ax + nx * ra, ay + ny * ra); ctx.lineTo(bx + nx * rb, by + ny * rb);
+    ctx.lineTo(bx - nx * rb, by - ny * rb); ctx.lineTo(ax - nx * ra, ay - ny * ra); ctx.closePath();
+    const g = ctx.createLinearGradient(ax + nx * ra, ay + ny * ra, ax - nx * ra, ay - ny * ra);
+    g.addColorStop(0, cols[0]); g.addColorStop(0.3, cols[1]); g.addColorStop(1, cols[2]);
+    ctx.fillStyle = g; ctx.fill(); ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = 1.2 * dpr; ctx.stroke();
+    const ang = Math.atan2(ny, nx);
+    if (cap) { ctx.beginPath(); ctx.ellipse(ax, ay, ra, ra * capRatio, ang, 0, Math.PI * 2); ctx.fillStyle = cap; ctx.fill(); ctx.stroke(); }
+    return { ax, ay, ra, ang };
+  };
+  const GLOSS = ['#6a6f70', '#2a2d2e', '#0b0c0c'], MATTE = ['#464a4a', '#1f2121', '#090a0a'];
+  const STOCK_TOP = '#2c2f2c', STOCK_SIDE = '#171917', METAL_TOP = '#3a3e3f', METAL_SIDE = '#1c1e1f';
+
+  ctx.save();
+  // held low in the corner so it covers less of the yard
+  ctx.translate(Wc * 0.03, Hc * 0.16);
+  // barrel and muzzle brake, furthest away
+  tube(0.32, 0.97, 0.010, 0.009, 0, GLOSS);
+  tube(0.95, 1.0, 0.014, 0.014, 0, MATTE);
+  // forend / stock running back past the edge of the screen
+  box(0.05, 0.42, 0.026, 0.024, STOCK_TOP, STOCK_SIDE, -0.02);
+  box(-0.32, 0.06, 0.03, 0.03, STOCK_TOP, STOCK_SIDE, -0.02);
+  // receiver with its rail on top
+  box(-0.12, 0.08, 0.017, 0.016, METAL_TOP, METAL_SIDE, 0.02);
+  for (let t = -0.1; t < 0.075; t += 0.018) box(t, t + 0.008, 0.012, 0.003, '#4a4f50', '#202324', 0.04);
+  // bolt handle and its big knob out to the right; it slides back and forward after each shot
+  { const t = -0.01 - bolt * 0.05, a = P(at(t, 0.02, 0.016)), kp = at(t - 0.01, -0.012, 0.04), k = P(kp), kr = R(kp, 0.011);
+    ctx.strokeStyle = '#26292a'; ctx.lineWidth = R(kp, 0.006) * 2; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(k[0], k[1]); ctx.stroke(); ctx.lineCap = 'butt';
+    const kg = ctx.createRadialGradient(k[0] - kr * 0.35, k[1] - kr * 0.4, kr * 0.1, k[0], k[1], kr);
+    kg.addColorStop(0, '#6b7071'); kg.addColorStop(0.5, '#2a2d2e'); kg.addColorStop(1, '#0a0b0b');
+    ctx.fillStyle = kg; ctx.beginPath(); ctx.arc(k[0], k[1], kr, 0, Math.PI * 2); ctx.fill(); }
+  // scope rings
+  for (const t of [0.02, 0.17]) box(t, t + 0.025, 0.014, 0.018, METAL_TOP, METAL_SIDE, 0.045);
+  // scope: objective bell, main tube, turrets, then the big eyepiece nearest us
+  tube(0.2, 0.3, 0.022, 0.03, SCOPE_UP, GLOSS);
+  tube(0.03, 0.22, 0.016, 0.016, SCOPE_UP, GLOSS);
+  { const top = at(0.1, SCOPE_UP + 0.016), tip = at(0.1, SCOPE_UP + 0.038), [x0, y0] = P(top), [x1, y1] = P(tip), r = R(top, 0.014);
+    ctx.fillStyle = '#16191a'; ctx.fillRect(x0 - r, y1, r * 2, y0 - y1);
+    ctx.strokeStyle = 'rgba(150,160,158,.35)'; ctx.lineWidth = 1 * dpr;
+    for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(x0 + i * r / 3.5, y1 + 2); ctx.lineTo(x0 + i * r / 3.5, y0 - 2); ctx.stroke(); }
+    ctx.fillStyle = '#2b2f30'; ctx.beginPath(); ctx.ellipse(x1, y1, r, r * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
+  { const p = at(0.1, SCOPE_UP, 0.024), [x, y] = P(p), r = R(p, 0.013);
+    ctx.fillStyle = '#16191a'; ctx.beginPath(); ctx.ellipse(x, y, r * 0.55, r, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(150,160,158,.35)'; ctx.lineWidth = 1 * dpr; ctx.stroke(); }
+  tube(-0.02, 0.05, 0.026, 0.018, SCOPE_UP, GLOSS);
+  const eye = tube(-0.045, -0.015, 0.027, 0.027, SCOPE_UP, MATTE, '#070808');
+  { // knurled focus ring and the dark coated glass with a reflection of the night yard
+    ctx.strokeStyle = 'rgba(150,160,158,.3)'; ctx.lineWidth = 1 * dpr;
+    for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
+      const ca = Math.cos(eye.ang), sa = Math.sin(eye.ang), r0 = eye.ra * 0.86, r1 = eye.ra * 0.98;
+      const p = (r) => [eye.ax + (c * r) * ca - (s * r * 0.85) * sa, eye.ay + (c * r) * sa + (s * r * 0.85) * ca];
+      const [x0, y0] = p(r0), [x1, y1] = p(r1); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
+    const r = eye.ra * 0.78;
+    const lg = ctx.createRadialGradient(eye.ax - r * 0.3, eye.ay - r * 0.35, r * 0.05, eye.ax, eye.ay, r);
+    lg.addColorStop(0, 'rgba(120,170,150,.9)'); lg.addColorStop(0.45, 'rgba(30,70,62,.95)'); lg.addColorStop(1, 'rgba(4,12,10,1)');
+    ctx.fillStyle = lg; ctx.beginPath(); ctx.ellipse(eye.ax, eye.ay, r, r * 0.85, eye.ang, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.ellipse(eye.ax - r * 0.42, eye.ay - r * 0.3, r * 0.1, r * 0.3, eye.ang + 0.4, 0, Math.PI * 2); ctx.fill();
+  }
+  // muzzle flash on the shot
+  if (rec > 0.55) {
+    const [a, b] = P(at(1.03)), s = (rec - 0.55) / 0.45, Rf = (14 + 30 * s) * dpr;
+    ctx.globalCompositeOperation = 'lighter';
+    const fg = ctx.createRadialGradient(a, b, 0, a, b, Rf);
+    fg.addColorStop(0, 'rgba(255,250,220,.95)'); fg.addColorStop(0.3, 'rgba(255,220,150,.5)'); fg.addColorStop(1, 'rgba(255,200,120,0)');
+    ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(a, b, Rf, 0, Math.PI * 2); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  ctx.restore();
+}
 // faint joystick under the finger: a ring where it first touched and a dot where it is now
 function drawStick() {
   const u = dpr, ox = drag.ox * u, oy = drag.oy * u, R = 46 * u;
