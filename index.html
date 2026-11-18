@@ -198,7 +198,7 @@ html, body {
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.5</div>
+    <div class="ver" id="ver">version 0.0.6</div>
     <p class="lede">Let's go get them rats!</p>
     <div class="rules">
       <span><b>DRAG</b> to aim</span>
@@ -248,16 +248,15 @@ html, body {
 
 /* ---------- world constants ---------- */
 const W = 3000;                 // panorama circumference in world units (wraps)
-const HORIZON = 488;             // far edge of the yard
-const BASE = 506, FAR_K = 0.48;  // buildings stand far back: base line and scale
+const HORIZON = 516;             // far edge of the yard
+const BASE = 539, FAR_K = 0.69;  // buildings stand back from the yard: base line and scale
 const SKY_Y0 = -320, SKY_Y1 = 610;
 const GR_Y0 = 150, GR_Y1 = 1380;
 const LANES = [
-  { y: 510, sc: 0.28, j: 1 },   // along the far barn walls
-  { y: 545, sc: 0.36, j: 2 },
-  { y: 590, sc: 0.46, j: 3 },
-  { y: 650, sc: 0.6, j: 5 },
-  { y: 732, sc: 0.82, j: 3 },   // on the concrete slab
+  { y: 543, sc: 0.4, j: 2 },    // along the far barn walls
+  { y: 598, sc: 0.52, j: 3 },
+  { y: 660, sc: 0.66, j: 5 },
+  { y: 732, sc: 0.82, j: 3, slab: true },   // on the concrete slab
   { y: 905, sc: 1.12, j: 20 },  // near dirt
 ];
 const AIM_MIN = 430, AIM_MAX = 950;
@@ -862,6 +861,18 @@ function sfxShatter(delay) {
     o.connect(g); g.connect(A.sfx); o.start(s); o.stop(s + 0.22);
   }
 }
+function sfxOwlFlush() {
+  const c = A.ctx; if (!c) return; const t = c.currentTime + 0.08;
+  // heavy wingbeats fading into the distance, and an alarmed screech
+  for (let i = 0; i < 7; i++) noiseBurst(t + i * 0.13, A.sfx, { type: 'lowpass', f0: 700, f1: 250, q: 0.8, peak: 0.32 * Math.pow(0.8, i), dur: 0.1, attack: 0.02 });
+  const o = c.createOscillator(), v = c.createOscillator(), vg = c.createGain(), g = c.createGain(), f = c.createBiquadFilter();
+  o.type = 'sawtooth'; o.frequency.setValueAtTime(1700, t); o.frequency.exponentialRampToValueAtTime(1150, t + 0.5);
+  v.frequency.value = 38; vg.gain.value = 60; v.connect(vg); vg.connect(o.frequency);
+  f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = 2;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.07, t + 0.05); g.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+  o.connect(f); f.connect(g); g.connect(A.sfx); g.connect(A.rev);
+  o.start(t); v.start(t); o.stop(t + 0.6); v.stop(t + 0.6);
+}
 function sfxDry() {
   const c = A.ctx; if (!c) return;
   noiseBurst(c.currentTime, A.sfx, { f0: 3200, q: 5, peak: 0.18, dur: 0.03, attack: 0.001 });
@@ -945,7 +956,7 @@ const stopDur = () => Math.max(0.55, rand(1.3, 2.8) - 0.13 * (G.night - 1));
 const ratSpeed = r => 72 * r.ls * (VAR_SPEED[r.variant] || 1) * (r.king ? 1.5 * (r.hp <= r.maxHp / 2 ? 1.5 : 1) : diff()) * (r.state === 'scurry' ? 2.3 : r.state === 'rage' ? 1.9 : 1);
 const BOSS_EVERY = 5, KING_HP = 20, KING_SIZE = 3.2;
 function makeKing() {
-  const lane = Math.random() < 0.5 ? 3 : 4, side = Math.random() < 0.5 ? -1 : 1;
+  const lane = Math.random() < 0.5 ? 2 : 3, side = Math.random() < 0.5 ? -1 : 1;
   const r = makeRat(G.aimX + side * viewW * 0.18, lane, -side, true);
   r.king = true; r.sc = r.ls * KING_SIZE; r.hp = r.maxHp = KING_HP; r.t = rand(2, 3);
   r.coat = { k: 'king', patches: [], nick: true, nickFar: false, facePatch: false };
@@ -972,7 +983,7 @@ function dirtLip(g, s, ee) {
 }
 const ALPHA_EVERY = 10, ALPHA_SIZE = 1.45;
 
-const LANE_W = [0.12, 0.14, 0.16, 0.18, 0.2, 0.2];
+const LANE_W = [0.16, 0.18, 0.2, 0.23, 0.23];
 function pickLane() { let x = Math.random(); for (let i = 0; i < LANE_W.length; i++) if ((x -= LANE_W[i]) <= 0) return i; return LANES.length - 1; }
 // rare dressed-up rats: about 1 in 15 ordinary spawns; they only look different (zombie also takes 2 body hits)
 const VARIANTS = ['zombie', 'clown', 'xmas', 'pirate', 'drunk', 'albino', 'mohawk', 'french', 'blind'];
@@ -1117,6 +1128,7 @@ function fire() {
   G.kick = 1; G.kickX = rand(-1, 1); G.flash = 1;
   if (blocker) { best = null; hitObstacle(blocker, ax, ay); }
   else if (best) hitRat(best, hit, ax, ay);
+  else if (G.owl && owlHit(G.owl, ax, ay)) flushOwl(G.owl);   // no points, it just leaves
   else missPuff(ax, ay);
   // every rat near the shot panics and scurries about for 2 seconds
   for (const r of G.rats) {
@@ -1235,6 +1247,7 @@ function startRound(n) {
   G.spawnT = 1.2; G.lastShot = -9;
   for (const o of G.obs) o.broken = false;   // a fresh empty bottle each night
   G.boss = n % BOSS_EVERY === 0; G.bossEndT = 0;
+  G.owl = !G.boss && Math.random() < OWL_CHANCE ? makeOwl() : null;
   if (G.boss) {
     // boss night: one king rat, no clock, a health bar and metal
     const k = makeKing(); G.rats.push(k); bossBar(k);
@@ -1402,6 +1415,7 @@ function update(dt) {
   }
   for (const r of G.rats) { updRat(r, dt); if (r.king && r.alive) kingTick(r, dt); }
   for (const o of G.obs) if (o.hopT > 0) o.hopT = Math.max(0, o.hopT - dt);
+  if (G.owl) { owlTick(G.owl, dt); if (G.owl.gone) G.owl = null; }
   for (const p of G.parts) {
     p.life -= dt;
     if (p.kind === 'blood') {
@@ -1910,6 +1924,87 @@ function drawRat(g, r, sx, sy) {
   g.restore();
 }
 
+/* ---------- the owl: sometimes perched on a ledge in the background; shooting at it only scares it off ---------- */
+const OWL_CHANCE = 0.6, OWL_SCALE = 1.15 * FAR_K;   // sized to match the buildings it perches on
+// perches are given in the buildings' own drawing coordinates, then pushed back like the buildings are
+const farPt = (cx, lx, ly) => [cx + (lx - cx) * FAR_K, BASE + (ly - 600) * FAR_K];
+const OWL_PERCHES = [
+  [380, 120, 566], [380, 200, 566], [380, 520, 566], [380, 650, 566],                 // barn wall ledge
+  [1610, 1360, 566], [1610, 1540, 566], [1610, 1860, 566],                            // coop ledge
+  [2665, 2380, 566], [2665, 2520, 566], [2665, 2840, 566], [2665, 2960, 566],         // long shed ledge
+  [865, 736, 468], [865, 876, 468], [865, 946, 468],                                  // fence posts
+  [2122, 1986, 468], [2122, 2196, 468], [2122, 2266, 468],
+  [1185, 1127, 396], [1185, 1240, 398],                                               // top of the hay stack
+].map(([cx, lx, ly]) => farPt(cx, lx, ly));
+function makeOwl() {
+  const [x, y] = OWL_PERCHES[Math.random() * OWL_PERCHES.length | 0];
+  return { x, y, s: OWL_SCALE, turn: 0, turnTarget: 0, turnT: rand(1, 3), blink: 0, fly: false, ft: 0, vx: 0, vy: 0, gone: false };
+}
+function owlTick(o, dt) {
+  if (o.fly) {
+    o.ft += dt; o.x = mod(o.x + o.vx * dt, W); o.y += o.vy * dt; o.vy -= 40 * dt;
+    if (o.ft > 4) o.gone = true;
+    return;
+  }
+  o.turnT -= dt;
+  if (o.turnT <= 0) { o.turnT = rand(1.5, 4.5); o.turnTarget = [-1, -0.5, 0, 0, 0.5, 1, 1.6][Math.random() * 7 | 0]; }
+  o.turn += (o.turnTarget - o.turn) * Math.min(1, dt * 5);
+  if (o.blink > 0) o.blink -= dt; else if (Math.random() < dt * 0.3) o.blink = 0.15;
+}
+function owlHit(o, ax, ay) {
+  if (o.fly) return false;
+  const lx = wrapD(ax - o.x) / o.s, ly = (ay - o.y) / o.s;
+  const bx = lx / 15, by = (ly + 28) / 30;
+  return bx * bx + by * by <= 1;
+}
+function flushOwl(o) {
+  o.fly = true; o.ft = 0;
+  o.vx = (Math.random() < 0.5 ? -1 : 1) * rand(150, 210); o.vy = rand(-70, -40);
+  for (let i = 0; i < 8; i++) G.parts.push({ kind: 'dust', x: o.x, y: o.y - 26 * o.s, vx: rand(-40, 40), vy: rand(-50, 10), size: rand(1.2, 2.4), life: rand(0.5, 0.9), max: 0.9 });
+  sfxOwlFlush();
+}
+function drawOwl(g, o, sx, sy) {
+  g.save(); g.translate(sx, sy); g.scale(o.s, o.s);
+  const bodyGrad = () => { const bg = g.createLinearGradient(0, -40, 0, 0); bg.addColorStop(0, '#9a9486'); bg.addColorStop(1, '#4a463d'); return bg; };
+  const eyes = (cx, cy, k) => {
+    if (o.blink > 0 && !o.fly) { g.strokeStyle = '#2a2722'; g.lineWidth = 1; line(g, cx - 7, cy, cx - 3, cy); line(g, cx + 3, cy, cx + 7, cy); return; }
+    for (const ex of [cx - 5 * k, cx + 5 * k]) glowEye(g, ex, cy, '#ffffff', '255,255,255', 9);
+  };
+  if (o.fly) {
+    // wings beating, body tipped forward into the flight
+    const a = Math.sin(o.ft * 18), dir = Math.sign(o.vx) || 1;
+    g.rotate(0.35 * dir);
+    g.fillStyle = '#5d584c';
+    for (const side of [-1, 1]) {
+      g.beginPath(); g.moveTo(side * 6, -26); g.quadraticCurveTo(side * 26, -40 - a * 16, side * 40, -30 - a * 22);
+      g.quadraticCurveTo(side * 28, -18 - a * 6, side * 6, -16); g.closePath(); g.fill();
+    }
+    g.fillStyle = bodyGrad(); ell(g, 0, -22, 11, 16);
+    g.fillStyle = '#8f897c'; ell(g, 0, -38, 10, 9);
+    eyes(0, -39, 0.85);
+  } else {
+    g.fillStyle = '#8a8070'; for (const tx of [-5, -3, 3, 5]) ell(g, tx, -0.5, 1.2, 1.6);          // talons on the ledge
+    g.fillStyle = bodyGrad(); ell(g, 0, -20, 13, 19);
+    g.fillStyle = '#3e3a32'; ell(g, -10, -19, 6, 15, 0.15); ell(g, 10, -19, 6, 15, -0.15);         // folded wings
+    g.strokeStyle = 'rgba(30,26,20,.45)'; g.lineWidth = 1;
+    for (let i = 0; i < 6; i++) { const y = -28 + i * 4; line(g, -4, y, -3, y + 2); line(g, 3, y + 1, 4, y + 3); }  // breast streaks
+    // head: turns side to side; past a quarter turn we see the back of it
+    const t = o.turn, back = Math.abs(t) > 1.3, hx = Math.sin(Math.max(-1.2, Math.min(1.2, t))) * 5;
+    g.fillStyle = '#857f71'; ell(g, 0, -40, 12.5, 11);
+    g.fillStyle = '#6e695c';
+    for (const sd of [-1, 1]) { g.beginPath(); g.moveTo(sd * 9 + hx * 0.3, -46); g.lineTo(sd * 8 + hx * 0.3, -55); g.lineTo(sd * 3 + hx * 0.3, -48); g.closePath(); g.fill(); }  // ear tufts
+    if (!back) {
+      g.fillStyle = '#b9b2a4'; ell(g, -5 + hx, -40, 5.6, 6.2); ell(g, 5 + hx, -40, 5.6, 6.2);         // facial disc
+      g.strokeStyle = 'rgba(40,36,30,.6)'; g.lineWidth = 0.8; g.beginPath(); g.ellipse(hx, -39, 11, 9, 0, 0, Math.PI * 2); g.stroke();
+      eyes(hx, -40, 1);
+      g.fillStyle = '#2a2620'; g.beginPath(); g.moveTo(hx, -35); g.lineTo(hx - 1.6, -38); g.lineTo(hx + 1.6, -38); g.closePath(); g.fill();
+    } else {
+      g.strokeStyle = 'rgba(40,36,30,.5)'; g.lineWidth = 1; for (let i = -2; i <= 2; i++) line(g, i * 3, -48, i * 2.5, -32);
+    }
+  }
+  g.restore();
+}
+
 /* ---------- yard clutter: dirt mounds and junk that rats can pass behind ---------- */
 const OBS_TYPES = [['mound', 0.28], ['can', 0.17], ['bag', 0.12], ['box', 0.11], ['bottle', 0.1], ['ebottle', 0.12], ['bucket', 0.1]];
 const OBS_W = { mound: 130, can: 22, bag: 58, box: 48, bottle: 30, ebottle: 16, bucket: 36 };
@@ -1921,7 +2016,7 @@ function makeObstacles() {
       const x = r() * W;
       let t = r(), type = 'mound';
       for (const [k, w] of OBS_TYPES) if ((t -= w) <= 0) { type = k; break; }
-      const off = li === 4 ? 2 + r() * 3 : 5 + r() * 12;        // stay on top of the slab
+      const off = L.slab ? 2 + r() * 3 : 5 + r() * 12;        // stay on top of the slab
       const s = L.sc * (type === 'mound' ? 0.8 + r() * 0.6 : 0.85 + r() * 0.35);
       const o = { x, y: L.y + off * L.sc, s, type, lane: li, v: r(), lying: r() < 0.55, flip: r() < 0.5 ? -1 : 1, hopT: 0, seed: (r() * 1e6) | 0 };
       const half = OBS_W[type] * s / 2;
@@ -2098,8 +2193,9 @@ function render() {
   const ents = [];
   for (const r of G.rats) { const x = rel(r.x); if (vis(x)) ents.push([r.y, 0, r, x]); }
   for (const o of G.obs) { const x = rel(o.x); if (vis(x)) ents.push([o.y, 1, o, x]); }
+  if (G.owl) { const x = rel(G.owl.x); if (vis(x)) ents.push([G.owl.fly ? 0 : G.owl.y, 2, G.owl, x]); }
   ents.sort((a, b) => a[0] - b[0]);
-  for (const [, k, e, x] of ents) k ? drawObs(ctx, e, x, e.y - top) : drawRat(ctx, e, x + e.jx, e.y + e.jy - top);
+  for (const [, k, e, x] of ents) k === 2 ? drawOwl(ctx, e, x, e.y - top) : k ? drawObs(ctx, e, x, e.y - top) : drawRat(ctx, e, x + e.jx, e.y + e.jy - top);
   for (const p of G.parts) {
     const x = rel(p.x); if (!vis(x)) continue;
     if (p.kind === 'blood') { ctx.fillStyle = p.col; ell(ctx, x, p.y - top, p.size, p.size); }
@@ -2170,6 +2266,7 @@ function boot() {
   checkOrientation();
   updateFsBtn();
   G.obs = makeObstacles();
+  G.owl = makeOwl();
   for (let i = 0; i < 4; i++) spawnRat(true);
   window.addEventListener('resize', resize);
   requestAnimationFrame(frame);
