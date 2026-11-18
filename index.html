@@ -191,6 +191,7 @@ html, body {
         </svg>
         <span id="sound-label">Sound on</span>
       </button>
+      <button class="btn btn-quiet" id="home" type="button">Main menu</button>
     </div>
   </div>
 </section>
@@ -198,7 +199,7 @@ html, body {
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.7</div>
+    <div class="ver" id="ver">version 0.0.8</div>
     <p class="lede">Let's go get them rats!</p>
     <div class="rules">
       <span><b>DRAG</b> to aim</span>
@@ -1384,6 +1385,19 @@ function setUserPause(p) {
 elPauseBtn.addEventListener('click', () => setUserPause(true));
 $('#resume').addEventListener('click', () => setUserPause(false));
 $('#sound').addEventListener('click', () => setMuted(!A.muted));
+// leave the current game and go back to the start screen, with rats roaming behind it again
+function goHome() {
+  G.mode = 'menu'; G.boss = false; G.bossEndT = 0; G.ufo = null; G.ufoT = 0; ufoHumStop();
+  G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
+  for (let i = 0; i < 4; i++) spawnRat(true);
+  G.owl = makeOwl();
+  elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elSplash.hidden = elHint.hidden = true;
+  elStart.hidden = false;
+  setMusic('night');
+  setUserPause(false);
+  elPauseBtn.hidden = true;
+}
+$('#home').addEventListener('click', goHome);
 document.addEventListener('keydown', e => {
   if ((e.key === 'Escape' || e.key === 'p' || e.key === 'P') && G.mode !== 'menu') setUserPause(!G.userPaused);
 });
