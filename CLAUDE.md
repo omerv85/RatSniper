@@ -21,6 +21,12 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
   `VOICE_DATA`. No build step, no dependencies besides Google Fonts
   (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew).
 - `README.md`: short public description.
+- `manifest.webmanifest`, `icon-192.png`, `icon-512.png` (also used as the maskable icon), `apple-touch-icon.png` (180):
+  "Add to home screen" support (v0.0.17). The installed game opens full screen in landscape. The icon is a green
+  night-vision crosshair drawn with System.Drawing in PowerShell; keep everything inside the middle 80% so Android's
+  round masks don't cut it. The start screen's install button opens Android Chrome's prompt (`beforeinstallprompt`),
+  or shows a how-to line on iPhone and other browsers; it's hidden once the game runs from the home screen.
+  The start screen has no "Boss round" button any more (removed in v0.0.17 at the owner's request).
 - `CLAUDE.md`: this file.
 
 The game was first developed as a claude.ai artifact (https://claude.ai/artifact/3pFadoARRyjL2661NMdVh5,

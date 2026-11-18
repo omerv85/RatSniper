@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Rat Sniper">
 <meta name="theme-color" content="#070908">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="description" content="A night-vision rat sniping game for touch screens."><title>Rat Sniper</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,10 +82,10 @@ html, body {
   box-shadow: 0 0 22px rgba(69,255,122,.18), inset 0 0 12px rgba(69,255,122,.12); }
 .btn:active { background: rgba(69,255,122,.2); }
 .btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-.btn-boss { --boss: #ff4a3a; color: var(--boss); border-color: var(--boss); background: rgba(255,74,58,.08);
-  box-shadow: 0 0 22px rgba(255,74,58,.2), inset 0 0 12px rgba(255,74,58,.12); }
-.btn-boss:active { background: rgba(255,74,58,.22); }
-.btn-boss:focus-visible { outline-color: #ff4a3a; }
+.start-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; }
+.btn.btn-install { font-size: 13px; letter-spacing: .12em; padding: 8px 14px; min-height: 40px; gap: 8px; }
+.btn-install svg { width: 16px; height: 16px; }
+.sub.install-help { max-width: 60ch; line-height: 1.5; text-transform: none; letter-spacing: .04em; color: var(--ink); margin-top: -4px; }
 #hud-boss { top: calc(env(safe-area-inset-top, 0px) + 12px); left: 50%; transform: translateX(-50%); width: min(40vw, 420px); display: grid; gap: 5px; justify-items: center; }
 #hud-boss .boss-name { font-family: var(--f-display); font-weight: 900; font-size: 20px; letter-spacing: .14em; line-height: 1; color: #ff5a48; text-shadow: 0 0 12px rgba(255,60,40,.5); }
 .boss-bar { position: relative; width: 100%; height: 12px; border: 1px solid rgba(255,90,72,.7); background: rgba(40,6,6,.7); padding: 1px; box-sizing: border-box; }
@@ -310,7 +313,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.16</div>
+    <div class="ver" id="ver">version 0.0.17</div>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
       <span data-i18n-html="ruleAim"><b>DRAG</b> to aim</span>
@@ -319,9 +322,17 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
     </div>
     <div class="btns">
       <button class="btn" id="go" type="button" data-i18n="start">Start night 1</button>
-      <button class="btn btn-boss" id="go-boss" type="button" data-i18n="bossRound">Boss round</button>
     </div>
-    <label class="lang-pick" for="lang-start"><span data-i18n="language">Language</span> <select id="lang-start" class="lang-select"></select></label>
+    <div class="start-row">
+      <label class="lang-pick" for="lang-start"><span data-i18n="language">Language</span> <select id="lang-start" class="lang-select"></select></label>
+      <button class="btn btn-quiet btn-install" id="install" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 7v7M9 11l3 3 3-3"/>
+        </svg>
+        <span data-i18n="install">Add to home screen</span>
+      </button>
+    </div>
+    <div class="sub install-help" id="install-help" hidden></div>
     <div class="fine" data-i18n="fine">Best in landscape · sound on</div>
   </div>
 </section>
@@ -406,12 +417,12 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.16';
+const VERSION = '0.0.17';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
     tagline: "Let's go get them rats!", ruleAim: '<b>DRAG</b> to aim', ruleFire: '<b>LIFT</b> to fire', ruleNight: '<b>30 s</b> a night',
-    start: 'Start night 1', bossRound: 'Boss round', fine: 'Best in landscape · sound on', version: 'version', language: 'Language',
+    start: 'Start night 1', fine: 'Best in landscape · sound on', install: 'Add to home screen', installIos: 'Tap Share, then "Add to Home Screen"', installOther: 'Open the browser menu, then "Add to Home screen"', version: 'version', language: 'Language',
     night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 8 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
     headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
     paused: 'PAUSED', resume: 'Back to the game', soundOn: 'Sound on', soundOff: 'Sound off', rifleShown: 'Rifle shown', rifleHidden: 'Rifle hidden',
@@ -428,7 +439,7 @@ const STR = {
   },
   ru: {
     tagline: 'Вперёд, за крысами!', ruleAim: '<b>ТЯНИ</b>, чтобы целиться', ruleFire: '<b>ОТПУСТИ</b>, чтобы стрелять', ruleNight: '<b>30 с</b> на ночь',
-    start: 'Начать ночь 1', bossRound: 'Битва с боссом', fine: 'Лучше горизонтально · со звуком', version: 'версия', language: 'Язык',
+    start: 'Начать ночь 1', fine: 'Лучше горизонтально · со звуком', install: 'На главный экран', installIos: 'Нажмите «Поделиться», затем «На экран „Домой“»', installOther: 'Откройте меню браузера и выберите «Добавить на главный экран»', version: 'версия', language: 'Язык',
     night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 8 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
     headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
     paused: 'ПАУЗА', resume: 'Вернуться в игру', soundOn: 'Звук вкл.', soundOff: 'Звук выкл.', rifleShown: 'Винтовка видна', rifleHidden: 'Винтовка скрыта',
@@ -445,7 +456,7 @@ const STR = {
   },
   es: {
     tagline: '¡Vamos a por esas ratas!', ruleAim: '<b>ARRASTRA</b> para apuntar', ruleFire: '<b>SUELTA</b> para disparar', ruleNight: '<b>30 s</b> por noche',
-    start: 'Empezar noche 1', bossRound: 'Ronda del jefe', fine: 'Mejor en horizontal · con sonido', version: 'versión', language: 'Idioma',
+    start: 'Empezar noche 1', fine: 'Mejor en horizontal · con sonido', install: 'Añadir a la pantalla de inicio', installIos: 'Toca Compartir y luego «Añadir a pantalla de inicio»', installOther: 'Abre el menú del navegador y elige «Añadir a la pantalla de inicio»', version: 'versión', language: 'Idioma',
     night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 8 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
     headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
     paused: 'PAUSA', resume: 'Volver al juego', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', rifleShown: 'Rifle visible', rifleHidden: 'Rifle oculto',
@@ -462,7 +473,7 @@ const STR = {
   },
   fr: {
     tagline: 'Allez, on chope ces rats !', ruleAim: '<b>GLISSE</b> pour viser', ruleFire: '<b>RELÂCHE</b> pour tirer', ruleNight: '<b>30 s</b> par nuit',
-    start: 'Commencer la nuit 1', bossRound: 'Manche du boss', fine: 'Mieux en paysage · avec le son', version: 'version', language: 'Langue',
+    start: 'Commencer la nuit 1', fine: 'Mieux en paysage · avec le son', install: 'Ajouter à l’écran d’accueil', installIos: 'Touchez Partager, puis « Sur l’écran d’accueil »', installOther: 'Ouvrez le menu du navigateur, puis « Ajouter à l’écran d’accueil »', version: 'version', language: 'Langue',
     night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 8 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
     headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
     paused: 'PAUSE', resume: 'Retour au jeu', soundOn: 'Son activé', soundOff: 'Son coupé', rifleShown: 'Fusil visible', rifleHidden: 'Fusil masqué',
@@ -479,7 +490,7 @@ const STR = {
   },
   he: {
     tagline: 'בואו נתפוס את העכברושים!', ruleAim: '<b>גררו</b> כדי לכוון', ruleFire: '<b>שחררו</b> כדי לירות', ruleNight: '<b>30 שניות</b> ללילה',
-    start: 'התחלת לילה 1', bossRound: 'סיבוב בוס', fine: 'הכי טוב לרוחב · עם סאונד', version: 'גרסה', language: 'שפה',
+    start: 'התחלת לילה 1', fine: 'הכי טוב לרוחב · עם סאונד', install: 'הוספה למסך הבית', installIos: 'הקישו על שיתוף ואז על "הוספה למסך הבית"', installOther: 'פתחו את תפריט הדפדפן ובחרו "הוספה למסך הבית"', version: 'גרסה', language: 'שפה',
     night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 8 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
     headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
     paused: 'מושהה', resume: 'חזרה למשחק', soundOn: 'סאונד פועל', soundOff: 'סאונד כבוי', rifleShown: 'הרובה מוצג', rifleHidden: 'הרובה מוסתר',
@@ -1910,7 +1921,6 @@ function startGame(night) {
   startRound(night);
 }
 $('#go').addEventListener('click', () => startGame(1));
-$('#go-boss').addEventListener('click', () => startGame(BOSS_EVERY));
 // Pause: button bottom right during a game; the pause screen holds the sound toggle and the way back.
 const elPauseBtn = $('#pause-btn'), elPause = $('#pause');
 function setUserPause(p) {
@@ -1966,6 +1976,7 @@ function langChanged() {
   setMuted(A.muted); setShowRifle(showRifle);
   if (!elHint.hidden) elHint.textContent = tr(G.armed ? 'nadeHint' : G.boss ? 'bossHint' : 'hint');
   if (!elSplash.hidden) { renderSpecials(); renderNextLine(); renderShop(); }
+  if (!$('#install-help').hidden) $('#install-help').textContent = tr(isIos() ? 'installIos' : 'installOther');
   setShareLink();
   if (grImg) buildScenery(Pgr);
 }
@@ -1980,7 +1991,7 @@ setMuted(A.muted);
 const elFs = $('#fs-btn');
 const fsSupported = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
 const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
-function updateFsBtn() { elFs.hidden = !fsSupported() || isFs(); }
+function updateFsBtn() { elFs.hidden = !fsSupported() || isFs() || installed(); }   // the home-screen app is already full screen
 function goFullscreen() {
   try {
     const el = document.documentElement, fs = el.requestFullscreen || el.webkitRequestFullscreen;
@@ -2013,6 +2024,31 @@ function tryLandscapeLock() {
   // on phones, starting a game also goes full screen; iPhones can't, so the rotate notice covers them
   if (touchDevice()) goFullscreen();
 }
+// Add to home screen: Android Chrome hands us an install prompt we can open from our own button;
+// elsewhere (iPhone, other browsers) the button explains where the browser keeps that option.
+// Started from the home screen, the game opens full screen in landscape (see manifest.webmanifest).
+let installEvt = null;
+const installed = () => navigator.standalone === true ||
+  (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches));
+const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function updateInstallBtn() {
+  $('#install').hidden = installed() || !(installEvt || touchDevice());
+  if ($('#install').hidden) $('#install-help').hidden = true;
+}
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; updateInstallBtn(); });
+window.addEventListener('appinstalled', () => { installEvt = null; updateInstallBtn(); });
+$('#install').addEventListener('click', () => {
+  if (installEvt) {
+    const ev = installEvt; installEvt = null;
+    ev.prompt();
+    (ev.userChoice || Promise.resolve()).then(() => updateInstallBtn()).catch(() => {});
+    return;
+  }
+  const h = $('#install-help');
+  h.textContent = tr(isIos() ? 'installIos' : 'installOther'); h.hidden = false;
+  $('#start .fine').hidden = true;   // make room on short landscape screens
+});
+updateInstallBtn();
 document.addEventListener('visibilitychange', applyPause);
 window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 250));
 window.addEventListener('resize', checkOrientation);
