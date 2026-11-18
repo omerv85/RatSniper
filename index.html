@@ -63,6 +63,7 @@ html, body {
 .stack { display: grid; justify-items: center; gap: clamp(10px, 2.6vmin, 20px); max-width: 34rem; }
 .eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .28em; color: var(--dim); text-transform: uppercase; }
 .title { font-family: var(--f-display); font-weight: 900; font-size: clamp(3.2rem, 15vmin, 7.5rem); line-height: .86; letter-spacing: .02em; margin: 0; text-wrap: balance; }
+.ver { font-family: var(--f-mono); font-size: 11px; letter-spacing: .2em; color: var(--dim); margin-top: -6px; }
 .lede { font-family: var(--f-mono); font-size: 15px; line-height: 1.5; color: var(--ink); margin: 0; max-width: 30ch; }
 .rules { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; font-family: var(--f-mono); font-size: 13px; color: var(--dim); letter-spacing: .06em; }
 .rules b { color: var(--phos); font-weight: 400; letter-spacing: .14em; }
@@ -171,9 +172,9 @@ html, body {
 
 <section class="screen" id="start">
   <div class="stack">
-    <div class="eyebrow">Feed barn · 02:14 · moon ¾</div>
     <h1 class="title">RAT<br>SNIPER</h1>
-    <p class="lede">The rats come out after dark and go straight for the feed. Hold the barnyard till dawn.</p>
+    <div class="ver" id="ver">version 0.0.3</div>
+    <p class="lede">Kill the rat infestation</p>
     <div class="rules">
       <span><b>DRAG</b> to aim</span>
       <span><b>LIFT</b> to fire</span>
