@@ -87,7 +87,7 @@ html, body {
 #hud-boss .boss-name { font-family: var(--f-display); font-weight: 900; font-size: 20px; letter-spacing: .14em; line-height: 1; color: #ff5a48; text-shadow: 0 0 12px rgba(255,60,40,.5); }
 .boss-bar { position: relative; width: 100%; height: 12px; border: 1px solid rgba(255,90,72,.7); background: rgba(40,6,6,.7); padding: 1px; box-sizing: border-box; }
 .boss-bar i { display: block; height: 100%; background: linear-gradient(#ff6a52, #c3121a); transform-origin: left; transition: transform .25s ease-out; }
-.boss-bar::after { content: ""; position: absolute; inset: 1px; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(0,0,0,.6) calc(10% - 1px) 10%); pointer-events: none; }
+.boss-bar::after { content: ""; position: absolute; inset: 1px; background: repeating-linear-gradient(90deg, transparent 0 calc(12.5% - 1px), rgba(0,0,0,.6) calc(12.5% - 1px) 12.5%); pointer-events: none; }
 #hud-boss.low .boss-bar { animation: pulse .35s ease-in-out infinite alternate; }
 @media (max-width: 600px) { #hud-boss { top: calc(env(safe-area-inset-top, 0px) + 74px); width: min(70vw, 320px); } }
 #splash .boss-slain { color: #ff5a48; font-size: clamp(16px, 4vmin, 22px); letter-spacing: .22em; margin: 0; text-shadow: 0 0 12px rgba(255,60,40,.45); }
@@ -151,11 +151,34 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 .pill.coin { color: var(--amber); border-color: rgba(255,190,74,.6); }
 .pill.coin svg { width: 20px; height: 20px; }
 .pill.bump { animation: bump .28s ease-out; }
-.btn-buy { font-size: 14px; padding: 10px 14px; min-height: 44px; }
-.btn-buy.cant { opacity: .45; }
+.pill.nade svg { width: 20px; height: 20px; }
+/* shop: title and wallet on one line, the items as a row of cards, the countdown and start button on one line */
+.shop-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 16px; }
+.items { display: flex; gap: 10px; justify-content: center; }
+.item { display: grid; justify-items: center; gap: 6px; min-width: 78px; padding: 8px 10px 7px; cursor: pointer; touch-action: manipulation;
+  font-family: var(--f-mono); color: var(--ink); background: rgba(228,233,230,.06); border: 1px solid rgba(228,233,230,.45); }
+.item:active { background: rgba(69,255,122,.2); }
+.item:focus-visible { outline: 2px solid var(--phos); outline-offset: 3px; }
+.item .qty { display: flex; align-items: center; gap: 6px; font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums; }
+.item .qty svg { width: 9px; height: 22px; }
+.item .qty svg.g { width: 22px; height: 22px; }
+.item .price { display: flex; align-items: center; gap: 5px; font-size: 15px; line-height: 1; color: var(--amber); font-variant-numeric: tabular-nums; }
+.item .price svg { width: 14px; height: 14px; }
+.item.cant { opacity: .4; }
 .poor { color: var(--amber); }
-.shop .next { grid-auto-flow: row; }
+.next-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.next-row .ring { width: 58px; }
+.next-row .ring span { font-size: 1.35rem; }
+.next-txt { display: grid; justify-items: center; gap: 8px; }
 .shop #start-now { font-size: 14px; padding: 10px 18px; min-height: 44px; }
+/* grenade button, bottom middle; it lights up while a grenade is in hand */
+#nade-btn { left: 50%; transform: translateX(-50%); width: 60px; height: 60px; }
+#nade-btn svg { width: 30px; height: 30px; }
+#nade-btn .cnt { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px;
+  display: grid; place-items: center; font-family: var(--f-mono); font-size: 13px; line-height: 1; color: #0a0d0c; background: var(--amber); }
+#nade-btn.armed { color: var(--phos); border-color: var(--phos); background: rgba(69,255,122,.18); box-shadow: 0 0 16px rgba(69,255,122,.5); }
+body.has-nade #hud-b { bottom: calc(env(safe-area-inset-bottom, 0px) + 80px); }
+body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 /* game over */
 #over .over-title { font-family: var(--f-display); font-weight: 900; font-size: clamp(3rem, 15vmin, 7rem); line-height: .85; color: #ff5a48; text-shadow: 0 0 28px rgba(255,60,40,.4); margin: 0; }
 .stats { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(14px, 5vw, 40px); }
@@ -223,6 +246,13 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
     <circle cx="12" cy="12" r="7" fill="none" stroke="#0a0d0c" stroke-width="1.6" opacity=".55"/>
     <path d="M9.5 9.5 L12 7.5 L14.5 9.5 M12 7.5 V16.5" fill="none" stroke="#0a0d0c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
   </symbol>
+  <symbol id="grenade" viewBox="0 0 24 24">
+    <circle cx="11" cy="15" r="7.5" fill="currentColor"/>
+    <rect x="8" y="5" width="6" height="4" rx="1" fill="currentColor"/>
+    <path d="M14 5.5 L17.5 6.5 Q19.5 8.5 18 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="5.5" cy="5.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M7.8 6.4 L8.5 6.8" stroke="currentColor" stroke-width="1.5"/>
+  </symbol>
 </svg>
 
 <canvas id="game" aria-label="Night-vision rifle scope looking over the farmyard"></canvas>
@@ -249,6 +279,9 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>
   </svg>
+</button>
+<button class="round-btn" id="nade-btn" type="button" aria-label="Grenade" data-i18n-aria="grenade" aria-pressed="false" hidden>
+  <svg aria-hidden="true"><use href="#grenade"/></svg><span class="cnt" id="nade-cnt">0</span>
 </button>
 <button class="round-btn" id="pause-btn" type="button" aria-label="Pause" data-i18n-aria="pause" hidden>
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
@@ -277,7 +310,7 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.14</div>
+    <div class="ver" id="ver">version 0.0.15</div>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
       <span data-i18n-html="ruleAim"><b>DRAG</b> to aim</span>
@@ -319,24 +352,30 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
       <div class="sub"><span data-i18n="total">Total</span> <b id="sp-total">0</b></div>
     </div>
     <div class="stack shop">
-      <p class="shop-title" data-i18n="shopTitle">Restock</p>
-      <div class="sub bonus" id="shop-bonus">+3 bullets for surviving the night</div>
-      <div class="wallet">
-        <span class="pill" title="Bullets"><svg aria-hidden="true"><use href="#bullet"/></svg><b id="shop-ammo">0</b></span>
-        <span class="pill coin" title="Coins"><svg aria-hidden="true"><use href="#coin"/></svg><b id="shop-coins">0</b></span>
+      <div class="shop-head">
+        <p class="shop-title" data-i18n="shopTitle">Restock</p>
+        <div class="wallet">
+          <span class="pill" title="Bullets"><svg aria-hidden="true"><use href="#bullet"/></svg><b id="shop-ammo">0</b></span>
+          <span class="pill nade" title="Grenades"><svg aria-hidden="true"><use href="#grenade"/></svg><b id="shop-nades">0</b></span>
+          <span class="pill coin" title="Coins"><svg aria-hidden="true"><use href="#coin"/></svg><b id="shop-coins">0</b></span>
+        </div>
       </div>
-      <div class="btns">
-        <button class="btn btn-quiet btn-buy" id="buy5" type="button" data-pack="0">5 bullets · 4 coins</button>
-        <button class="btn btn-quiet btn-buy" id="buy15" type="button" data-pack="1">15 bullets · 10 coins</button>
+      <div class="sub bonus" id="shop-bonus">+5 bullets for surviving the night</div>
+      <div class="items">
+        <button class="item" type="button" data-pack="0"><span class="qty"><svg aria-hidden="true"><use href="#bullet"/></svg><b class="n">+5</b></span><span class="price"><svg aria-hidden="true"><use href="#coin"/></svg><b class="c">4</b></span></button>
+        <button class="item" type="button" data-pack="1"><span class="qty"><svg aria-hidden="true"><use href="#bullet"/></svg><b class="n">+15</b></span><span class="price"><svg aria-hidden="true"><use href="#coin"/></svg><b class="c">10</b></span></button>
+        <button class="item" type="button" data-pack="nade"><span class="qty"><svg class="g" aria-hidden="true"><use href="#grenade"/></svg><b class="n">+1</b></span><span class="price"><svg aria-hidden="true"><use href="#coin"/></svg><b class="c">6</b></span></button>
       </div>
       <div class="sub poor" id="shop-msg" hidden data-i18n="poor">Not enough coins</div>
-      <div class="next">
+      <div class="next-row">
         <div class="ring" aria-hidden="true">
           <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="44"/><circle class="prog" id="sp-ring" cx="50" cy="50" r="44"/></svg>
           <span id="sp-count">15</span>
         </div>
-        <div class="sub" id="sp-next-line">Night <b>2</b> begins</div>
-        <button class="btn" id="start-now" type="button" data-i18n="startNow">Start now</button>
+        <div class="next-txt">
+          <div class="sub" id="sp-next-line">Night <b>2</b> begins</div>
+          <button class="btn" id="start-now" type="button" data-i18n="startNow">Start now</button>
+        </div>
       </div>
     </div>
   </div>
@@ -367,13 +406,13 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.14';
+const VERSION = '0.0.15';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
     tagline: "Let's go get them rats!", ruleAim: '<b>DRAG</b> to aim', ruleFire: '<b>LIFT</b> to fire', ruleNight: '<b>30 s</b> a night',
     start: 'Start night 1', bossRound: 'Boss round', fine: 'Best in landscape · sound on', version: 'version', language: 'Language',
-    night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 10 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
+    night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 8 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
     headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
     paused: 'PAUSED', resume: 'Back to the game', soundOn: 'Sound on', soundOff: 'Sound off', rifleShown: 'Rifle shown', rifleHidden: 'Rifle hidden',
     mainMenu: 'Main menu', rotateTitle: 'TURN YOUR PHONE SIDEWAYS', rotateBody: 'Rat Sniper plays in landscape. The game is paused until you rotate.',
@@ -383,13 +422,14 @@ const STR = {
     bullets: 'Bullets', coins: 'Coins', shopTitle: 'Restock', bonusLine: '+{n} bullets for surviving the night', buy5: '5 bullets · 4 coins', buy15: '15 bullets · 10 coins',
     poor: 'Not enough coins', startNow: 'Start now', gameOver: 'GAME OVER', outOfAmmo: 'You ran out of bullets', nightsSurvived: 'Nights survived', ratsKilled: 'Rats killed',
     best: 'Best', newBest: 'New best!', shareWa: 'Share on WhatsApp', playAgain: 'Play again',
-    noBonus: 'Out of bullets: no night bonus', needAmmo: 'Buy bullets to start the next night', words: { bullet: ['bullet', 'bullets'], coin: ['coin', 'coins'] },
+    noBonus: 'Out of bullets: no night bonus', needAmmo: 'Buy bullets to start the next night', words: { bullet: ['bullet', 'bullets'], coin: ['coin', 'coins'], grenade: ['grenade', 'grenades'] },
+    grenade: 'Grenade', grenades: 'Grenades', nadeHint: 'GRENADE IN HAND · LIFT TO THROW',
     shareMsg: 'My Rat Sniper score: {k} rats killed, {n} nights survived. Can you beat that? {url}',
   },
   ru: {
     tagline: 'Вперёд, за крысами!', ruleAim: '<b>ТЯНИ</b>, чтобы целиться', ruleFire: '<b>ОТПУСТИ</b>, чтобы стрелять', ruleNight: '<b>30 с</b> на ночь',
     start: 'Начать ночь 1', bossRound: 'Битва с боссом', fine: 'Лучше горизонтально · со звуком', version: 'версия', language: 'Язык',
-    night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 10 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
+    night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 8 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
     headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
     paused: 'ПАУЗА', resume: 'Вернуться в игру', soundOn: 'Звук вкл.', soundOff: 'Звук выкл.', rifleShown: 'Винтовка видна', rifleHidden: 'Винтовка скрыта',
     mainMenu: 'Главное меню', rotateTitle: 'ПОВЕРНИТЕ ТЕЛЕФОН', rotateBody: 'Rat Sniper играется в горизонтальном режиме. Игра на паузе, пока вы не повернёте телефон.',
@@ -399,13 +439,14 @@ const STR = {
     bullets: 'Патроны', coins: 'Монеты', shopTitle: 'Пополнение', bonusLine: '+{n} патрона за пережитую ночь', buy5: '5 патронов · 4 монеты', buy15: '15 патронов · 10 монет',
     poor: 'Не хватает монет', startNow: 'Начать сейчас', gameOver: 'ИГРА ОКОНЧЕНА', outOfAmmo: 'Закончились патроны', nightsSurvived: 'Ночей пережито', ratsKilled: 'Крыс убито',
     best: 'Рекорд', newBest: 'Новый рекорд!', shareWa: 'Поделиться в WhatsApp', playAgain: 'Играть снова',
-    noBonus: 'Патроны кончились: без бонуса за ночь', needAmmo: 'Купите патроны, чтобы начать следующую ночь', words: { bullet: ['патрон', 'патрона', 'патронов'], coin: ['монета', 'монеты', 'монет'] },
+    noBonus: 'Патроны кончились: без бонуса за ночь', needAmmo: 'Купите патроны, чтобы начать следующую ночь', words: { bullet: ['патрон', 'патрона', 'патронов'], coin: ['монета', 'монеты', 'монет'], grenade: ['граната', 'гранаты', 'гранат'] },
+    grenade: 'Граната', grenades: 'Гранаты', nadeHint: 'ГРАНАТА В РУКЕ · ОТПУСТИ — БРОСОК',
     shareMsg: 'Мой результат в Rat Sniper: ночей пережито — {n}, крыс убито — {k}. Сможешь лучше? {url}',
   },
   es: {
     tagline: '¡Vamos a por esas ratas!', ruleAim: '<b>ARRASTRA</b> para apuntar', ruleFire: '<b>SUELTA</b> para disparar', ruleNight: '<b>30 s</b> por noche',
     start: 'Empezar noche 1', bossRound: 'Ronda del jefe', fine: 'Mejor en horizontal · con sonido', version: 'versión', language: 'Idioma',
-    night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 10 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
+    night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 8 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
     headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
     paused: 'PAUSA', resume: 'Volver al juego', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', rifleShown: 'Rifle visible', rifleHidden: 'Rifle oculto',
     mainMenu: 'Menú principal', rotateTitle: 'GIRA EL TELÉFONO', rotateBody: 'Rat Sniper se juega en horizontal. El juego está en pausa hasta que lo gires.',
@@ -415,13 +456,14 @@ const STR = {
     bullets: 'Balas', coins: 'Monedas', shopTitle: 'Recarga', bonusLine: '+{n} balas por sobrevivir la noche', buy5: '5 balas · 4 monedas', buy15: '15 balas · 10 monedas',
     poor: 'No tienes monedas suficientes', startNow: 'Empezar ya', gameOver: 'FIN DEL JUEGO', outOfAmmo: 'Te quedaste sin balas', nightsSurvived: 'Noches superadas', ratsKilled: 'Ratas abatidas',
     best: 'Récord', newBest: '¡Nuevo récord!', shareWa: 'Compartir por WhatsApp', playAgain: 'Jugar de nuevo',
-    noBonus: 'Sin balas: no hay bonificación de la noche', needAmmo: 'Compra balas para empezar la siguiente noche', words: { bullet: ['bala', 'balas'], coin: ['moneda', 'monedas'] },
+    noBonus: 'Sin balas: no hay bonificación de la noche', needAmmo: 'Compra balas para empezar la siguiente noche', words: { bullet: ['bala', 'balas'], coin: ['moneda', 'monedas'], grenade: ['granada', 'granadas'] },
+    grenade: 'Granada', grenades: 'Granadas', nadeHint: 'GRANADA EN MANO · SUELTA PARA LANZAR',
     shareMsg: 'Sobreviví {n} noches y abatí {k} ratas en Rat Sniper. ¿Puedes superarlo? {url}',
   },
   fr: {
     tagline: 'Allez, on chope ces rats !', ruleAim: '<b>GLISSE</b> pour viser', ruleFire: '<b>RELÂCHE</b> pour tirer', ruleNight: '<b>30 s</b> par nuit',
     start: 'Commencer la nuit 1', bossRound: 'Manche du boss', fine: 'Mieux en paysage · avec le son', version: 'version', language: 'Langue',
-    night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 10 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
+    night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 8 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
     headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
     paused: 'PAUSE', resume: 'Retour au jeu', soundOn: 'Son activé', soundOff: 'Son coupé', rifleShown: 'Fusil visible', rifleHidden: 'Fusil masqué',
     mainMenu: 'Menu principal', rotateTitle: 'TOURNE TON TÉLÉPHONE', rotateBody: 'Rat Sniper se joue en paysage. Le jeu est en pause jusqu’à ce que tu le tournes.',
@@ -431,13 +473,14 @@ const STR = {
     bullets: 'Balles', coins: 'Pièces', shopTitle: 'Ravitaillement', bonusLine: '+{n} balles pour avoir survécu à la nuit', buy5: '5 balles · 4 pièces', buy15: '15 balles · 10 pièces',
     poor: 'Pas assez de pièces', startNow: 'Commencer', gameOver: 'PARTIE TERMINÉE', outOfAmmo: 'Tu n’as plus de balles', nightsSurvived: 'Nuits survécues', ratsKilled: 'Rats abattus',
     best: 'Record', newBest: 'Nouveau record !', shareWa: 'Partager sur WhatsApp', playAgain: 'Rejouer',
-    noBonus: 'Plus de balles : pas de bonus de nuit', needAmmo: 'Achète des balles pour commencer la nuit suivante', words: { bullet: ['balle', 'balles'], coin: ['pièce', 'pièces'] },
+    noBonus: 'Plus de balles : pas de bonus de nuit', needAmmo: 'Achète des balles pour commencer la nuit suivante', words: { bullet: ['balle', 'balles'], coin: ['pièce', 'pièces'], grenade: ['grenade', 'grenades'] },
+    grenade: 'Grenade', grenades: 'Grenades', nadeHint: 'GRENADE EN MAIN · RELÂCHE POUR LANCER',
     shareMsg: 'J’ai survécu {n} nuits et abattu {k} rats dans Rat Sniper. Tu fais mieux ? {url}',
   },
   he: {
     tagline: 'בואו נתפוס את העכברושים!', ruleAim: '<b>גררו</b> כדי לכוון', ruleFire: '<b>שחררו</b> כדי לירות', ruleNight: '<b>30 שניות</b> ללילה',
     start: 'התחלת לילה 1', bossRound: 'סיבוב בוס', fine: 'הכי טוב לרוחב · עם סאונד', version: 'גרסה', language: 'שפה',
-    night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 10 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
+    night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 8 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
     headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
     paused: 'מושהה', resume: 'חזרה למשחק', soundOn: 'סאונד פועל', soundOff: 'סאונד כבוי', rifleShown: 'הרובה מוצג', rifleHidden: 'הרובה מוסתר',
     mainMenu: 'תפריט ראשי', rotateTitle: 'סובבו את הטלפון לרוחב', rotateBody: 'משחקים ב-Rat Sniper לרוחב. המשחק מושהה עד שתסובבו את הטלפון.',
@@ -447,7 +490,8 @@ const STR = {
     bullets: 'כדורים', coins: 'מטבעות', shopTitle: 'חידוש תחמושת', bonusLine: '+{n} כדורים על שרידת הלילה', buy5: '5 כדורים · 4 מטבעות', buy15: '15 כדורים · 10 מטבעות',
     poor: 'אין מספיק מטבעות', startNow: 'להתחיל עכשיו', gameOver: 'המשחק נגמר', outOfAmmo: 'נגמרו לך הכדורים', nightsSurvived: 'לילות ששרדת', ratsKilled: 'עכברושים שחוסלו',
     best: 'שיא', newBest: 'שיא חדש!', shareWa: 'שיתוף בוואטסאפ', playAgain: 'לשחק שוב',
-    noBonus: 'נגמרו הכדורים: אין בונוס לילה', needAmmo: 'קנו כדורים כדי להתחיל את הלילה הבא', words: { bullet: ['כדור', 'כדורים'], coin: ['מטבע', 'מטבעות'] },
+    noBonus: 'נגמרו הכדורים: אין בונוס לילה', needAmmo: 'קנו כדורים כדי להתחיל את הלילה הבא', words: { bullet: ['כדור', 'כדורים'], coin: ['מטבע', 'מטבעות'], grenade: ['רימון', 'רימונים'] },
+    grenade: 'רימון', grenades: 'רימונים', nadeHint: 'רימון ביד · שחררו לזריקה',
     shareMsg: 'שרדתי {n} לילות וחיסלתי {k} עכברושים ב-Rat Sniper. מסוגלים יותר? {url}',
   },
 };
@@ -506,6 +550,11 @@ const DIFF = {
   flee:   () => Math.min(2.2, 1 + 0.07 * LVL()),           // how fast scared rats run
 };
 const SHOT_COOLDOWN = 0.55;
+/* grenade: sold in the shop, one use each. Tap the button to take one in hand, lift to throw it at the crosshair.
+   It blows up everything inside an oval on the ground (sized to the depth it lands at) for 2 damage, like a head shot. */
+const NADE_PRICE = 6, NADE_DMG = 2;
+const NADE_RX = 170, NADE_RY = 90;       // blast oval in world units at full (near-lane) scale
+const NADE_FLIGHT = 0.42, THROW_T = 0.3;  // seconds in the air; length of the arm swing
 
 const mod = (a, n) => ((a % n) + n) % n;
 const wrapD = d => mod(d + W / 2, W) - W / 2;
@@ -1157,6 +1206,33 @@ function sfxOwlFlush() {
   o.connect(f); f.connect(g); g.connect(A.sfx); g.connect(A.rev);
   o.start(t); v.start(t); o.stop(t + 0.6); v.stop(t + 0.6);
 }
+// grenade: a metal click when it's taken in hand, a whoosh on the throw, then a short, hard blast with dirt pattering down
+function sfxPin() {
+  const c = A.ctx; if (!c) return; const t = c.currentTime;
+  noiseBurst(t, A.sfx, { f0: 5200, q: 6, peak: 0.16, dur: 0.03, attack: 0.001 });
+  for (const [f, d, v] of [[2500, 0, 0.06], [3700, 0.07, 0.05]]) {
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t + d); g.gain.exponentialRampToValueAtTime(v, t + d + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.12);
+    o.connect(g); g.connect(A.sfx); o.start(t + d); o.stop(t + d + 0.14);
+  }
+}
+function sfxThrow() {
+  const c = A.ctx; if (!c) return; const t = c.currentTime;
+  noiseBurst(t, A.sfx, { f0: 500, f1: 1900, q: 1.3, peak: 0.28, dur: 0.26, attack: 0.09 });
+  noiseBurst(t + 0.06, A.sfx, { f0: 4300, q: 9, peak: 0.08, dur: 0.05, attack: 0.001 });   // the spoon flies off
+}
+function sfxNade() {
+  const c = A.ctx; if (!c) return; const t = c.currentTime;
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(30, t + 0.45);
+  g.gain.setValueAtTime(1.3, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+  o.connect(g); g.connect(A.sfx); o.start(t); o.stop(t + 0.6);
+  noiseBurst(t, A.sfx, { type: 'highpass', f0: 1800, f1: 900, q: 0.6, peak: 0.7, dur: 0.1, attack: 0.001 });   // sharp crack
+  const n = noiseBurst(t, A.sfx, { type: 'lowpass', f0: 4200, f1: 160, q: 0.5, peak: 1, dur: 0.55, attack: 0.002 });
+  n.connect(A.echo); const rs = c.createGain(); rs.gain.value = 0.5; n.connect(rs); rs.connect(A.rev);
+  for (let i = 0; i < 9; i++) noiseBurst(t + 0.22 + rand(0, 0.55), A.sfx, { f0: rand(1400, 3600), q: 2, peak: rand(0.04, 0.11), dur: 0.04, attack: 0.002 });
+}
 function sfxDry() {
   const c = A.ctx; if (!c) return;
   noiseBurst(c.currentTime, A.sfx, { f0: 3200, q: 5, peak: 0.18, dur: 0.03, attack: 0.001 });
@@ -1258,12 +1334,13 @@ const G = {
   mode: 'menu', night: 1, time: ROUND_TIME, breakT: 0, kills: 0, nightKills: 0,
   aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [],
   spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, nightSpecial: {}, gameSpecial: {}, ammo: AMMO_START, coins: 0, outT: 0, pops: [], lastResult: null, firstNight: 1, hintTO: 0,
+  grenades: 0, armed: false, nade: null, throwT: -9, wpn: 0, nadeHinted: false,
 };
 const diff = () => DIFF.speed();
 const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
 const stopDur = () => Math.max(0.55, rand(1.3, 2.8) - 0.13 * (G.night - 1));
 const ratSpeed = r => 72 * r.ls * (VAR_SPEED[r.variant] || 1) * (r.king ? 1.5 * (r.hp <= r.maxHp / 2 ? 1.5 : 1) : diff()) * (r.state === 'scurry' ? 2.3 * DIFF.flee() : r.state === 'rage' ? 1.9 : 1);
-const BOSS_EVERY = 5, KING_HP = 10, KING_SIZE = 3.2;   // 10 hits: there are no other rats on boss nights to pay for bullets
+const BOSS_EVERY = 5, KING_HP = 8, KING_SIZE = 3.2;    // 8 hits: there are no other rats on boss nights to pay for bullets
 function makeKing() {
   const lane = Math.random() < 0.5 ? 2 : 3, side = Math.random() < 0.5 ? -1 : 1;
   const r = makeRat(G.aimX + side * viewW * 0.18, lane, -side, true);
@@ -1427,10 +1504,11 @@ function hitTest(r, ax, ay) {
 
 function fire() {
   if (G.mode !== 'play') return;
+  if (G.clock - G.throwT < THROW_T + 0.25) return;   // the rifle is still coming back up after a throw
   if (G.clock - G.lastShot < SHOT_COOLDOWN || G.ammo <= 0) { sfxDry(); return; }
   G.lastShot = G.clock;
   G.ammo--; updateAmmo();
-  if (G.ammo <= 0) G.outT = 1.3;     // that was the last bullet: the game ends once it lands
+  if (G.ammo <= 0 && G.grenades <= 0) G.outT = 1.3;     // that was the last bullet: the night ends once it lands
   const ax = G.aimX, ay = G.aimY;
   let best = null, hit = null;
   for (const r of G.rats) {
@@ -1449,15 +1527,88 @@ function fire() {
   else if (G.ufo && (ufoZone = ufoHit(G.ufo, ax, ay))) shootUfo(G.ufo, ufoZone);
   else if (G.owl && owlHit(G.owl, ax, ay)) flushOwl(G.owl);   // no points, it just leaves
   else missPuff(ax, ay);
-  // every rat near the shot panics and scurries about for 2 seconds
+  scare(ax, best);
+}
+// every rat near a shot or blast panics and scurries about for 2 seconds
+function scare(ax, spare) {
   for (const r of G.rats) {
-    if (!r.alive || r === best || r.state === 'rage' || r.state === 'emerge' || r.king) continue;
+    if (!r.alive || r === spare || r.state === 'rage' || r.state === 'emerge' || r.king) continue;
     const away = wrapD(r.x - ax);
     if (Math.abs(away) > 600 * DIFF.fright()) continue;
     // bolt away from the shot first; later nights they run straight for longer before zig-zagging
     r.state = 'scurry'; r.t = 2; r.turnT = 0.35 + 0.12 * LVL() + rand(0, 0.25); r.rearTarget = 0;
     r.dir = away >= 0 ? 1 : -1;
   }
+}
+
+/* ---------- grenade ---------- */
+// how big things are drawn at a given height in the yard (the lanes' scale, interpolated)
+function scAt(y) {
+  const L = LANES;
+  if (y <= L[0].y) return Math.max(0.3, L[0].sc - (L[0].y - y) * 0.0015);
+  for (let i = 0; i < L.length - 1; i++) if (y <= L[i + 1].y) return L[i].sc + (L[i + 1].sc - L[i].sc) * (y - L[i].y) / (L[i + 1].y - L[i].y);
+  return Math.min(1.3, L[L.length - 1].sc + (y - L[L.length - 1].y) * 0.0015);
+}
+function setArmed(a) {
+  if (a && (G.mode !== 'play' || G.grenades <= 0 || G.nade)) return;
+  if (a === G.armed) return;
+  G.armed = a;
+  if (a) {
+    sfxPin();
+    if (!G.nadeHinted) {   // first time in a game: say how it works
+      G.nadeHinted = true; elHint.textContent = tr('nadeHint'); elHint.hidden = false; elHint.classList.remove('gone');
+      clearTimeout(G.hintTO); G.hintTO = setTimeout(() => elHint.classList.add('gone'), 2500);
+    }
+  }
+  updateNadeBtn();
+}
+function updateNadeBtn() {
+  const b = $('#nade-btn'), show = G.mode === 'play' && (G.grenades > 0 || G.armed);
+  b.hidden = !show || G.userPaused;
+  document.body.classList.toggle('has-nade', show);
+  b.classList.toggle('armed', G.armed);
+  b.setAttribute('aria-pressed', String(G.armed));
+  $('#nade-cnt').textContent = G.grenades;
+}
+function throwNade() {
+  if (G.mode !== 'play' || !G.armed || G.nade || G.grenades <= 0) return;
+  G.grenades--; G.armed = false; G.throwT = G.clock;
+  G.nade = { t: 0, x: G.aimX, y: G.aimY, spin: rand(9, 13) };
+  sfxThrow(); updateNadeBtn();
+}
+function blast(x, y) {
+  const k = scAt(y), rx = NADE_RX * k, ry = NADE_RY * k;
+  // inside the oval, counting the target's own half-size so a near miss on a big rat still catches it
+  const inBlast = (px, py, hw, hh) => {
+    const dx = Math.max(0, Math.abs(wrapD(px - x)) - hw) / rx, dy = Math.max(0, Math.abs(py - y) - hh) / ry;
+    return dx * dx + dy * dy <= 1;
+  };
+  // fireball, shock ring, smoke, flying dirt and a scorch mark
+  G.flash = Math.max(G.flash, 1.5); G.kick = Math.max(G.kick, 1.5); G.kickX = rand(-1, 1);
+  G.puffs.push({ x, y, r: 10 * k, max: rx * 1.1, life: 0.38, t: 0, glow: true });
+  G.puffs.push({ x, y: y - 20 * k, r: 6 * k, max: rx * 0.55, life: 0.22, t: 0, glow: true });
+  G.puffs.push({ x, y, r: 12 * k, max: rx * 1.15, life: 0.35, t: 0, ring: true });
+  G.puffs.push({ x, y: y - 14 * k, r: 14 * k, max: rx * 0.95, life: 1.4, t: 0, col: [34, 37, 36] });
+  for (let i = 0; i < 44; i++) G.parts.push({ kind: 'blood', col: Math.random() < 0.5 ? 'rgba(125,129,124,.95)' : 'rgba(70,74,71,.95)', dcol: 'rgba(38,41,39,.55)',
+    x: x + rand(-14, 14) * k, y: y - 4 * k, vx: rand(-340, 340) * k, vy: rand(-560, -140) * k, ground: y + rand(-8, 12) * k, size: rand(1.4, 3.8) * k, life: 2.5, sc: k });
+  for (let i = 0; i < 24; i++) G.parts.push({ kind: 'dust', x: x + rand(-60, 60) * k, y: y - rand(0, 40) * k, vx: rand(-100, 100) * k, vy: rand(-190, -40) * k, size: rand(9, 20) * k, life: rand(0.9, 1.8), max: 1.8 });
+  G.decals.push({ x, y: y + 2, rx: 10 * k, target: 72 * k, ry: 0.32, col: 'rgba(12,14,13,.82)' });
+  sfxNade();
+  // everything caught in it takes 2 damage
+  const caught = [];
+  for (const r of G.rats) {
+    if (!r.alive) continue;
+    const s = r.sc, cy = r.y - 22 * s + r.jy + (r.state === 'emerge' ? (1 - emergeEase(r)) * SINK * s : 0);
+    if (inBlast(r.x + r.jx, cy, 46 * s, 16 * s)) caught.push([r, cy]);
+  }
+  caught.forEach(([r, cy], i) => hitRat(r, { zone: 'body', lx: rand(-30, 30), ly: rand(-34, -12) }, r.x + r.jx, cy, true, i));
+  for (const o of G.obs) if (inBlast(o.x, o.y - 10 * o.s, OBS_W[o.type] / 2 * o.s, 10 * o.s)) hitObstacle(o, o.x, o.y - 10 * o.s, true);
+  if (G.ufo && G.ufo.state === 'fly' && inBlast(G.ufo.x, G.ufo.y, 42 * G.ufo.s, 12 * G.ufo.s)) shootUfo(G.ufo, 'body');
+  if (G.owl && !G.owl.fly && inBlast(G.owl.x, G.owl.y - 22 * G.owl.s, 13 * G.owl.s, 20 * G.owl.s)) flushOwl(G.owl);
+  scare(x, null);
+  // that was the last thing to shoot or throw: the night ends
+  if (G.ammo <= 0 && G.grenades <= 0) G.outT = 1.3;
+  return caught.length;
 }
 
 const BLOOD = 'rgba(52,11,13,.95)', BRAIN = 'rgba(236,150,170,.95)';
@@ -1468,9 +1619,9 @@ function spray(r, ax, ay, n, col, power = 1, size = 1, dcol = null) {
       ground: r.y + rand(-5, 6) * s, size: rand(1.4, 3.6) * s * size, life: 2, sc: s });
   }
 }
-function hitRat(r, hit, ax, ay) {
-  const delay = 0.04 + 0.025 * (LANES.length - 1 - r.lane);
-  const head = hit.zone === 'head', dmg = head ? 2 : 1;   // a head shot counts as two hits
+function hitRat(r, hit, ax, ay, blasted = false, n = 0) {
+  const delay = blasted ? 0.03 + n * 0.05 : 0.04 + 0.025 * (LANES.length - 1 - r.lane);
+  const head = !blasted && hit.zone === 'head', dmg = head || blasted ? 2 : 1;   // a head shot or a grenade counts as two hits
   if (r.hp > dmg && r.variant === 'zombie') {
     // the zombie shrugs off its first body hit and keeps shambling
     r.hp -= dmg;
@@ -1590,31 +1741,36 @@ function plural(n, forms) {
   }
   return forms[n === 1 ? 0 : 1];
 }
-const packLabel = (b, c) => `${b} ${plural(b, STR[LANG].words.bullet)} · ${c} ${plural(c, STR[LANG].words.coin)}`;
-const packPrice = i => PACKS[i][1] + Math.floor(G.night / PRICE_STEP);
-const cheapest = () => Math.min(...PACKS.map((_, i) => packPrice(i)));
+const itemLabel = (word, n, c) => `${n} ${plural(n, STR[LANG].words[word])} · ${c} ${plural(c, STR[LANG].words.coin)}`;
+const packPrice = i => i === 'nade' ? NADE_PRICE + Math.floor(G.night / PRICE_STEP) : PACKS[i][1] + Math.floor(G.night / PRICE_STEP);
+const cheapest = () => Math.min(...PACKS.map((_, i) => packPrice(i)));   // bullets only: a grenade can't keep you in the game
+// nothing left to shoot or throw, and no coins for bullets
+const broke = () => G.ammo <= 0 && G.grenades <= 0 && G.coins < cheapest();
 function renderShop() {
   $('#shop-bonus').textContent = G.earlyEnd ? tr('noBonus') : tr('bonusLine', { n: NIGHT_BONUS });
   $('#shop-bonus').classList.toggle('poor', !!G.earlyEnd);
-  $('#shop-ammo').textContent = G.ammo; $('#shop-coins').textContent = G.coins;
-  document.querySelectorAll('.btn-buy').forEach(b => {
-    const i = +b.dataset.pack;
-    b.textContent = packLabel(PACKS[i][0], packPrice(i));
-    b.classList.toggle('cant', G.coins < packPrice(i));
+  $('#shop-ammo').textContent = G.ammo; $('#shop-coins').textContent = G.coins; $('#shop-nades').textContent = G.grenades;
+  document.querySelectorAll('.item').forEach(b => {
+    const i = b.dataset.pack === 'nade' ? 'nade' : +b.dataset.pack, n = i === 'nade' ? 1 : PACKS[i][0], price = packPrice(i);
+    b.querySelector('.n').textContent = '+' + n;
+    b.querySelector('.c').textContent = price;
+    b.setAttribute('aria-label', itemLabel(i === 'nade' ? 'grenade' : 'bullet', n, price));
+    b.classList.toggle('cant', G.coins < price);
   });
 }
 function buyPack(i) {
-  const bullets = PACKS[i][0], price = packPrice(i);
+  const price = packPrice(i);
   if (G.coins < price) { $('#shop-msg').textContent = tr('poor'); $('#shop-msg').hidden = false; return; }
-  G.coins -= price; G.ammo += bullets; $('#shop-msg').hidden = true;
-  sfxPing(0, false); updateAmmo(); renderShop();
-  for (const id of ['#shop-ammo', '#shop-coins']) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
+  G.coins -= price; $('#shop-msg').hidden = true;
+  if (i === 'nade') { G.grenades++; sfxPin(); } else { G.ammo += PACKS[i][0]; sfxPing(0, false); }
+  updateAmmo(); renderShop();
+  for (const id of [i === 'nade' ? '#shop-nades' : '#shop-ammo', '#shop-coins']) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
 }
-document.querySelectorAll('.btn-buy').forEach(b => b.addEventListener('click', () => buyPack(+b.dataset.pack)));
+document.querySelectorAll('.item').forEach(b => b.addEventListener('click', () => buyPack(b.dataset.pack === 'nade' ? 'nade' : +b.dataset.pack)));
 // the end: out of bullets mid-night
 function gameOver() {
   if (G.mode !== 'play' && G.mode !== 'cleared') return;
-  G.mode = 'over'; drag.id = null; G.ufo = null; ufoHumStop();
+  G.mode = 'over'; drag.id = null; G.ufo = null; ufoHumStop(); G.armed = false; G.nade = null; updateNadeBtn();
   const nights = G.night - 1, kills = G.kills;
   let best = 0; try { best = +localStorage.getItem('rs-best') || 0; } catch (e) {}
   const newBest = kills > best; if (newBest) { best = kills; try { localStorage.setItem('rs-best', String(kills)); } catch (e) {} }
@@ -1647,7 +1803,7 @@ function renderNextLine() { $('#sp-next-line').innerHTML = tr('nextBegins', { n:
 function startRound(n) {
   G.night = n; G.nightKills = 0; G.time = ROUND_TIME; G.nightSpecial = {};
   G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
-  G.spawnT = 1.2; G.lastShot = -9;
+  G.spawnT = 1.2; G.lastShot = -9; G.armed = false; G.nade = null; G.throwT = -9; G.wpn = 0;
   for (const o of G.obs) o.broken = false;   // a fresh empty bottle each night
   G.boss = n % BOSS_EVERY === 0; G.bossEndT = 0;
   G.owl = !G.boss && Math.random() < OWL_CHANCE ? makeOwl() : null;
@@ -1667,6 +1823,7 @@ function startRound(n) {
   setMusic(G.boss ? 'boss' : 'night');
   if (G.boss || n === G.firstNight) { elHint.hidden = false; elHint.classList.remove('gone'); clearTimeout(G.hintTO); G.hintTO = setTimeout(() => elHint.classList.add('gone'), 4500); }
   G.mode = 'play';
+  updateNadeBtn();
   elSplash.hidden = true;
   elNight.textContent = n;
   elKills.textContent = G.kills;
@@ -1675,8 +1832,8 @@ function endRound(early = false) {
   if (G.mode !== 'play') return;
   G.earlyEnd = early;
   // ran dry and can't afford even the small pack: straight to game over, no cleared screen
-  if (early && G.ammo <= 0 && G.coins < cheapest()) { G.mode = 'cleared'; gameOver(); return; }
-  G.mode = 'cleared'; G.breakT = BREAK_TIME; drag.id = null;
+  if (early && broke()) { G.mode = 'cleared'; gameOver(); return; }
+  G.mode = 'cleared'; G.breakT = BREAK_TIME; drag.id = null; G.armed = false; G.nade = null; updateNadeBtn();
   $('#sp-night').textContent = G.night;
   $('#sp-kills').textContent = G.nightKills;
   $('#sp-total').textContent = G.kills;
@@ -1692,7 +1849,7 @@ function endRound(early = false) {
   // a full night pays a few bullets; running dry forfeits it. Broke with no bullets means the game is over.
   if (!early) G.ammo += NIGHT_BONUS;
   G.outT = 0; updateAmmo(); $('#shop-msg').hidden = true; renderShop();
-  if (G.ammo <= 0 && G.coins < cheapest()) gameOver();
+  if (broke()) gameOver();
 }
 
 /* ---------- input ---------- */
@@ -1725,8 +1882,9 @@ cv.addEventListener('pointermove', e => {
 cv.addEventListener('pointerup', e => {
   if (e.pointerId !== drag.id) return;
   drag.id = null;
-  fire();
+  if (G.armed) throwNade(); else fire();
 });
+$('#nade-btn').addEventListener('click', () => setArmed(!G.armed));
 cv.addEventListener('pointercancel', e => { if (e.pointerId === drag.id) drag.id = null; });
 cv.addEventListener('contextmenu', e => e.preventDefault());
 
@@ -1740,6 +1898,7 @@ function startGame(night) {
   elHudL.hidden = elHudR.hidden = elHudB.hidden = false; $('#hud-ammo').hidden = false;
   elPauseBtn.hidden = false;
   G.ammo = AMMO_START; G.coins = 0; G.gameSpecial = {}; G.outT = 0; G.pops = []; updateAmmo();
+  G.grenades = 0; G.armed = false; G.nade = null; G.nadeHinted = false;
   G.kills = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
   startRound(night);
 }
@@ -1753,6 +1912,7 @@ function setUserPause(p) {
   elPause.hidden = !p;
   elPauseBtn.hidden = p || G.mode === 'menu';
   drag.id = null;
+  updateNadeBtn();
   applyPause();
   if (p) $('#resume').focus();
 }
@@ -1761,7 +1921,7 @@ $('#resume').addEventListener('click', () => setUserPause(false));
 $('#sound').addEventListener('click', () => setMuted(!A.muted));
 // leave the current game and go back to the start screen, with rats roaming behind it again
 function goHome() {
-  G.mode = 'menu'; G.boss = false; G.bossEndT = 0; G.ufo = null; G.ufoT = 0; ufoHumStop();
+  G.mode = 'menu'; G.boss = false; G.bossEndT = 0; G.ufo = null; G.ufoT = 0; ufoHumStop(); G.armed = false; G.nade = null;
   G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
   for (let i = 0; i < 4; i++) spawnRat(true);
   G.owl = makeOwl();
@@ -1775,7 +1935,7 @@ function goHome() {
 $('#home').addEventListener('click', goHome);
 $('#start-now').addEventListener('click', () => {
   if (G.mode !== 'cleared') return;
-  if (G.ammo <= 0) { $('#shop-msg').textContent = tr('needAmmo'); $('#shop-msg').hidden = false; return; }
+  if (G.ammo <= 0 && G.grenades <= 0) { $('#shop-msg').textContent = tr('needAmmo'); $('#shop-msg').hidden = false; return; }
   startRound(G.night + 1);
 });
 // some players prefer a clear view: the rifle can be hidden from the pause screen, and the choice is remembered
@@ -1797,7 +1957,7 @@ document.querySelectorAll('.lang-select').forEach(sel => {
 });
 function langChanged() {
   setMuted(A.muted); setShowRifle(showRifle);
-  if (!elHint.hidden) elHint.textContent = tr(G.boss ? 'bossHint' : 'hint');
+  if (!elHint.hidden) elHint.textContent = tr(G.armed ? 'nadeHint' : G.boss ? 'bossHint' : 'hint');
   if (!elSplash.hidden) { renderSpecials(); renderNextLine(); renderShop(); }
   setShareLink();
   if (grImg) buildScenery(Pgr);
@@ -1805,6 +1965,7 @@ function langChanged() {
 applyLang();
 document.addEventListener('keydown', e => {
   if ((e.key === 'Escape' || e.key === 'p' || e.key === 'P') && (G.mode === 'play' || G.mode === 'cleared')) setUserPause(!G.userPaused);
+  if ((e.key === 'g' || e.key === 'G') && G.mode === 'play' && !G.paused) setArmed(!G.armed);
 });
 setMuted(A.muted);
 
@@ -1861,6 +2022,10 @@ function update(dt) {
   }
   for (const p of G.pops) p.t += dt;
   G.pops = G.pops.filter(p => p.t < p.life);
+  if (G.nade) { G.nade.t += dt; if (G.nade.t >= NADE_FLIGHT) { const n = G.nade; G.nade = null; if (G.mode === 'play') blast(n.x, n.y); } }
+  // weapon swap: 0 = rifle up, 1 = grenade hand up (it stays up through the throw, then the rifle comes back)
+  const wantHand = G.armed || G.clock - G.throwT < THROW_T ? 1 : 0;
+  G.wpn += Math.sign(wantHand - G.wpn) * Math.min(Math.abs(wantHand - G.wpn), dt / 0.32);
   if (G.mode === 'play') {
     if (!G.boss) {
       G.time -= dt;
@@ -1873,7 +2038,7 @@ function update(dt) {
     G.breakT -= dt;
     $('#sp-count').textContent = Math.max(1, Math.ceil(G.breakT));
     elRing.style.strokeDashoffset = (276.46 * (1 - Math.max(0, G.breakT) / BREAK_TIME)).toFixed(2);
-    if (G.breakT <= 0) { if (G.ammo > 0) startRound(G.night + 1); else gameOver(); }
+    if (G.breakT <= 0) { if (G.ammo > 0 || G.grenades > 0) startRound(G.night + 1); else gameOver(); }
   } else if (G.mode === 'menu') {
     G.aimX += dt * 16;
   }
@@ -2738,7 +2903,8 @@ function drawObs(g, o, sx, sy) {
   }
   g.restore();
 }
-function hitObstacle(o, ax, ay) {
+function hitObstacle(o, ax, ay, blasted = false) {
+  if (blasted && o.type !== 'ebottle' && o.type !== 'can' && o.type !== 'bucket' && o.type !== 'bottle') return;
   if (o.type === 'ebottle' && !o.broken) {
     o.broken = true;
     spray({ sc: o.s, y: o.y }, ax, ay, 16, 'rgba(225,238,232,.9)', 0.9, 0.7, 'rgba(225,238,232,.55)');
@@ -2752,7 +2918,7 @@ function hitObstacle(o, ax, ay) {
     sfxPing(0.03 + 0.025 * (LANES.length - 1 - o.lane), o.type === 'bottle');
     G.puffs.push({ x: ax, y: ay, r: 2 * o.s, max: 14 * o.s, life: 0.2, t: 0, col: [230, 238, 234] });
   }
-  missPuff(ax, ay);
+  if (!blasted) missPuff(ax, ay);
 }
 
 function render() {
@@ -2794,6 +2960,18 @@ function render() {
   for (const f of G.puffs) {
     const x = rel(f.x); if (!vis(x)) continue;
     const k = f.t / f.life, rr = f.r + (f.max - f.r) * Math.sqrt(k);
+    if (f.glow) {   // grenade fireball: white-hot core, added light
+      const a = 1 - k * k, gg = ctx.createRadialGradient(x, f.y - top - rr * 0.2, 0, x, f.y - top - rr * 0.2, rr);
+      gg.addColorStop(0, `rgba(255,255,250,${a.toFixed(3)})`); gg.addColorStop(0.5, `rgba(236,240,232,${(0.85 * a).toFixed(3)})`);
+      gg.addColorStop(0.8, `rgba(150,156,150,${(0.5 * a).toFixed(3)})`); gg.addColorStop(1, 'rgba(120,125,120,0)');
+      ctx.fillStyle = gg; ell(ctx, x, f.y - top - rr * 0.2, rr, rr * 0.75);
+      continue;
+    }
+    if (f.ring) {   // shock wave racing out along the ground
+      ctx.strokeStyle = `rgba(225,232,228,${(0.6 * (1 - k)).toFixed(3)})`; ctx.lineWidth = Math.max(1, 5 * (1 - k));
+      ctx.beginPath(); ctx.ellipse(x, f.y - top, rr, rr * 0.38, 0, 0, Math.PI * 2); ctx.stroke();
+      continue;
+    }
     ctx.fillStyle = f.col ? `rgba(${f.col.join(',')},${(0.55 * (1 - k)).toFixed(3)})` : `rgba(180,186,182,${(0.35 * (1 - k)).toFixed(3)})`;
     ell(ctx, x, f.y - top, rr, rr * 0.8);
   }
@@ -2829,8 +3007,158 @@ function render() {
     }
     ctx.restore();
   }
-  if (G.mode !== 'menu' && G.mode !== 'over') { if (showRifle) drawRifle(); drawCrosshair(); }
+  if (G.nade) drawNadeFlight(rel, top);
+  if (G.mode !== 'menu' && G.mode !== 'over') {
+    // swapping weapons: one drops out of view before the other comes up
+    if (showRifle && G.wpn < 0.5) drawRifle(G.wpn * 2);
+    if (showRifle && G.wpn > 0.5) drawHand((1 - G.wpn) * 2);
+    if (G.armed) drawBombSight(); else drawCrosshair();
+  }
   if (drag.id !== null && G.mode === 'play') drawStick();
+}
+
+/* ---------- grenade drawing ---------- */
+// a "pineapple" fragmentation grenade: an egg-shaped body cut into a grid of square lugs, the fuse on top,
+// the lever (spoon) down its right side and the pull ring at the front (r: half the body's height, in px)
+function drawGrenade(x, y, r, rot, ring = true) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  const rx = r * 0.78, lw = Math.max(1, r * 0.035);
+  ctx.lineJoin = 'round';
+  // fuse neck and cap
+  ctx.strokeStyle = 'rgba(0,0,0,.85)'; ctx.lineWidth = lw;
+  const fg = ctx.createLinearGradient(-r * 0.3, 0, r * 0.3, 0);
+  fg.addColorStop(0, '#4c504d'); fg.addColorStop(0.35, '#9ea39f'); fg.addColorStop(1, '#30332f');
+  ctx.fillStyle = fg;
+  ctx.beginPath(); ctx.rect(-r * 0.24, -r * 1.12, r * 0.48, r * 0.24); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.rect(-r * 0.3, -r * 1.3, r * 0.6, r * 0.2); ctx.fill(); ctx.stroke();
+  // body: dark metal, then the lugs, then shading round the edge
+  ctx.beginPath(); ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#1d201e'; ctx.fill();
+  ctx.save(); ctx.clip();
+  const ROWS = 6, COLS = 5;
+  for (let i = 0; i < ROWS; i++) {
+    const v0 = -1 + (i + 0.12) * 2 / ROWS, v1 = -1 + (i + 0.88) * 2 / ROWS;     // row band, -1..1
+    for (let j = 0; j < COLS; j++) {
+      const a0 = -Math.PI / 2 + (j + 0.14) * Math.PI / COLS, a1 = -Math.PI / 2 + (j + 0.86) * Math.PI / COLS;
+      const vm = (v0 + v1) / 2, wide = Math.sqrt(Math.max(0, 1 - vm * vm));      // the body narrows toward the ends
+      const x0 = Math.sin(a0) * rx * wide, x1 = Math.sin(a1) * rx * wide, y0 = v0 * r, y1 = v1 * r;
+      const face = Math.cos((a0 + a1) / 2) * (1 - Math.abs(vm) * 0.5);              // lugs facing us catch the IR lamp
+      const lg = ctx.createLinearGradient(x0, y0, x1, y1);
+      const hi = Math.round(92 + 112 * face), lo = Math.round(48 + 58 * face);
+      lg.addColorStop(0, `rgb(${hi},${hi + 4},${hi})`); lg.addColorStop(1, `rgb(${lo},${lo + 3},${lo})`);
+      ctx.fillStyle = lg;
+      const rr = Math.min(Math.abs(x1 - x0), y1 - y0) * 0.2;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(Math.min(x0, x1), y0, Math.abs(x1 - x0), y1 - y0, rr) : ctx.rect(Math.min(x0, x1), y0, Math.abs(x1 - x0), y1 - y0);
+      ctx.fill();
+    }
+  }
+  const sh = ctx.createRadialGradient(-rx * 0.3, -r * 0.35, r * 0.1, 0, 0, r * 1.05);
+  sh.addColorStop(0, 'rgba(255,255,255,.08)'); sh.addColorStop(0.6, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.75)');
+  ctx.fillStyle = sh; ctx.fillRect(-rx, -r, rx * 2, r * 2);
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(0,0,0,.9)'; ctx.lineWidth = lw * 1.4;
+  ctx.beginPath(); ctx.ellipse(0, 0, rx, r, 0, 0, Math.PI * 2); ctx.stroke();
+  // lever: a flat strip from the top of the fuse, out and down the right side
+  const lever = () => { ctx.beginPath(); ctx.moveTo(-r * 0.05, -r * 1.3); ctx.lineTo(r * 0.42, -r * 1.24); ctx.quadraticCurveTo(r * 0.72, -r * 1.05, rx * 0.98, -r * 0.45); ctx.lineTo(rx * 1.02, r * 0.25); };
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(0,0,0,.9)'; ctx.lineWidth = r * 0.17; lever(); ctx.stroke();
+  ctx.strokeStyle = '#8b908c'; ctx.lineWidth = r * 0.1; lever(); ctx.stroke();
+  ctx.strokeStyle = 'rgba(220,226,222,.5)'; ctx.lineWidth = r * 0.03; lever(); ctx.stroke();
+  ctx.lineCap = 'butt';
+  if (ring) {   // pull ring hanging at the front of the fuse
+    ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.lineWidth = Math.max(1.5, r * 0.12);
+    ctx.beginPath(); ctx.ellipse(r * 0.08, -r * 0.92, r * 0.3, r * 0.27, -0.2, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = '#c9cec9'; ctx.lineWidth = Math.max(1, r * 0.065);
+    ctx.beginPath(); ctx.ellipse(r * 0.08, -r * 0.92, r * 0.3, r * 0.27, -0.2, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+// first person: a bare right hand gripping the grenade low on the right, where the rifle was; it swings forward on the throw.
+// Skin throws back the IR lamp, so the hand reads pale, like the rats' bare feet.
+function drawHand(drop) {
+  const Wc = cv.width, Hc = cv.height, u = Hc / 600;
+  const tk = (G.clock - G.throwT) / THROW_T, throwing = tk >= 0 && tk < 1, s = throwing ? Math.sin(tk * Math.PI) : 0;
+  let ox = Wc - 215 * u + Math.sin(G.clock * 1.3) * 3 * u, oy = Hc - 95 * u + Math.sin(G.clock * 2.1) * 2 * u + drop * 440 * u;
+  ox -= 230 * u * s; oy -= 170 * u * s - 60 * u * Math.max(0, tk - 0.5) * (throwing ? 1 : 0);
+  const sc = 1 - 0.32 * s, rot = 0.12 - 0.7 * s;
+  ctx.save(); ctx.translate(ox, oy); ctx.rotate(rot); ctx.scale(sc * u, sc * u);
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  const OUT = 'rgba(14,16,15,.9)', SKIN = '#aaa4a1', SKIN_HI = '#d2ccc9', SKIN_LO = '#6c6765';
+  // a finger or thumb: dark outline, skin, a lit upper edge
+  const digit = (pts, w) => {
+    const path = () => { ctx.beginPath(); ctx.moveTo(pts[0], pts[1]); ctx.quadraticCurveTo(pts[2], pts[3], pts[4], pts[5]); };
+    ctx.strokeStyle = OUT; ctx.lineWidth = w + 4; path(); ctx.stroke();
+    ctx.strokeStyle = SKIN; ctx.lineWidth = w; path(); ctx.stroke();
+    ctx.strokeStyle = 'rgba(40,38,37,.35)'; ctx.lineWidth = w * 0.35;
+    ctx.save(); ctx.translate(0, w * 0.22); path(); ctx.stroke(); ctx.restore();
+    ctx.strokeStyle = 'rgba(232,228,225,.55)'; ctx.lineWidth = w * 0.22;
+    ctx.save(); ctx.translate(0, -w * 0.24); path(); ctx.stroke(); ctx.restore();
+  };
+  const nail = (x, y, rx, ry, a) => {
+    ctx.fillStyle = SKIN_HI; ctx.strokeStyle = 'rgba(60,57,55,.7)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(x, y, rx, ry, a, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  };
+  // forearm running off the bottom right corner (long enough to stay off screen mid-swing)
+  const ag = ctx.createLinearGradient(-30, 0, 150, 0);
+  ag.addColorStop(0, SKIN_LO); ag.addColorStop(0.4, "#8f8a88"); ag.addColorStop(1, "#3c3938");
+  ctx.fillStyle = ag; ctx.strokeStyle = OUT; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-14, 50); ctx.quadraticCurveTo(10, 200, 90, 720); ctx.lineTo(270, 720); ctx.quadraticCurveTo(130, 220, 88, 40); ctx.closePath(); ctx.fill(); ctx.stroke();
+  // palm cupped behind the lower half of the grenade
+  const pg = ctx.createRadialGradient(10, 20, 10, 20, 30, 80);
+  pg.addColorStop(0, SKIN); pg.addColorStop(1, SKIN_LO);
+  ctx.fillStyle = pg;
+  ctx.beginPath(); ctx.ellipse(22, 22, 66, 58, -0.15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  if (G.clock - G.throwT > THROW_T + 0.4) drawGrenade(0, -42, 66, -0.08);   // gone from the hand once thrown
+  // thumb up the right side, pressing the lever down
+  // fleshy base of the thumb swelling out of the palm, then two segments bent at the joint, nail along the tip
+  const tb = ctx.createRadialGradient(56, 0, 6, 62, 18, 48);
+  tb.addColorStop(0, SKIN_HI); tb.addColorStop(0.5, SKIN); tb.addColorStop(1, SKIN_LO);
+  ctx.fillStyle = tb; ctx.strokeStyle = OUT; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.ellipse(64, 14, 30, 44, 0.25, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  digit([70, 4, 72, -22, 62, -40], 34);                 // lower segment
+  digit([62, -40, 54, -56, 40, -64], 29);               // tip, bent in over the lever
+  ctx.strokeStyle = 'rgba(40,38,37,.55)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(48, -44); ctx.quadraticCurveTo(62, -38, 76, -40); ctx.stroke();   // joint crease
+  nail(45, -61, 10, 7.5, -0.45);
+  // four fingers wrapped round the front-left of the grenade, tips toward us
+  const F = [[-76, -76, -28, -70, 31], [-82, -45, -22, -40, 32], [-80, -14, -24, -9, 31], [-70, 15, -30, 20, 27]];
+  for (const [x0, y0, x1, y1, w] of F) {
+    digit([x0, y0, (x0 + x1) / 2, y0 - 6, x1, y1], w);
+    ctx.strokeStyle = 'rgba(40,38,37,.5)'; ctx.lineWidth = 2;                      // knuckle crease
+    const cx = x0 + (x1 - x0) * 0.42; ctx.beginPath(); ctx.moveTo(cx, y0 - w * 0.35); ctx.lineTo(cx + 3, y0 + w * 0.3); ctx.stroke();
+    nail(x1 - 2, y1 - 1, 8, w * 0.32, 0.15);
+  }
+  ctx.lineCap = 'butt';
+  ctx.restore();
+}
+// the grenade in the air: from the hand to the aim point, arcing up and shrinking with distance
+function drawNadeFlight(rel, top) {
+  const n = G.nade, Wc = cv.width, Hc = cv.height, u = Hc / 600, k = Math.min(1, n.t / NADE_FLIGHT);
+  const x0 = Wc - 260 * u, y0 = Hc - 300 * u, x1 = rel(n.x) * P, y1 = (n.y - top) * P;
+  const e = 1 - (1 - k) * (1 - k * 0.4);
+  const x = x0 + (x1 - x0) * e, y = y0 + (y1 - y0) * e - Math.sin(k * Math.PI) * Hc * 0.12;
+  const r0 = 26 * u, r1 = Math.max(2.5 * dpr, 13 * scAt(n.y) * P);
+  drawGrenade(x, y, r0 * Math.pow(r1 / r0, Math.pow(k, 0.6)), n.t * n.spin, false);
+}
+// with a grenade in hand the cross becomes a bomb outline, and a dashed oval shows what the blast would cover
+function drawBombSight() {
+  const u = dpr, cx = Math.round(cv.width / 2) + 0.5, cy = Math.round(cv.height / 2) + 0.5;
+  const k = scAt(G.aimY), rx = NADE_RX * k * P, ry = NADE_RY * k * P;
+  ctx.save();
+  ctx.strokeStyle = '#3dff6e'; ctx.fillStyle = '#3dff6e'; ctx.shadowColor = 'rgba(61,255,110,.8)'; ctx.shadowBlur = 6 * u;
+  ctx.globalAlpha = 0.45; ctx.lineWidth = 1.3 * u; ctx.setLineDash([7 * u, 6 * u]);
+  ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.globalAlpha = 1; ctx.lineWidth = 1.7 * u;
+  const R = 12 * u;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();                         // bomb body
+  ctx.translate(cx, cy); ctx.rotate(0.75);
+  ctx.strokeRect(-3.5 * u, -R - 5 * u, 7 * u, 5 * u);                                         // cap
+  ctx.beginPath(); ctx.moveTo(0, -R - 5 * u); ctx.quadraticCurveTo(-1 * u, -R - 12 * u, 5 * u, -R - 14 * u); ctx.stroke();   // fuse
+  const fl = 0.6 + 0.4 * Math.sin(G.clock * 30);                                              // spark
+  for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + G.clock * 6; line(ctx, 5 * u, -R - 14 * u, 5 * u + Math.cos(a) * 4 * u * fl, -R - 14 * u + Math.sin(a) * 4 * u * fl); }
+  ctx.rotate(-0.75);
+  ctx.beginPath(); ctx.arc(0, 0, 1.4 * u, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
 }
 
 /* ---------- the player's rifle: first-person bolt action with a big scope, held at the right shoulder ---------- */
@@ -2838,7 +3166,7 @@ function render() {
 // the stock and bolt knob come in from the bottom-right corner, the scope's eyepiece sits big and close
 // on the right, and the barrel runs to the middle with the muzzle just under the crosshair.
 const RIFLE_CHAMBER = [0.135, 0.09, 0.22], RIFLE_MUZZLE = [0.02, 0.05, 1.3], SCOPE_UP = 0.066;
-function drawRifle() {
+function drawRifle(drop = 0) {
   const Wc = cv.width, Hc = cv.height, cx = Wc / 2, cy = Hc / 2, f = Hc * 0.9;
   const rec = G.rifleKick || 0, since = G.clock - G.lastShot;
   const bolt = since > 0.3 && since < 0.62 ? Math.sin((since - 0.3) / 0.32 * Math.PI) : 0;   // matches the bolt sounds
@@ -2882,7 +3210,7 @@ function drawRifle() {
 
   ctx.save();
   // held low in the corner so it covers less of the yard
-  ctx.translate(Wc * 0.03, Hc * 0.16);
+  ctx.translate(Wc * 0.03, Hc * 0.16 + drop * Hc * 0.75);
   // barrel and muzzle brake, furthest away
   tube(0.32, 0.97, 0.010, 0.009, 0, GLOSS);
   tube(0.95, 1.0, 0.014, 0.014, 0, MATTE);

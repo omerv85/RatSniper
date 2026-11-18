@@ -90,7 +90,14 @@ Gameplay
   Removed by the owner: "old" and "gremlin".
 - Rats sometimes stare at the camera (~2 s), dig out of the ground when spawning in view, scurry away from
   shots (away from the shot point), pass behind clutter (mounds, cans, bags, boxes, bottles, buckets) that blocks shots.
-- Boss every 5th night: king rat, **10 hits**, rages after each hit, bleeds/growls under half health,
+- Grenade (v0.0.15): bought in the shop (6 coins, +1 every 5 nights; none at the start). Tap the round button
+  bottom-middle (shows the count; `G` on desktop) to take one in hand: the rifle swaps for a bare hand holding a
+  pineapple grenade and the crosshair becomes a bomb outline plus a dashed oval showing the blast area. Lift = quick
+  throw (0.42 s flight), then an explosion that does **2 damage** to every rat in the oval (`NADE_RX`/`NADE_RY`, scaled
+  by depth with `scAt`), also downs the UFO, flushes the owl and breaks bottles. Code: `setArmed`, `throwNade`, `blast`,
+  `drawHand`, `drawGrenade`, `drawBombSight`, `sfxPin`/`sfxThrow`/`sfxNade`. A night ends early only when both bullets
+  and grenades are gone. Bot: ~2.5 kills per grenade.
+- Boss every 5th night: king rat, **8 hits** (was 10 until v0.0.14), rages after each hit, bleeds/growls under half health,
   explodes with rib cage on death; health bar instead of timer; heavy-metal music.
 - Owl (60% of nights) sits on a background ledge; shooting it only makes it fly off (no reward).
 - UFO rat (12% of nights): flies over the yard, hovers with a beam; shooting it down = kill.
@@ -100,8 +107,8 @@ Economy (tuned with the bot, v0.0.14)
 - Start 15 bullets. Every shot costs 1. Bounty in coins: rat 1, alpha 2, rare 3, UFO 5, king 10, +1 head shot.
   Coins appear as rising, spinning coin icons (one per coin).
 - Running dry **ends the night early** (no night bonus). Finishing a night pays **+5 bullets**.
-- Shop between nights (15 s countdown + "Start now"): 5 bullets for 4 coins, 15 for 10;
-  both +1 coin every 5 nights (`PRICE_STEP`).
+- Shop between nights (15 s countdown + "Start now"): a row of item cards (icon, amount, coin price):
+  5 bullets for 4 coins, 15 for 10, 1 grenade for 6; all +1 coin every 5 nights (`PRICE_STEP`).
 - **Game over** = at the shop with 0 bullets and not enough coins for the cheapest pack.
   Game over screen: nights survived, rats killed, best (saved locally), special-kill badges,
   Share on WhatsApp (`wa.me` link with a translated message + game URL), Play again, Main menu.
