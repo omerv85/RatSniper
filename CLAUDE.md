@@ -41,7 +41,13 @@ directly.** If you also update the artifact, publish `index.html` to that URL.
 
 1. Edit `index.html`.
 2. Bump the version: `const VERSION = '0.0.N'` in the script **and** the static
-   `<div class="ver" id="ver">version 0.0.N</div>` on the start screen. Patch number +1 per push.
+   `<div class="ver" id="ver">version 0.0.N</div>` on the start screen, **and** `version.json` (`{"v":"0.0.N"}`).
+   Patch number +1 per push. `version.json` drives the in-game update check (v0.0.20): while the main menu is in the
+   foreground, at most once a minute, the game fetches it uncached and shows "New version … tap to update" (a reload)
+   if it's newer than the running `VERSION`. A page left open or the home-screen app finds out this way. While an
+   update waits it is the only button (Start, install and full screen hide) and checking stops. Traffic: about
+   1.4 KB per check; nothing while the screen is off or the game is in the background. Forgetting
+   to bump it just means no prompt; bumping it without pushing the new `index.html` would prompt a useless reload.
 3. Test (see Testing).
 4. Commit, tag `v0.0.N`, push both: `git push origin main v0.0.N`.
 5. **Tell the owner the version number** you pushed; they check it against the start screen.

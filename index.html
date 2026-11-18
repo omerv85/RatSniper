@@ -94,6 +94,7 @@ html, body {
   box-shadow: 0 0 22px rgba(69,255,122,.18), inset 0 0 12px rgba(69,255,122,.12); }
 .btn:active { background: rgba(69,255,122,.2); }
 .btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.btn.btn-update { font-size: 15px; letter-spacing: .14em; }
 .start-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; }
 .btn.btn-install { font-size: 13px; letter-spacing: .12em; padding: 8px 14px; min-height: 40px; gap: 8px; }
 .btn-install svg { width: 16px; height: 16px; }
@@ -325,7 +326,8 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.19</div>
+    <div class="ver" id="ver">version 0.0.20</div>
+    <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
       <span data-i18n-html="ruleAim"><b>DRAG</b> to aim</span>
@@ -428,12 +430,12 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.19';
+const VERSION = '0.0.20';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
     tagline: "Let's go get them rats!", ruleAim: '<b>DRAG</b> to aim', ruleFire: '<b>LIFT</b> to fire',
-    start: 'Start night 1', fine: 'Best in landscape · sound on', install: 'Add to home screen', installIos: 'Tap Share, then "Add to Home Screen"', installOther: 'Open the browser menu, then "Add to Home screen"', version: 'version', language: 'Language',
+    start: 'Start night 1', fine: 'Best in landscape · sound on', updateBtn: 'New version {v} · tap to update', install: 'Add to home screen', installIos: 'Tap Share, then "Add to Home Screen"', installOther: 'Open the browser menu, then "Add to Home screen"', version: 'version', language: 'Language',
     night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 8 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
     headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
     paused: 'PAUSED', resume: 'Back to the game', soundOn: 'Sound on', soundOff: 'Sound off', rifleShown: 'Rifle shown', rifleHidden: 'Rifle hidden',
@@ -450,7 +452,7 @@ const STR = {
   },
   ru: {
     tagline: 'Вперёд, за крысами!', ruleAim: '<b>ТЯНИ</b>, чтобы целиться', ruleFire: '<b>ОТПУСТИ</b>, чтобы стрелять',
-    start: 'Начать ночь 1', fine: 'Лучше горизонтально · со звуком', install: 'На главный экран', installIos: 'Нажмите «Поделиться», затем «На экран „Домой“»', installOther: 'Откройте меню браузера и выберите «Добавить на главный экран»', version: 'версия', language: 'Язык',
+    start: 'Начать ночь 1', fine: 'Лучше горизонтально · со звуком', updateBtn: 'Новая версия {v} · нажмите, чтобы обновить', install: 'На главный экран', installIos: 'Нажмите «Поделиться», затем «На экран „Домой“»', installOther: 'Откройте меню браузера и выберите «Добавить на главный экран»', version: 'версия', language: 'Язык',
     night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 8 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
     headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
     paused: 'ПАУЗА', resume: 'Вернуться в игру', soundOn: 'Звук вкл.', soundOff: 'Звук выкл.', rifleShown: 'Винтовка видна', rifleHidden: 'Винтовка скрыта',
@@ -467,7 +469,7 @@ const STR = {
   },
   es: {
     tagline: '¡Vamos a por esas ratas!', ruleAim: '<b>ARRASTRA</b> para apuntar', ruleFire: '<b>SUELTA</b> para disparar',
-    start: 'Empezar noche 1', fine: 'Mejor en horizontal · con sonido', install: 'Añadir a la pantalla de inicio', installIos: 'Toca Compartir y luego «Añadir a pantalla de inicio»', installOther: 'Abre el menú del navegador y elige «Añadir a la pantalla de inicio»', version: 'versión', language: 'Idioma',
+    start: 'Empezar noche 1', fine: 'Mejor en horizontal · con sonido', updateBtn: 'Nueva versión {v} · toca para actualizar', install: 'Añadir a la pantalla de inicio', installIos: 'Toca Compartir y luego «Añadir a pantalla de inicio»', installOther: 'Abre el menú del navegador y elige «Añadir a la pantalla de inicio»', version: 'versión', language: 'Idioma',
     night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 8 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
     headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
     paused: 'PAUSA', resume: 'Volver al juego', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', rifleShown: 'Rifle visible', rifleHidden: 'Rifle oculto',
@@ -484,7 +486,7 @@ const STR = {
   },
   fr: {
     tagline: 'Allez, on chope ces rats !', ruleAim: '<b>GLISSE</b> pour viser', ruleFire: '<b>RELÂCHE</b> pour tirer',
-    start: 'Commencer la nuit 1', fine: 'Mieux en paysage · avec le son', install: 'Ajouter à l’écran d’accueil', installIos: 'Touchez Partager, puis « Sur l’écran d’accueil »', installOther: 'Ouvrez le menu du navigateur, puis « Ajouter à l’écran d’accueil »', version: 'version', language: 'Langue',
+    start: 'Commencer la nuit 1', fine: 'Mieux en paysage · avec le son', updateBtn: 'Nouvelle version {v} · touchez pour mettre à jour', install: 'Ajouter à l’écran d’accueil', installIos: 'Touchez Partager, puis « Sur l’écran d’accueil »', installOther: 'Ouvrez le menu du navigateur, puis « Ajouter à l’écran d’accueil »', version: 'version', language: 'Langue',
     night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 8 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
     headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
     paused: 'PAUSE', resume: 'Retour au jeu', soundOn: 'Son activé', soundOff: 'Son coupé', rifleShown: 'Fusil visible', rifleHidden: 'Fusil masqué',
@@ -501,7 +503,7 @@ const STR = {
   },
   he: {
     tagline: 'בואו נתפוס את העכברושים!', ruleAim: '<b>גררו</b> כדי לכוון', ruleFire: '<b>שחררו</b> כדי לירות',
-    start: 'התחלת לילה 1', fine: 'הכי טוב לרוחב · עם סאונד', install: 'הוספה למסך הבית', installIos: 'הקישו על שיתוף ואז על "הוספה למסך הבית"', installOther: 'פתחו את תפריט הדפדפן ובחרו "הוספה למסך הבית"', version: 'גרסה', language: 'שפה',
+    start: 'התחלת לילה 1', fine: 'הכי טוב לרוחב · עם סאונד', updateBtn: 'גרסה חדשה {v} · הקישו לעדכון', install: 'הוספה למסך הבית', installIos: 'הקישו על שיתוף ואז על "הוספה למסך הבית"', installOther: 'פתחו את תפריט הדפדפן ובחרו "הוספה למסך הבית"', version: 'גרסה', language: 'שפה',
     night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 8 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
     headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
     paused: 'מושהה', resume: 'חזרה למשחק', soundOn: 'סאונד פועל', soundOff: 'סאונד כבוי', rifleShown: 'הרובה מוצג', rifleHidden: 'הרובה מוסתר',
@@ -1955,7 +1957,7 @@ function goHome() {
   G.owl = makeOwl();
   elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elSplash.hidden = elHint.hidden = true;
   $('#hud-ammo').hidden = true; $('#over').hidden = true;
-  elStart.hidden = false;
+  elStart.hidden = false; showUpdate();
   setMusic('night');
   setUserPause(false);
   elPauseBtn.hidden = true;
@@ -1987,6 +1989,7 @@ function langChanged() {
   setMuted(A.muted); setShowRifle(showRifle);
   if (!elHint.hidden) elHint.textContent = tr(G.armed ? 'nadeHint' : G.boss ? 'bossHint' : 'hint');
   if (!elSplash.hidden) { renderSpecials(); renderNextLine(); renderShop(); }
+  showUpdate();
   if (!$('#install-help').hidden) $('#install-help').textContent = tr(isIos() ? 'installIos' : 'installOther');
   setShareLink();
   if (grImg) buildScenery(Pgr);
@@ -2002,7 +2005,7 @@ setMuted(A.muted);
 const elFs = $('#fs-btn');
 const fsSupported = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
 const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
-function updateFsBtn() { elFs.hidden = !fsSupported() || isFs() || installed(); }   // the home-screen app is already full screen
+function updateFsBtn() { elFs.hidden = !fsSupported() || isFs() || installed() || !!G.newVersion; }   // the home-screen app is already full screen
 function goFullscreen() {
   try {
     const el = document.documentElement, fs = el.requestFullscreen || el.webkitRequestFullscreen;
@@ -2043,7 +2046,7 @@ const installed = () => navigator.standalone === true ||
   (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches));
 const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 function updateInstallBtn() {
-  $('#install').hidden = installed() || !(installEvt || touchDevice());
+  $('#install').hidden = installed() || !!G.newVersion || !(installEvt || touchDevice());
   if ($('#install').hidden) $('#install-help').hidden = true;
 }
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; updateInstallBtn(); });
@@ -2060,6 +2063,33 @@ $('#install').addEventListener('click', () => {
   $('#start .fine').hidden = true;   // make room on short landscape screens
 });
 updateInstallBtn();
+
+// Update check: a page left open (or the home-screen app) keeps running the version it loaded. While the main menu
+// is showing in the foreground, at most once a minute, ask GitHub for version.json (a few bytes, never the cached
+// copy) and offer a reload when a newer version is out. Never during a night, and no more checks once one is found.
+// When an update is waiting, it is the only button on the start screen (G.newVersion).
+let lastCheck = Date.now();
+const verNum = v => String(v).split('.').map(n => +n || 0);
+const newer = (a, b) => { const x = verNum(a), y = verNum(b); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); return false; };
+function showUpdate() {
+  const nv = G.newVersion, b = $('#update');
+  b.hidden = !nv;
+  if (!nv) return;
+  b.textContent = tr('updateBtn', { v: nv });
+  $('#go').hidden = true; $('#start .fine').hidden = true; $('#install-help').hidden = true;
+  $('#start .lede').hidden = true; $('#start .rules').hidden = true;   // no tagline or controls: just the update
+  updateInstallBtn(); updateFsBtn();
+}
+function checkUpdate() {
+  if (G.newVersion || G.mode !== 'menu' || document.hidden || Date.now() - lastCheck < 60000) return;
+  lastCheck = Date.now();
+  fetch('version.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => {
+    if (j && j.v && newer(j.v, VERSION)) { G.newVersion = j.v; if (G.mode === 'menu') showUpdate(); }
+  }).catch(() => {});
+}
+$('#update').addEventListener('click', () => location.reload());
+setInterval(checkUpdate, 5000);
+document.addEventListener('visibilitychange', checkUpdate);
 document.addEventListener('visibilitychange', applyPause);
 window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 250));
 window.addEventListener('resize', checkOrientation);
