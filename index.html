@@ -135,6 +135,45 @@ html, body {
 /* Hebrew letters don't take the wide tracking the Latin stencil and mono faces use */
 html[lang="he"] .btn, html[lang="he"] .rules, html[lang="he"] .rules b, html[lang="he"] .sub, html[lang="he"] .fine, html[lang="he"] .lang-pick,
 html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="he"] .night, html[lang="he"] .ver, html[lang="he"] #hud-boss .boss-name { letter-spacing: .02em; }
+/* ammo counter under the kill count; it pulses amber when you're nearly out */
+#hud-ammo { top: calc(env(safe-area-inset-top, 0px) + 50px); right: calc(env(safe-area-inset-right, 0px) + 14px); display: flex; align-items: center; gap: 8px; color: var(--ink); }
+#hud-ammo svg { width: 12px; height: 30px; }
+#hud-ammo span { font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+#hud-ammo.low { color: var(--amber); animation: pulse .4s ease-in-out infinite alternate; }
+/* between nights: results on one side, the shop on the other (stacked on narrow screens) */
+#splash .split { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: clamp(16px, 5vw, 56px); max-width: 100%; }
+.shop { border: 1px solid rgba(228,233,230,.2); background: rgba(5,8,7,.55); padding: clamp(10px, 2.5vmin, 18px) clamp(14px, 3vmin, 22px); }
+.shop-title { font-family: var(--f-display); font-weight: 900; font-size: clamp(1.6rem, 6vmin, 2.4rem); letter-spacing: .06em; margin: 0; color: var(--ink); line-height: 1; }
+.shop .bonus { color: var(--phos); }
+.wallet { display: flex; gap: 12px; justify-content: center; }
+.pill { display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-mono); font-size: 22px; color: var(--ink); padding: 4px 12px; border: 1px solid rgba(228,233,230,.35); font-variant-numeric: tabular-nums; }
+.pill svg { width: 10px; height: 24px; }
+.pill.coin { color: var(--amber); border-color: rgba(255,190,74,.6); }
+.pill.coin svg { width: 20px; height: 20px; }
+.pill.bump { animation: bump .28s ease-out; }
+.btn-buy { font-size: 14px; padding: 10px 14px; min-height: 44px; }
+.btn-buy.cant { opacity: .45; }
+.poor { color: var(--amber); }
+.shop .next { grid-auto-flow: row; }
+.shop #start-now { font-size: 14px; padding: 10px 18px; min-height: 44px; }
+/* game over */
+#over .over-title { font-family: var(--f-display); font-weight: 900; font-size: clamp(3rem, 15vmin, 7rem); line-height: .85; color: #ff5a48; text-shadow: 0 0 28px rgba(255,60,40,.4); margin: 0; }
+.stats { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(14px, 5vw, 40px); }
+.stat { display: grid; justify-items: center; gap: 4px; }
+.stat b { font-family: var(--f-mono); font-weight: 400; font-size: clamp(1.8rem, 7vmin, 2.8rem); color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
+.stat span { font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; color: var(--dim); text-transform: uppercase; }
+.newbest { color: var(--amber); font-size: 16px; }
+.btn-wa { --wa: #25d366; color: var(--wa); border-color: var(--wa); background: rgba(37,211,102,.1); box-shadow: 0 0 22px rgba(37,211,102,.2); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.btn-wa:focus-visible { outline-color: var(--wa); }
+@media (max-height: 500px) {
+  #splash .brand { display: none; }
+  .shop { padding: 8px 14px; } .shop .stack, .shop { gap: 6px; }
+  .pill { font-size: 18px; padding: 2px 10px; }
+  #over .stack { gap: 6px; } #over .brand { display: none; }
+  #over .over-title { font-size: 3rem; }
+  #over .btn { font-size: 14px; padding: 9px 16px; min-height: 44px; }
+  #over .stat b { font-size: 1.6rem; }
+}
 .specials { display: grid; justify-items: center; gap: 6px; }
 .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 34rem; }
 .chip { font-family: var(--f-mono); font-size: 15px; letter-spacing: .08em; padding: 5px 12px; border: 1px solid rgba(228,233,230,.4); color: var(--ink);
@@ -174,6 +213,16 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
       <path d="M48.5 21.5 L53.5 26.5"/><path d="M53.5 21.5 L48.5 26.5"/>
     </g>
   </symbol>
+  <symbol id="bullet" viewBox="0 0 12 32">
+    <path d="M6 1 C 9 4, 10 8, 10 11 L 2 11 C 2 8, 3 4, 6 1 Z" fill="currentColor" opacity=".75"/>
+    <rect x="1.5" y="12" width="9" height="17" rx="1" fill="currentColor"/>
+    <rect x="1" y="28.5" width="10" height="2.5" rx="1" fill="currentColor"/>
+  </symbol>
+  <symbol id="coin" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10.5" fill="currentColor"/>
+    <circle cx="12" cy="12" r="7" fill="none" stroke="#0a0d0c" stroke-width="1.6" opacity=".55"/>
+    <path d="M9.5 9.5 L12 7.5 L14.5 9.5 M12 7.5 V16.5" fill="none" stroke="#0a0d0c" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+  </symbol>
 </svg>
 
 <canvas id="game" aria-label="Night-vision rifle scope looking over the farmyard"></canvas>
@@ -187,6 +236,7 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
   <svg aria-hidden="true"><use href="#deadrat"/></svg>
   <span id="hud-kills">0</span>
 </div>
+<div class="hud" id="hud-ammo" hidden><svg aria-hidden="true"><use href="#bullet"/></svg><span id="hud-ammo-n">10</span></div>
 <div class="hud" id="hud-boss" hidden>
   <div class="boss-name" data-i18n="kingRat">KING RAT</div>
   <div class="boss-bar"><i id="boss-fill"></i></div>
@@ -227,7 +277,7 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.12</div>
+    <div class="ver" id="ver">version 0.0.13</div>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
       <span data-i18n-html="ruleAim"><b>DRAG</b> to aim</span>
@@ -255,23 +305,59 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 </section>
 
 <section class="screen" id="splash" hidden aria-live="assertive">
+  <div class="split">
+    <div class="stack results">
+      <p class="brand">RAT SNIPER</p>
+      <p class="night"><span data-i18n="night">NIGHT</span> <span id="sp-night">1</span></p>
+      <p class="cleared" data-i18n="cleared">CLEARED</p>
+      <p class="sub boss-slain" id="sp-boss" hidden data-i18n="kingSlain">King rat slain</p>
+      <div class="tally"><svg aria-hidden="true"><use href="#deadrat"/></svg><span>× <span id="sp-kills">0</span></span></div>
+      <div class="specials" id="sp-special" hidden>
+        <div class="sub" data-i18n="special">Special kills</div>
+        <div class="chips" id="sp-special-list"></div>
+      </div>
+      <div class="sub"><span data-i18n="total">Total</span> <b id="sp-total">0</b></div>
+    </div>
+    <div class="stack shop">
+      <p class="shop-title" data-i18n="shopTitle">Restock</p>
+      <div class="sub bonus" id="shop-bonus">+3 bullets for surviving the night</div>
+      <div class="wallet">
+        <span class="pill" title="Bullets"><svg aria-hidden="true"><use href="#bullet"/></svg><b id="shop-ammo">0</b></span>
+        <span class="pill coin" title="Coins"><svg aria-hidden="true"><use href="#coin"/></svg><b id="shop-coins">0</b></span>
+      </div>
+      <div class="btns">
+        <button class="btn btn-quiet btn-buy" id="buy5" type="button" data-pack="0" data-i18n="buy5">5 bullets · 4 coins</button>
+        <button class="btn btn-quiet btn-buy" id="buy15" type="button" data-pack="1" data-i18n="buy15">15 bullets · 10 coins</button>
+      </div>
+      <div class="sub poor" id="shop-msg" hidden data-i18n="poor">Not enough coins</div>
+      <div class="next">
+        <div class="ring" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="44"/><circle class="prog" id="sp-ring" cx="50" cy="50" r="44"/></svg>
+          <span id="sp-count">15</span>
+        </div>
+        <div class="sub" id="sp-next-line">Night <b>2</b> begins</div>
+        <button class="btn" id="start-now" type="button" data-i18n="startNow">Start now</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="over" hidden aria-live="assertive">
   <div class="stack">
     <p class="brand">RAT SNIPER</p>
-    <p class="night"><span data-i18n="night">NIGHT</span> <span id="sp-night">1</span></p>
-    <p class="cleared" data-i18n="cleared">CLEARED</p>
-    <p class="sub boss-slain" id="sp-boss" hidden data-i18n="kingSlain">King rat slain</p>
-    <div class="tally"><svg aria-hidden="true"><use href="#deadrat"/></svg><span>× <span id="sp-kills">0</span></span></div>
-    <div class="specials" id="sp-special" hidden>
-      <div class="sub" data-i18n="special">Special kills</div>
-      <div class="chips" id="sp-special-list"></div>
+    <p class="cleared over-title" data-i18n="gameOver">GAME OVER</p>
+    <p class="sub" data-i18n="outOfAmmo">You ran out of bullets</p>
+    <div class="stats">
+      <div class="stat"><b id="ov-nights">0</b><span data-i18n="nightsSurvived">Nights survived</span></div>
+      <div class="stat"><b id="ov-kills">0</b><span data-i18n="ratsKilled">Rats killed</span></div>
+      <div class="stat"><b id="ov-best">0</b><span data-i18n="best">Best</span></div>
     </div>
-    <div class="sub"><span data-i18n="total">Total</span> <b id="sp-total">0</b></div>
-    <div class="next">
-      <div class="ring" aria-hidden="true">
-        <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="44"/><circle class="prog" id="sp-ring" cx="50" cy="50" r="44"/></svg>
-        <span id="sp-count">5</span>
-      </div>
-      <div class="sub" id="sp-next-line">Night <b>2</b> begins</div>
+    <p class="sub newbest" id="ov-newbest" hidden data-i18n="newBest">New best!</p>
+    <div class="chips" id="ov-special"></div>
+    <div class="btns">
+      <a class="btn btn-wa" id="ov-share" href="#" target="_blank" rel="noopener" data-i18n="shareWa">Share on WhatsApp</a>
+      <button class="btn" id="ov-again" type="button" data-i18n="playAgain">Play again</button>
+      <button class="btn btn-quiet" id="ov-home" type="button" data-i18n="mainMenu">Main menu</button>
     </div>
   </div>
 </section>
@@ -281,7 +367,7 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.12';
+const VERSION = '0.0.13';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -294,6 +380,10 @@ const STR = {
     fullscreen: 'Go full screen', pause: 'Pause', sacks: ['FEED', 'OATS', 'CORN'],
     sp: { king: 'King rat', ufo: 'UFO rat', zombie: 'Zombie', clown: 'Clown', xmas: 'X-mas', pirate: 'Pirate', drunk: 'Drunk', albino: 'Albino', mohawk: 'Mohawk', french: 'French', blind: 'Blind', alpha: 'Alpha' },
     say: { round: 'Round cleared', head: 'Head shot', king: 'King rat' }, speechLang: 'en-US',
+    bullets: 'Bullets', coins: 'Coins', shopTitle: 'Restock', bonusLine: '+{n} bullets for surviving the night', buy5: '5 bullets · 4 coins', buy15: '15 bullets · 10 coins',
+    poor: 'Not enough coins', startNow: 'Start now', gameOver: 'GAME OVER', outOfAmmo: 'You ran out of bullets', nightsSurvived: 'Nights survived', ratsKilled: 'Rats killed',
+    best: 'Best', newBest: 'New best!', shareWa: 'Share on WhatsApp', playAgain: 'Play again',
+    shareMsg: 'My Rat Sniper score: {k} rats killed, {n} nights survived. Can you beat that? {url}',
   },
   ru: {
     tagline: 'Вперёд, за крысами!', ruleAim: '<b>ТЯНИ</b>, чтобы целиться', ruleFire: '<b>ОТПУСТИ</b>, чтобы стрелять', ruleNight: '<b>30 с</b> на ночь',
@@ -305,6 +395,10 @@ const STR = {
     fullscreen: 'Во весь экран', pause: 'Пауза', sacks: ['КОРМ', 'ОВЁС', 'ЗЕРНО'],
     sp: { king: 'Король крыс', ufo: 'Крыса на НЛО', zombie: 'Зомби', clown: 'Клоун', xmas: 'Новогодняя', pirate: 'Пират', drunk: 'Пьяница', albino: 'Альбинос', mohawk: 'Ирокез', french: 'Француз', blind: 'Слепой', alpha: 'Альфа' },
     say: { round: 'Раунд пройден', head: 'В голову', king: 'Король крыс' }, speechLang: 'ru-RU',
+    bullets: 'Патроны', coins: 'Монеты', shopTitle: 'Пополнение', bonusLine: '+{n} патрона за пережитую ночь', buy5: '5 патронов · 4 монеты', buy15: '15 патронов · 10 монет',
+    poor: 'Не хватает монет', startNow: 'Начать сейчас', gameOver: 'ИГРА ОКОНЧЕНА', outOfAmmo: 'Закончились патроны', nightsSurvived: 'Ночей пережито', ratsKilled: 'Крыс убито',
+    best: 'Рекорд', newBest: 'Новый рекорд!', shareWa: 'Поделиться в WhatsApp', playAgain: 'Играть снова',
+    shareMsg: 'Мой результат в Rat Sniper: ночей пережито — {n}, крыс убито — {k}. Сможешь лучше? {url}',
   },
   es: {
     tagline: '¡Vamos a por esas ratas!', ruleAim: '<b>ARRASTRA</b> para apuntar', ruleFire: '<b>SUELTA</b> para disparar', ruleNight: '<b>30 s</b> por noche',
@@ -316,6 +410,10 @@ const STR = {
     fullscreen: 'Pantalla completa', pause: 'Pausa', sacks: ['PIENSO', 'AVENA', 'MAÍZ'],
     sp: { king: 'Rey rata', ufo: 'Rata OVNI', zombie: 'Zombi', clown: 'Payaso', xmas: 'Navideña', pirate: 'Pirata', drunk: 'Borracha', albino: 'Albina', mohawk: 'Cresta', french: 'Francesa', blind: 'Ciega', alpha: 'Alfa' },
     say: { round: 'Ronda superada', head: 'Tiro a la cabeza', king: 'El rey rata' }, speechLang: 'es-ES',
+    bullets: 'Balas', coins: 'Monedas', shopTitle: 'Recarga', bonusLine: '+{n} balas por sobrevivir la noche', buy5: '5 balas · 4 monedas', buy15: '15 balas · 10 monedas',
+    poor: 'No tienes monedas suficientes', startNow: 'Empezar ya', gameOver: 'FIN DEL JUEGO', outOfAmmo: 'Te quedaste sin balas', nightsSurvived: 'Noches superadas', ratsKilled: 'Ratas abatidas',
+    best: 'Récord', newBest: '¡Nuevo récord!', shareWa: 'Compartir por WhatsApp', playAgain: 'Jugar de nuevo',
+    shareMsg: 'Sobreviví {n} noches y abatí {k} ratas en Rat Sniper. ¿Puedes superarlo? {url}',
   },
   fr: {
     tagline: 'Allez, on chope ces rats !', ruleAim: '<b>GLISSE</b> pour viser', ruleFire: '<b>RELÂCHE</b> pour tirer', ruleNight: '<b>30 s</b> par nuit',
@@ -327,6 +425,10 @@ const STR = {
     fullscreen: 'Plein écran', pause: 'Pause', sacks: ['GRAIN', 'AVOINE', 'MAÏS'],
     sp: { king: 'Roi des rats', ufo: 'Rat OVNI', zombie: 'Zombie', clown: 'Clown', xmas: 'Noël', pirate: 'Pirate', drunk: 'Ivrogne', albino: 'Albinos', mohawk: 'Crête', french: 'Français', blind: 'Aveugle', alpha: 'Alpha' },
     say: { round: 'Manche terminée', head: 'En pleine tête', king: 'Le roi des rats' }, speechLang: 'fr-FR',
+    bullets: 'Balles', coins: 'Pièces', shopTitle: 'Ravitaillement', bonusLine: '+{n} balles pour avoir survécu à la nuit', buy5: '5 balles · 4 pièces', buy15: '15 balles · 10 pièces',
+    poor: 'Pas assez de pièces', startNow: 'Commencer', gameOver: 'PARTIE TERMINÉE', outOfAmmo: 'Tu n’as plus de balles', nightsSurvived: 'Nuits survécues', ratsKilled: 'Rats abattus',
+    best: 'Record', newBest: 'Nouveau record !', shareWa: 'Partager sur WhatsApp', playAgain: 'Rejouer',
+    shareMsg: 'J’ai survécu {n} nuits et abattu {k} rats dans Rat Sniper. Tu fais mieux ? {url}',
   },
   he: {
     tagline: 'בואו נתפוס את העכברושים!', ruleAim: '<b>גררו</b> כדי לכוון', ruleFire: '<b>שחררו</b> כדי לירות', ruleNight: '<b>30 שניות</b> ללילה',
@@ -338,6 +440,10 @@ const STR = {
     fullscreen: 'מסך מלא', pause: 'השהיה', sacks: ['מספוא', 'שיבולת', 'תירס'],
     sp: { king: 'מלך העכברושים', ufo: 'עכברוש עב״ם', zombie: 'זומבי', clown: 'ליצן', xmas: 'חג המולד', pirate: 'פיראט', drunk: 'שיכור', albino: 'לבקן', mohawk: 'מוהוק', french: 'צרפתי', blind: 'עיוור', alpha: 'אלפא' },
     say: { round: 'הסיבוב הושלם', head: 'פגיעה בראש', king: 'מלך העכברושים' }, speechLang: 'he-IL',
+    bullets: 'כדורים', coins: 'מטבעות', shopTitle: 'חידוש תחמושת', bonusLine: '+{n} כדורים על שרידת הלילה', buy5: '5 כדורים · 4 מטבעות', buy15: '15 כדורים · 10 מטבעות',
+    poor: 'אין מספיק מטבעות', startNow: 'להתחיל עכשיו', gameOver: 'המשחק נגמר', outOfAmmo: 'נגמרו לך הכדורים', nightsSurvived: 'לילות ששרדת', ratsKilled: 'עכברושים שחוסלו',
+    best: 'שיא', newBest: 'שיא חדש!', shareWa: 'שיתוף בוואטסאפ', playAgain: 'לשחק שוב',
+    shareMsg: 'שרדתי {n} לילות וחיסלתי {k} עכברושים ב-Rat Sniper. מסוגלים יותר? {url}',
   },
 };
 let LANG = 'en';
@@ -378,7 +484,21 @@ const LANES = [
   { y: 905, sc: 1.12, j: 20 },  // near dirt
 ];
 const AIM_MIN = 430, AIM_MAX = 950;
-const ROUND_TIME = 30, BREAK_TIME = 5;
+const ROUND_TIME = 30, BREAK_TIME = 15;   // the break is longer now: it's also the shop
+/* economy: every shot costs a bullet; kills pay coins; coins buy bullets between nights.
+   Running out of bullets during a night ends the game. */
+const AMMO_START = 10, NIGHT_BONUS = 3, HEAD_BONUS = 1;
+const PACKS = [[5, 4], [15, 10]];                          // [bullets, price in coins]
+const BOUNTY = { rat: 1, alpha: 2, rare: 3, ufo: 5, king: 20 };
+const GAME_URL = 'https://omerv85.github.io/RatSniper/';
+/* difficulty: each grows a little every night (night 1 = 0) up to a cap */
+const LVL = () => Math.max(0, G.night - 1);
+const DIFF = {
+  speed:  () => Math.min(2.2, 1 + 0.09 * LVL()),           // how fast rats move
+  far:    () => Math.min(2.5, 0.18 * LVL()),               // how strongly spawns lean toward the far paths
+  fright: () => Math.min(2.0, 1 + 0.08 * LVL()),           // how far a shot scares rats
+  flee:   () => Math.min(2.2, 1 + 0.07 * LVL()),           // how fast scared rats run
+};
 const SHOT_COOLDOWN = 0.55;
 
 const mod = (a, n) => ((a % n) + n) % n;
@@ -1131,12 +1251,12 @@ function setMuted(m) {
 const G = {
   mode: 'menu', night: 1, time: ROUND_TIME, breakT: 0, kills: 0, nightKills: 0,
   aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [],
-  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, nightSpecial: {}, firstNight: 1, hintTO: 0,
+  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, nightSpecial: {}, gameSpecial: {}, ammo: AMMO_START, coins: 0, outT: 0, pops: [], lastResult: null, firstNight: 1, hintTO: 0,
 };
-const diff = () => Math.min(1.75, 1 + 0.09 * (G.night - 1));
+const diff = () => DIFF.speed();
 const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
 const stopDur = () => Math.max(0.55, rand(1.3, 2.8) - 0.13 * (G.night - 1));
-const ratSpeed = r => 72 * r.ls * (VAR_SPEED[r.variant] || 1) * (r.king ? 1.5 * (r.hp <= r.maxHp / 2 ? 1.5 : 1) : diff()) * (r.state === 'scurry' ? 2.3 : r.state === 'rage' ? 1.9 : 1);
+const ratSpeed = r => 72 * r.ls * (VAR_SPEED[r.variant] || 1) * (r.king ? 1.5 * (r.hp <= r.maxHp / 2 ? 1.5 : 1) : diff()) * (r.state === 'scurry' ? 2.3 * DIFF.flee() : r.state === 'rage' ? 1.9 : 1);
 const BOSS_EVERY = 5, KING_HP = 20, KING_SIZE = 3.2;
 function makeKing() {
   const lane = Math.random() < 0.5 ? 2 : 3, side = Math.random() < 0.5 ? -1 : 1;
@@ -1167,7 +1287,14 @@ function dirtLip(g, s, ee) {
 const ALPHA_EVERY = 10, ALPHA_SIZE = 1.45;
 
 const LANE_W = [0.16, 0.18, 0.2, 0.23, 0.23];
-function pickLane() { let x = Math.random(); for (let i = 0; i < LANE_W.length; i++) if ((x -= LANE_W[i]) <= 0) return i; return LANES.length - 1; }
+function pickLane() {
+  // later nights tip the odds toward the far paths, where rats are smaller and harder to hit
+  const far = G.mode === 'menu' ? 0 : DIFF.far(), n = LANE_W.length;
+  const w = LANE_W.map((v, i) => v * (1 + far * (1 - i / (n - 1))));
+  let x = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < n; i++) if ((x -= w[i]) <= 0) return i;
+  return n - 1;
+}
 // rare dressed-up rats: about 1 in 15 ordinary spawns; they only look different (zombie also takes 2 body hits)
 const VARIANTS = ['zombie', 'clown', 'xmas', 'pirate', 'drunk', 'albino', 'mohawk', 'french', 'blind'];
 const RARE_EVERY = 15;
@@ -1294,8 +1421,10 @@ function hitTest(r, ax, ay) {
 
 function fire() {
   if (G.mode !== 'play') return;
-  if (G.clock - G.lastShot < SHOT_COOLDOWN) { sfxDry(); return; }
+  if (G.clock - G.lastShot < SHOT_COOLDOWN || G.ammo <= 0) { sfxDry(); return; }
   G.lastShot = G.clock;
+  G.ammo--; updateAmmo();
+  if (G.ammo <= 0) G.outT = 1.3;     // that was the last bullet: the game ends once it lands
   const ax = G.aimX, ay = G.aimY;
   let best = null, hit = null;
   for (const r of G.rats) {
@@ -1317,9 +1446,11 @@ function fire() {
   // every rat near the shot panics and scurries about for 2 seconds
   for (const r of G.rats) {
     if (!r.alive || r === best || r.state === 'rage' || r.state === 'emerge' || r.king) continue;
-    if (Math.abs(wrapD(r.x - ax)) > 600) continue;
-    r.state = 'scurry'; r.t = 2; r.turnT = rand(0.1, 0.4); r.rearTarget = 0;
-    r.dir = Math.random() < 0.5 ? -1 : 1;
+    const away = wrapD(r.x - ax);
+    if (Math.abs(away) > 600 * DIFF.fright()) continue;
+    // bolt away from the shot first; later nights they run straight for longer before zig-zagging
+    r.state = 'scurry'; r.t = 2; r.turnT = 0.35 + 0.12 * LVL() + rand(0, 0.25); r.rearTarget = 0;
+    r.dir = away >= 0 ? 1 : -1;
   }
 }
 
@@ -1360,6 +1491,7 @@ function kill(r, ax, ay, head, delay) {
   r.alive = false; r.deadT = 0; r.rage = false; r.jx = r.jy = 0;
   G.kills++; G.nightKills++;
   countSpecial(r.king ? 'king' : r.variant || (r.alpha ? 'alpha' : null));
+  payBounty(r.king ? 'king' : r.variant ? 'rare' : r.alpha ? 'alpha' : 'rat', head, r.x, r.y - 44 * r.sc);
   elKills.textContent = G.kills;
   elKillBox.classList.remove('bump'); void elKillBox.offsetWidth; elKillBox.classList.add('bump');
   const s = r.sc;
@@ -1429,7 +1561,56 @@ const elSplash = $('#splash'), elStart = $('#start'), elHint = $('#hint'), elRin
 // special kills this night, shown on the cleared screen (rarest first)
 const SPECIALS = [['king', 'King rat'], ['ufo', 'UFO rat'], ['zombie', 'Zombie'], ['clown', 'Clown'], ['xmas', 'X-mas'], ['pirate', 'Pirate'],
   ['drunk', 'Drunk'], ['albino', 'Albino'], ['mohawk', 'Mohawk'], ['french', 'French'], ['blind', 'Blind'], ['alpha', 'Alpha']];
-function countSpecial(k) { if (k) G.nightSpecial[k] = (G.nightSpecial[k] || 0) + 1; }
+function countSpecial(k) { if (k) { G.nightSpecial[k] = (G.nightSpecial[k] || 0) + 1; G.gameSpecial[k] = (G.gameSpecial[k] || 0) + 1; } }
+// bounty for a kill, with a little "+N" rising from where it died
+function payBounty(kind, head, x, y) {
+  const n = BOUNTY[kind] + (head ? HEAD_BONUS : 0);
+  G.coins += n;
+  G.pops.push({ x, y, txt: `+${n}`, t: 0 });
+}
+function updateAmmo() {
+  $('#hud-ammo-n').textContent = G.ammo;
+  $('#hud-ammo').classList.toggle('low', G.ammo <= 3);
+}
+// between nights: the night bonus, wallet and the two packs
+function renderShop() {
+  $('#shop-bonus').textContent = tr('bonusLine', { n: NIGHT_BONUS });
+  $('#shop-ammo').textContent = G.ammo; $('#shop-coins').textContent = G.coins;
+  document.querySelectorAll('.btn-buy').forEach(b => b.classList.toggle('cant', G.coins < PACKS[+b.dataset.pack][1]));
+}
+function buyPack(i) {
+  const [bullets, price] = PACKS[i];
+  if (G.coins < price) { $('#shop-msg').hidden = false; return; }
+  G.coins -= price; G.ammo += bullets; $('#shop-msg').hidden = true;
+  sfxPing(0, false); updateAmmo(); renderShop();
+  for (const id of ['#shop-ammo', '#shop-coins']) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
+}
+document.querySelectorAll('.btn-buy').forEach(b => b.addEventListener('click', () => buyPack(+b.dataset.pack)));
+// the end: out of bullets mid-night
+function gameOver() {
+  if (G.mode !== 'play') return;
+  G.mode = 'over'; drag.id = null; G.ufo = null; ufoHumStop();
+  const nights = G.night - 1, kills = G.kills;
+  let best = 0; try { best = +localStorage.getItem('rs-best') || 0; } catch (e) {}
+  const newBest = kills > best; if (newBest) { best = kills; try { localStorage.setItem('rs-best', String(kills)); } catch (e) {} }
+  $('#ov-nights').textContent = nights; $('#ov-kills').textContent = kills; $('#ov-best').textContent = best;
+  $('#ov-newbest').hidden = !newBest;
+  $('#ov-special').innerHTML = SPECIALS.filter(([k]) => G.gameSpecial[k]).map(([k, label]) =>
+    `<span class="chip${k === 'alpha' ? '' : ' rare'}"><b>${STR[LANG].sp[k] || label}</b> ×${G.gameSpecial[k]}</span>`).join('');
+  G.lastResult = { nights, kills };
+  setShareLink();
+  elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elHint.hidden = true; $('#hud-ammo').hidden = true;
+  elPauseBtn.hidden = true; elSplash.hidden = true;
+  $('#over').hidden = false;
+  setMusic('night');
+}
+function setShareLink() {
+  if (!G.lastResult) return;
+  const msg = tr('shareMsg', { n: G.lastResult.nights, k: G.lastResult.kills, url: GAME_URL });
+  $('#ov-share').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+}
+$('#ov-again').addEventListener('click', () => { $('#over').hidden = true; startGame(1); });
+$('#ov-home').addEventListener('click', () => { $('#over').hidden = true; goHome(); });
 function renderSpecials() {
   const el = $('#sp-special'), list = $('#sp-special-list');
   const got = SPECIALS.filter(([k]) => G.nightSpecial[k]);
@@ -1479,6 +1660,8 @@ function endRound() {
   setMusic('night');
   elSplash.hidden = false;
   if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(); }
+  // surviving the night pays a few bullets; then the shop is open until the next night
+  G.ammo += NIGHT_BONUS; G.outT = 0; updateAmmo(); $('#shop-msg').hidden = true; renderShop();
 }
 
 /* ---------- input ---------- */
@@ -1523,8 +1706,9 @@ function startGame(night) {
   try { if (!VOICE_DATA[LANG] && window.speechSynthesis) { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } } catch (e) {}
   try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
   elStart.hidden = true;
-  elHudL.hidden = elHudR.hidden = elHudB.hidden = false;
+  elHudL.hidden = elHudR.hidden = elHudB.hidden = false; $('#hud-ammo').hidden = false;
   elPauseBtn.hidden = false;
+  G.ammo = AMMO_START; G.coins = 0; G.gameSpecial = {}; G.outT = 0; G.pops = []; updateAmmo();
   G.kills = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
   startRound(night);
 }
@@ -1551,12 +1735,14 @@ function goHome() {
   for (let i = 0; i < 4; i++) spawnRat(true);
   G.owl = makeOwl();
   elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elSplash.hidden = elHint.hidden = true;
+  $('#hud-ammo').hidden = true; $('#over').hidden = true;
   elStart.hidden = false;
   setMusic('night');
   setUserPause(false);
   elPauseBtn.hidden = true;
 }
 $('#home').addEventListener('click', goHome);
+$('#start-now').addEventListener('click', () => { if (G.mode === 'cleared') startRound(G.night + 1); });
 // some players prefer a clear view: the rifle can be hidden from the pause screen, and the choice is remembered
 let showRifle = true;
 try { showRifle = localStorage.getItem('rs-rifle') !== '0'; } catch (e) {}
@@ -1577,12 +1763,13 @@ document.querySelectorAll('.lang-select').forEach(sel => {
 function langChanged() {
   setMuted(A.muted); setShowRifle(showRifle);
   if (!elHint.hidden) elHint.textContent = tr(G.boss ? 'bossHint' : 'hint');
-  if (!elSplash.hidden) { renderSpecials(); renderNextLine(); }
+  if (!elSplash.hidden) { renderSpecials(); renderNextLine(); renderShop(); }
+  setShareLink();
   if (grImg) buildScenery(Pgr);
 }
 applyLang();
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Escape' || e.key === 'p' || e.key === 'P') && G.mode !== 'menu') setUserPause(!G.userPaused);
+  if ((e.key === 'Escape' || e.key === 'p' || e.key === 'P') && (G.mode === 'play' || G.mode === 'cleared')) setUserPause(!G.userPaused);
 });
 setMuted(A.muted);
 
@@ -1631,6 +1818,13 @@ window.addEventListener('resize', checkOrientation);
 function update(dt) {
   G.clock += dt;
   steer(dt);
+  if (G.mode === 'play' && G.outT > 0) {
+    // the last bullet has been fired: end the game once it has landed, unless that shot just won the boss night
+    G.outT -= dt;
+    if (G.outT <= 0 && !(G.boss && G.bossEndT > 0)) gameOver();
+  }
+  for (const p of G.pops) p.t += dt;
+  G.pops = G.pops.filter(p => p.t < 1.3);
   if (G.mode === 'play') {
     if (!G.boss) {
       G.time -= dt;
@@ -2300,6 +2494,7 @@ function shootUfo(u, zone) {
   u.state = 'fall'; u.vy = -60;
   G.kills++; G.nightKills++;
   countSpecial('ufo');
+  payBounty('ufo', zone === 'head', u.x, u.y - 24);
   elKills.textContent = G.kills;
   elKillBox.classList.remove('bump'); void elKillBox.offsetWidth; elKillBox.classList.add('bump');
   for (let i = 0; i < 14; i++) G.parts.push({ kind: 'blood', col: 'rgba(255,240,200,.95)', dcol: 'rgba(0,0,0,0)', x: u.x, y: u.y, vx: rand(-200, 200), vy: rand(-220, 40), ground: UFO_GROUND, size: rand(0.8, 1.6), life: 1.2, sc: 0.7 });
@@ -2580,7 +2775,20 @@ function render() {
   ctx.fillStyle = vignette; ctx.fillRect(0, 0, cv.width, cv.height);
   if (G.flash > 0.02) { ctx.fillStyle = `rgba(235,245,240,${(0.42 * G.flash).toFixed(3)})`; ctx.fillRect(0, 0, cv.width, cv.height); }
 
-  if (G.mode !== 'menu') { if (showRifle) drawRifle(); drawCrosshair(); }
+  // coin rewards rising from each kill
+  if (G.pops.length) {
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.font = `700 ${Math.round(22 * dpr)}px 'Share Tech Mono', monospace`; ctx.textAlign = 'center';
+    for (const p of G.pops) {
+      const x = rel(p.x); if (!vis(x)) continue;
+      const k = p.t / 1.3, sx = x * P, sy = (p.y - top) * P - k * 40 * dpr;
+      ctx.globalAlpha = Math.min(1, (1 - k) * 2);
+      ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillText(p.txt, sx + 1.5 * dpr, sy + 1.5 * dpr);
+      ctx.fillStyle = '#ffbe4a'; ctx.fillText(p.txt, sx, sy);
+    }
+    ctx.restore();
+  }
+  if (G.mode !== 'menu' && G.mode !== 'over') { if (showRifle) drawRifle(); drawCrosshair(); }
   if (drag.id !== null && G.mode === 'play') drawStick();
 }
 
