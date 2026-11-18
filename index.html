@@ -198,7 +198,7 @@ html, body {
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.6</div>
+    <div class="ver" id="ver">version 0.0.7</div>
     <p class="lede">Let's go get them rats!</p>
     <div class="rules">
       <span><b>DRAG</b> to aim</span>
@@ -861,6 +861,45 @@ function sfxShatter(delay) {
     o.connect(g); g.connect(A.sfx); o.start(s); o.stop(s + 0.22);
   }
 }
+// saucer: a warbling two-tone hum while it's around, a zap and a falling whistle when hit, a metal crash
+function ufoHumStart() {
+  const c = A.ctx; if (!c || A.ufoHum) return;
+  const g = c.createGain(), f = c.createBiquadFilter(); g.gain.value = 0; f.type = 'lowpass'; f.frequency.value = 1600;
+  const o1 = c.createOscillator(), l1 = c.createOscillator(), d1 = c.createGain();
+  o1.type = 'sine'; o1.frequency.value = 210; l1.frequency.value = 7; d1.gain.value = 22; l1.connect(d1); d1.connect(o1.frequency);
+  const o2 = c.createOscillator(), l2 = c.createOscillator(), d2 = c.createGain(), g2 = c.createGain();
+  o2.type = 'triangle'; o2.frequency.value = 720; l2.frequency.value = 0.7; d2.gain.value = 140; l2.connect(d2); d2.connect(o2.frequency); g2.gain.value = 0.35;
+  o1.connect(f); o2.connect(g2); g2.connect(f); f.connect(g); g.connect(A.sfx);
+  const nodes = [o1, l1, o2, l2]; nodes.forEach(n => n.start());
+  A.ufoHum = { g, nodes };
+}
+function ufoHumLevel(v) { if (A.ufoHum) A.ufoHum.g.gain.setTargetAtTime(v, A.ctx.currentTime, 0.12); }
+function ufoHumStop() {
+  if (!A.ufoHum) return;
+  const h = A.ufoHum, t = A.ctx.currentTime; A.ufoHum = null;
+  h.g.gain.setTargetAtTime(0, t, 0.08); h.nodes.forEach(n => n.stop(t + 0.5));
+}
+function sfxUfoHit() {
+  const c = A.ctx; if (!c) return; const t = c.currentTime + 0.05;
+  ufoHumStop();
+  const z = c.createOscillator(), zg = c.createGain();
+  z.type = 'square'; z.frequency.setValueAtTime(1900, t); z.frequency.exponentialRampToValueAtTime(260, t + 0.25);
+  zg.gain.setValueAtTime(0.12, t); zg.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+  z.connect(zg); zg.connect(A.sfx); z.start(t); z.stop(t + 0.3);
+  const w = c.createOscillator(), wg = c.createGain();
+  w.type = 'sine'; w.frequency.setValueAtTime(1500, t + 0.2); w.frequency.exponentialRampToValueAtTime(170, t + 1.4);
+  wg.gain.setValueAtTime(0, t + 0.2); wg.gain.linearRampToValueAtTime(0.09, t + 0.3); wg.gain.linearRampToValueAtTime(0, t + 1.4);
+  w.connect(wg); wg.connect(A.sfx); w.start(t + 0.2); w.stop(t + 1.45);
+}
+function sfxUfoCrash() {
+  const c = A.ctx; if (!c) return; const t = c.currentTime;
+  noiseBurst(t, A.sfx, { type: 'lowpass', f0: 2000, f1: 220, q: 0.7, peak: 0.7, dur: 0.6, attack: 0.003 });
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(90, t); o.frequency.exponentialRampToValueAtTime(32, t + 0.5);
+  g.gain.setValueAtTime(0.8, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+  o.connect(g); g.connect(A.sfx); o.start(t); o.stop(t + 0.65);
+  sfxPing(0.02, false); sfxPing(0.14, false);
+}
 function sfxOwlFlush() {
   const c = A.ctx; if (!c) return; const t = c.currentTime + 0.08;
   // heavy wingbeats fading into the distance, and an alarmed screech
@@ -948,7 +987,7 @@ function setMuted(m) {
 const G = {
   mode: 'menu', night: 1, time: ROUND_TIME, breakT: 0, kills: 0, nightKills: 0,
   aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [],
-  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, firstNight: 1, hintTO: 0,
+  spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, firstNight: 1, hintTO: 0,
 };
 const diff = () => Math.min(1.75, 1 + 0.09 * (G.night - 1));
 const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
@@ -1121,13 +1160,14 @@ function fire() {
     if (h && (!best || r.y > best.y)) { best = r; hit = h; }
   }
   // clutter in front of the rat takes the bullet instead
-  let blocker = null;
+  let blocker = null, ufoZone = null;
   for (const o of G.obs) if (obsHit(o, ax, ay) && (!blocker || o.y > blocker.y)) blocker = o;
   if (blocker && best && blocker.y < best.y) blocker = null;
   sfxShot();
   G.kick = 1; G.kickX = rand(-1, 1); G.flash = 1;
   if (blocker) { best = null; hitObstacle(blocker, ax, ay); }
   else if (best) hitRat(best, hit, ax, ay);
+  else if (G.ufo && (ufoZone = ufoHit(G.ufo, ax, ay))) shootUfo(G.ufo, ufoZone);
   else if (G.owl && owlHit(G.owl, ax, ay)) flushOwl(G.owl);   // no points, it just leaves
   else missPuff(ax, ay);
   // every rat near the shot panics and scurries about for 2 seconds
@@ -1248,6 +1288,8 @@ function startRound(n) {
   for (const o of G.obs) o.broken = false;   // a fresh empty bottle each night
   G.boss = n % BOSS_EVERY === 0; G.bossEndT = 0;
   G.owl = !G.boss && Math.random() < OWL_CHANCE ? makeOwl() : null;
+  G.ufo = null; ufoHumStop();
+  G.ufoT = !G.boss && Math.random() < UFO_CHANCE ? rand(4, 22) : 0;   // ultra rare: shows up partway through some nights
   if (G.boss) {
     // boss night: one king rat, no clock, a health bar and metal
     const k = makeKing(); G.rats.push(k); bossBar(k);
@@ -1416,6 +1458,12 @@ function update(dt) {
   for (const r of G.rats) { updRat(r, dt); if (r.king && r.alive) kingTick(r, dt); }
   for (const o of G.obs) if (o.hopT > 0) o.hopT = Math.max(0, o.hopT - dt);
   if (G.owl) { owlTick(G.owl, dt); if (G.owl.gone) G.owl = null; }
+  if (G.ufoT > 0 && G.mode === 'play') { G.ufoT -= dt; if (G.ufoT <= 0) { G.ufo = spawnUfo(); ufoHumStart(); } }
+  if (G.ufo) {
+    ufoTick(G.ufo, dt);
+    if (G.ufo.state === 'fly') ufoHumLevel(0.07 * Math.max(0.15, 1 - Math.abs(wrapD(G.ufo.x - G.aimX)) / viewW));
+    if (G.ufo.gone) { G.ufo = null; ufoHumStop(); }
+  }
   for (const p of G.parts) {
     p.life -= dt;
     if (p.kind === 'blood') {
@@ -2005,6 +2053,112 @@ function drawOwl(g, o, sx, sy) {
   g.restore();
 }
 
+/* ---------- ultra rare: a rat flying a little saucer across the yard ---------- */
+const UFO_CHANCE = 0.12, UFO_SCALE = 0.95, UFO_GROUND = 600;
+function spawnUfo() {
+  const side = Math.random() < 0.5 ? -1 : 1;
+  return { x: mod(G.aimX - side * (viewW / 2 + 160), W), y: rand(450, 490), baseY: 0, vx: side * rand(210, 260), t: 0,
+    s: UFO_SCALE, state: 'fly', hover: 0, hovered: false, rot: 0, vy: 0, smokeT: 0, sparkT: 0, life: 0 };
+}
+function ufoTick(u, dt) {
+  u.t += dt;
+  if (u.state === 'fly') {
+    if (!u.baseY) u.baseY = u.y;
+    u.life += dt;
+    const d = wrapD(u.x - G.aimX);
+    // stops once over the yard to shine its beam down, then carries on and leaves
+    if (!u.hovered && Math.abs(d) < viewW * 0.18) { u.hovered = true; u.hover = rand(1.2, 2); }
+    if (u.hover > 0) u.hover -= dt;
+    else u.x = mod(u.x + u.vx * dt + Math.sin(u.t * 3.1) * 40 * dt, W);
+    u.y = u.baseY + Math.sin(u.t * 2.3) * 8;
+    u.rot = Math.sin(u.t * 1.7) * 0.06 + (u.hover > 0 ? 0 : Math.sign(u.vx) * 0.05);
+    if (u.life > 4 && Math.abs(d) > viewW * 0.9) u.gone = true;
+  } else if (u.state === 'fall') {
+    // shot down: spins, trails smoke and drops into the yard
+    u.vy += 420 * dt; u.y += u.vy * dt; u.x = mod(u.x + u.vx * 0.35 * dt, W); u.rot += dt * 7 * Math.sign(u.vx);
+    u.smokeT -= dt;
+    if (u.smokeT <= 0) { u.smokeT = 0.03; G.parts.push({ kind: 'dust', x: u.x, y: u.y, vx: rand(-20, 20), vy: rand(-40, -10), size: rand(3, 6), life: rand(0.6, 1.1), max: 1.1 }); }
+    if (u.y >= UFO_GROUND) crashUfo(u);
+  } else {
+    u.sparkT -= dt;
+    if (u.sparkT <= 0) {
+      u.sparkT = rand(0.15, 0.6);
+      for (let i = 0; i < 3; i++) G.parts.push({ kind: 'blood', col: 'rgba(255,240,200,.95)', dcol: 'rgba(0,0,0,0)', x: u.x + rand(-20, 20), y: u.y - 12,
+        vx: rand(-80, 80), vy: rand(-160, -60), ground: u.y + 4, size: rand(0.8, 1.5), life: 1, sc: 0.6 });
+      G.parts.push({ kind: 'dust', x: u.x + rand(-10, 10), y: u.y - 16, vx: rand(-10, 10), vy: -30, size: rand(3, 5), life: 1, max: 1 });
+    }
+  }
+}
+function ufoHit(u, ax, ay) {
+  if (u.state !== 'fly') return null;
+  const dx = wrapD(ax - u.x) / u.s, dy = (ay - u.y) / u.s;
+  const c = Math.cos(-u.rot), sn = Math.sin(-u.rot), lx = dx * c - dy * sn, ly = dx * sn + dy * c;
+  const hx = lx / 17, hy = (ly + 14) / 15;
+  if (hx * hx + hy * hy <= 1) return 'head';
+  const bx = lx / 42, by = ly / 11;
+  return bx * bx + by * by <= 1 ? 'body' : null;
+}
+function shootUfo(u, zone) {
+  u.state = 'fall'; u.vy = -60;
+  G.kills++; G.nightKills++;
+  elKills.textContent = G.kills;
+  elKillBox.classList.remove('bump'); void elKillBox.offsetWidth; elKillBox.classList.add('bump');
+  for (let i = 0; i < 14; i++) G.parts.push({ kind: 'blood', col: 'rgba(255,240,200,.95)', dcol: 'rgba(0,0,0,0)', x: u.x, y: u.y, vx: rand(-200, 200), vy: rand(-220, 40), ground: UFO_GROUND, size: rand(0.8, 1.6), life: 1.2, sc: 0.7 });
+  G.puffs.push({ x: u.x, y: u.y, r: 4, max: 30, life: 0.3, t: 0, col: [230, 240, 255] });
+  if (zone === 'head') headshot();
+  sfxUfoHit();
+}
+function crashUfo(u) {
+  u.state = 'crashed'; u.y = UFO_GROUND; u.rot = 0.32 * Math.sign(u.vx || 1);
+  for (let i = 0; i < 18; i++) G.parts.push({ kind: 'dust', x: u.x + rand(-30, 30), y: u.y - 8, vx: rand(-90, 90), vy: rand(-120, -20), size: rand(3, 7), life: rand(0.6, 1.2), max: 1.2 });
+  G.decals.push({ x: u.x, y: u.y + 2, rx: 10, target: 46, ry: 0.25, col: 'rgba(14,16,15,.8)' });
+  G.kick = Math.max(G.kick, 0.6);
+  sfxUfoCrash();
+}
+function drawUfo(g, u, sx, sy) {
+  g.save(); g.translate(sx, sy); g.rotate(u.rot); g.scale(u.s, u.s);
+  const crashed = u.state === 'crashed', t = u.t;
+  // tractor beam while it hovers over the yard
+  if (u.state === 'fly' && u.hover > 0) {
+    g.globalCompositeOperation = 'lighter';
+    const bm = g.createLinearGradient(0, 6, 0, 150);
+    bm.addColorStop(0, 'rgba(190,255,210,.35)'); bm.addColorStop(1, 'rgba(190,255,210,0)');
+    g.fillStyle = bm; g.beginPath(); g.moveTo(-12, 8); g.lineTo(12, 8); g.lineTo(40, 150); g.lineTo(-40, 150); g.closePath(); g.fill();
+    g.globalCompositeOperation = 'source-over';
+  }
+  // glass dome with the pilot inside
+  g.save(); g.beginPath(); g.ellipse(0, -10, 17, 15, 0, Math.PI, 0); g.closePath(); g.clip();
+  g.fillStyle = 'rgba(40,52,50,.85)'; g.fillRect(-18, -26, 36, 18);
+  if (!crashed) {
+    g.fillStyle = 'rgba(190,182,184,.95)'; ell(g, -8, -21, 4, 5, 0.4); ell(g, 8, -21, 4, 5, -0.4);   // ears
+    g.fillStyle = '#5a5f5d'; ell(g, 0, -15, 8, 7);
+    g.fillStyle = SKIN; ell(g, 0, -11.5, 1.6, 1.2);
+    for (const ex of [-3, 3]) glowEye(g, ex, -16, '#ffffff', '255,255,255', 6);
+    g.fillStyle = SKIN; ell(g, -5, -9, 1.6, 1.2); ell(g, 5, -9, 1.6, 1.2);                          // paws on the controls
+  }
+  g.restore();
+  g.fillStyle = 'rgba(200,225,220,.18)'; g.beginPath(); g.ellipse(0, -10, 17, 15, 0, Math.PI, 0); g.fill();
+  g.strokeStyle = 'rgba(230,245,240,.75)'; g.lineWidth = 1.2; g.beginPath(); g.ellipse(0, -10, 17, 15, 0, Math.PI, 0); g.stroke();
+  g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = 1.6; g.beginPath(); g.arc(-4, -16, 9, Math.PI * 1.15, Math.PI * 1.45); g.stroke();
+  if (crashed) { g.strokeStyle = 'rgba(240,250,245,.85)'; g.lineWidth = 0.8; line(g, -6, -22, 2, -14); line(g, 2, -14, -2, -10); line(g, 2, -14, 9, -18); }
+  // hull: upper deck, rim band with running lights, underside
+  const hg = g.createLinearGradient(0, -12, 0, 10);
+  hg.addColorStop(0, '#c9cfcc'); hg.addColorStop(0.45, '#7d8481'); hg.addColorStop(1, '#3a3f3d');
+  g.fillStyle = hg; ell(g, 0, -4, 34, 8);
+  g.fillStyle = '#9aa19e'; ell(g, 0, 0, 44, 8);
+  g.fillStyle = '#3b403e'; ell(g, 0, 3, 40, 6);
+  g.strokeStyle = 'rgba(20,22,21,.6)'; g.lineWidth = 0.8; g.beginPath(); g.ellipse(0, 0, 44, 8, 0, 0, Math.PI * 2); g.stroke();
+  for (let i = 0; i < 7; i++) {
+    const a = (i / 7) * Math.PI * 2 + t * 2.5, lx = Math.cos(a) * 40, ly = Math.sin(a) * 6;
+    if (ly < -1) continue;                                  // only the lights on the near side of the rim
+    const on = crashed ? Math.random() < 0.2 : (Math.floor(t * 6) + i) % 3 !== 0;
+    if (on) glowEye(g, lx, ly, i % 2 ? '#d8ffe0' : '#fff2c8', i % 2 ? '200,255,215' : '255,236,190', 9);
+    else { g.fillStyle = '#222624'; ell(g, lx, ly, 2.4, 1.8); }
+  }
+  g.fillStyle = 'rgba(210,255,225,.55)'; ell(g, 0, 7, 9, 2.4);   // landing light underneath
+  g.restore();
+}
+
 /* ---------- yard clutter: dirt mounds and junk that rats can pass behind ---------- */
 const OBS_TYPES = [['mound', 0.28], ['can', 0.17], ['bag', 0.12], ['box', 0.11], ['bottle', 0.1], ['ebottle', 0.12], ['bucket', 0.1]];
 const OBS_W = { mound: 130, can: 22, bag: 58, box: 48, bottle: 30, ebottle: 16, bucket: 36 };
@@ -2194,8 +2348,14 @@ function render() {
   for (const r of G.rats) { const x = rel(r.x); if (vis(x)) ents.push([r.y, 0, r, x]); }
   for (const o of G.obs) { const x = rel(o.x); if (vis(x)) ents.push([o.y, 1, o, x]); }
   if (G.owl) { const x = rel(G.owl.x); if (vis(x)) ents.push([G.owl.fly ? 0 : G.owl.y, 2, G.owl, x]); }
+  if (G.ufo) { const x = rel(G.ufo.x); if (vis(x)) ents.push([G.ufo.state === 'fly' ? 540 : G.ufo.y, 3, G.ufo, x]); }
   ents.sort((a, b) => a[0] - b[0]);
-  for (const [, k, e, x] of ents) k === 2 ? drawOwl(ctx, e, x, e.y - top) : k ? drawObs(ctx, e, x, e.y - top) : drawRat(ctx, e, x + e.jx, e.y + e.jy - top);
+  for (const [, k, e, x] of ents) {
+    if (k === 3) drawUfo(ctx, e, x, e.y - top);
+    else if (k === 2) drawOwl(ctx, e, x, e.y - top);
+    else if (k) drawObs(ctx, e, x, e.y - top);
+    else drawRat(ctx, e, x + e.jx, e.y + e.jy - top);
+  }
   for (const p of G.parts) {
     const x = rel(p.x); if (!vis(x)) continue;
     if (p.kind === 'blood') { ctx.fillStyle = p.col; ell(ctx, x, p.y - top, p.size, p.size); }
