@@ -147,10 +147,15 @@ Gameplay
   skips "Round cleared" (v0.0.27, `kingLived`, `renderBossLine`).
 - Owl (60% of nights) sits on a background ledge; shooting it only makes it fly off (no reward).
 - UFO rat (12% of nights): flies over the yard, hovers with a beam; shooting it down = kill.
+- Jackal (v0.0.29, owner-approved look): on ~40% of ordinary nights from night 2 (`JACKAL_CHANCE`, never boss nights) one
+  trots across the view once without stopping (~6 s), only on the three far paths (`JACKAL_LANES`, never near the
+  player). One hit kills (head or body; legs and tail miss), 2 coins (+1 head shot), "Jackal" badge, not counted as a
+  rat; grenades kill it too; clutter blocks shots. Dies flipped on its back like the rats. Yips when it appears, yelps
+  when hit. Code: `spawnJackal`, `jackalTick`, `jackalHit`, `shootJackal`, `drawJackal` (trot via `ph`), `drawJackalAt`.
 - Rats counted per night and per game; special kills shown as badges on the cleared and game over screens.
 
 Economy (tuned with the bot, v0.0.14)
-- Start 15 bullets. Every shot costs 1. Bounty in coins: rat 1, alpha 2, rare 3, UFO 5, king 10, +1 head shot.
+- Start 15 bullets. Every shot costs 1. Bounty in coins: rat 1, alpha 2, rare 3, jackal 2, UFO 5, king 10, +1 head shot.
   Coins appear as rising, spinning coin icons (one per coin).
 - Running dry **ends the night early** (no night bonus). Finishing a night pays **+5 bullets**.
 - Shop between nights (15 s countdown + "Start now"): a row of item cards (icon, amount, coin price):
