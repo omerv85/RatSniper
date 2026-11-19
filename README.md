@@ -15,4 +15,4 @@ Best played in landscape with the sound on.
 
 ## About
 
-The whole game is a single `index.html` file: canvas graphics and Web Audio sound, all generated in code, with no images or audio files.
+Plain HTML, CSS and JavaScript (`index.html`, `style.css`, `game.js`) with no build step: canvas graphics and Web Audio sound, all generated in code. The only recorded audio is the announcer (`voice/`).

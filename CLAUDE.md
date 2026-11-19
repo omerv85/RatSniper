@@ -9,7 +9,7 @@ design decisions the owner (GitHub user `omerv85`) has already made, so you don'
   delay). `.assetsignore` keeps `CLAUDE.md`, `README.md` and `worker/` off the website. GitHub Pages
   (omerv85.github.io/RatSniper) was switched off at the owner's request; the address change reset players' saved data.
 - Repo: https://github.com/omerv85/RatSniper
-- Current version: see `const VERSION` near the top of the script in `index.html`
+- Current version: see `const VERSION` at the top of `game.js`
 
 ## What the game is
 
@@ -20,12 +20,16 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
 
 ## Files
 
-- `index.html`: **the entire game** in one file: HTML, CSS and one inline script (canvas 2D graphics,
-  Web Audio sound, everything generated in code). No build step, no dependencies besides Google Fonts
-  (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew), plus the counter below.
+The game is three files (split out of one `index.html` in v0.0.33), no build step, no dependencies besides
+Google Fonts (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew), plus the counter below:
+- `index.html`: the page: `<head>` (meta, Open Graph, fonts), the start/shop/pause/game-over screens and the SVG symbols.
+- `style.css`: all the styles.
+- `game.js`: the whole script, in one `(() => { 'use strict'; ... })()` wrapper (canvas 2D graphics, Web Audio sound,
+  everything generated in code). Loaded at the end of `<body>`, so it runs after the page's elements exist.
 - `voice/<lang>/<clip>.wav`: the announcer's recorded clips (en, he; clips listed in `VOICE_CLIPS`). Until v0.0.31
-  they were embedded in `index.html` as base64 (`VOICE_DATA`, ~600 KB); since v0.0.32 `loadClips()` fetches them when
+  they were embedded in the page as base64 (`VOICE_DATA`, ~600 KB); since v0.0.32 `loadClips()` fetches them when
   the audio starts (first game), only for the language in use, and again on a language switch.
+- `dev/serve.js`: local test server (Node, no packages), kept off the website by `.assetsignore`.
 - `worker/worker.js`, `worker/schema.sql`: the game's counter (v0.0.22, replaced GoatCounter from v0.0.21).
   A Cloudflare Worker at https://ratsniper-counter.o-vertman.workers.dev on the owner's Cloudflare account, with a D1
   database `rat_sniper` bound as `DB` (table `counters(name, value)`; all-time rows plus daily rows `name:YYYY-MM-DD`,
@@ -56,20 +60,21 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
 
 The game was first developed as a claude.ai artifact (https://claude.ai/artifact/3pFadoARRyjL2661NMdVh5,
 private to the owner) from a fragment file that was wrapped into `index.html`. That source file lived in a
-temporary session folder and is gone; **`index.html` in this repo is now the source of truth. Edit it
-directly.** If you also update the artifact, publish `index.html` to that URL.
+temporary session folder and is gone; **the files in this repo are now the source of truth. Edit them
+directly.** If you also update the artifact, publish `index.html` to that URL with `style.css`, `game.js` and
+`voice/` as supporting files.
 
 ## How to ship a change (the owner's conventions)
 
-1. Edit `index.html`.
-2. Bump the version: `const VERSION = '0.0.N'` in the script **and** the static
-   `<div class="ver" id="ver">version 0.0.N</div>` on the start screen, **and** `version.json` (`{"v":"0.0.N"}`).
+1. Edit `game.js` / `style.css` / `index.html`.
+2. Bump the version: `const VERSION = '0.0.N'` in `game.js` **and** the static
+   `<div class="ver" id="ver">version 0.0.N</div>` in `index.html`, **and** `version.json` (`{"v":"0.0.N"}`).
    Patch number +1 per push. `version.json` drives the in-game update check (v0.0.20): while the main menu is in the
    foreground, at most once a minute, the game fetches it uncached and shows "New version … tap to update" (a reload)
    if it's newer than the running `VERSION`. A page left open or the home-screen app finds out this way. While an
    update waits it is the only button (Start, install and full screen hide) and checking stops. Traffic: about
    1.4 KB per check; nothing while the screen is off or the game is in the background. Forgetting
-   to bump it just means no prompt; bumping it without pushing the new `index.html` would prompt a useless reload.
+   to bump it just means no prompt; bumping it without pushing the new `game.js` would prompt a useless reload.
 3. Test (see Testing).
 4. Commit, tag `v0.0.N`, push both: `git push origin main v0.0.N`.
 5. **Tell the owner the version number** you pushed; they check it against the start screen.
@@ -84,10 +89,12 @@ Owner preferences:
 
 ## Testing
 
-- Serve the folder locally (any static server) and open it in a browser at phone size, e.g. 812×375 landscape.
-- For logic checks, temporarily expose internals in a **local copy only** (never commit it), e.g. replace
-  `const fontsReady = document` with `window.__nightWatch = { G, fire, update, startRound, buyPack, makeRat };`
-  then drive the game from the console.
+- Serve the folder locally with `node dev/serve.js` (http://localhost:8768; `.claude/launch.json` config
+  `ratsniper` runs it for the browser pane) and open it at phone size, e.g. 812×375 landscape.
+- For logic checks, expose internals without touching the real files: the server serves `/test` as the game with
+  `window.__t = { G, A, fire, update, startRound, buyPack, makeRat, voice, setLang, VERSION }` added just before
+  `const fontsReady = document` (done in memory, nothing is written), then drive the game from the console. Add more
+  names in `dev/serve.js` when needed. The script is wrapped in a function, so its names aren't global otherwise.
 - **Balance testing bot**: the economy was tuned with a bot that plays whole games inside the real code,
   fast-forwarded (`G.paused = true`, then call `update(1/30)` in a loop). Skill levels:
   casual (reaction 1.0 s, aim error σ 13 world units), average (0.75 s, σ 9), good (0.55 s, σ 6). It waits for
@@ -95,7 +102,7 @@ Owner preferences:
   v0.0.14 (median night reached): casual ~4, average ~8, good ~30.
 - If the browser pane/tab is hidden, `requestAnimationFrame` stops and the game appears frozen. That's not a bug.
 
-## Code map (inside the script in `index.html`)
+## Code map (in `game.js`)
 
 Search for these names:
 - `STR`, `LANGS`, `tr()`, `applyLang()`: translations (en, ru, es, fr, he). **Every player-visible string
