@@ -2,7 +2,7 @@
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.34';
+const VERSION = '0.0.35';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -13,7 +13,7 @@ const STR = {
     paused: 'PAUSED', resume: 'Back to the game', soundOn: 'Sound on', soundOff: 'Sound off', rifleShown: 'Rifle shown', rifleHidden: 'Rifle hidden',
     mainMenu: 'Main menu', rotateTitle: 'TURN YOUR PHONE SIDEWAYS', rotateBody: 'Rat Sniper plays in landscape. The game is paused until you rotate.',
     fullscreen: 'Go full screen', pause: 'Pause', sacks: ['FEED', 'OATS', 'CORN'],
-    sp: { king: 'King rat', ufo: 'UFO rat', jackal: 'Jackal', zombie: 'Zombie', clown: 'Clown', xmas: 'X-mas', pirate: 'Pirate', drunk: 'Drunk', albino: 'Albino', mohawk: 'Mohawk', french: 'French', blind: 'Blind', alpha: 'Alpha' },
+    sp: { king: 'King rat', ufo: 'UFO rat', jackal: 'Jackal', boar: 'Wild boar', zombie: 'Zombie', clown: 'Clown', xmas: 'X-mas', pirate: 'Pirate', drunk: 'Drunk', albino: 'Albino', mohawk: 'Mohawk', french: 'French', blind: 'Blind', alpha: 'Alpha' },
     say: { round: 'Round cleared', head: 'Head shot', king: 'King rat', noAmmo: 'Ran out of ammo', noTime: 'Ran out of time' }, speechLang: 'en-US',
     bullets: 'Bullets', coins: 'Coins', shopTitle: 'Restock', bonusLine: '+{n} bullets for surviving the night', buy5: '5 bullets · 4 coins', buy15: '15 bullets · 10 coins',
     poor: 'Not enough coins', startNow: 'Start now', gameOver: 'GAME OVER', outOfAmmo: 'You ran out of bullets', nightsSurvived: 'Nights survived', ratsKilled: 'Rats killed',
@@ -31,7 +31,7 @@ const STR = {
     paused: 'ПАУЗА', resume: 'Вернуться в игру', soundOn: 'Звук вкл.', soundOff: 'Звук выкл.', rifleShown: 'Винтовка видна', rifleHidden: 'Винтовка скрыта',
     mainMenu: 'Главное меню', rotateTitle: 'ПОВЕРНИТЕ ТЕЛЕФОН', rotateBody: 'Rat Sniper играется в горизонтальном режиме. Игра на паузе, пока вы не повернёте телефон.',
     fullscreen: 'Во весь экран', pause: 'Пауза', sacks: ['КОРМ', 'ОВЁС', 'ЗЕРНО'],
-    sp: { king: 'Король крыс', ufo: 'Крыса на НЛО', jackal: 'Шакал', zombie: 'Зомби', clown: 'Клоун', xmas: 'Новогодняя', pirate: 'Пират', drunk: 'Пьяница', albino: 'Альбинос', mohawk: 'Ирокез', french: 'Француз', blind: 'Слепой', alpha: 'Альфа' },
+    sp: { king: 'Король крыс', ufo: 'Крыса на НЛО', jackal: 'Шакал', boar: 'Кабан', zombie: 'Зомби', clown: 'Клоун', xmas: 'Новогодняя', pirate: 'Пират', drunk: 'Пьяница', albino: 'Альбинос', mohawk: 'Ирокез', french: 'Француз', blind: 'Слепой', alpha: 'Альфа' },
     say: { round: 'Раунд пройден', head: 'В голову', king: 'Король крыс', noAmmo: 'Кончились патроны', noTime: 'Время вышло' }, speechLang: 'ru-RU',
     bullets: 'Патроны', coins: 'Монеты', shopTitle: 'Пополнение', bonusLine: '+{n} патрона за пережитую ночь', buy5: '5 патронов · 4 монеты', buy15: '15 патронов · 10 монет',
     poor: 'Не хватает монет', startNow: 'Начать сейчас', gameOver: 'ИГРА ОКОНЧЕНА', outOfAmmo: 'Закончились патроны', nightsSurvived: 'Ночей пережито', ratsKilled: 'Крыс убито',
@@ -49,7 +49,7 @@ const STR = {
     paused: 'PAUSA', resume: 'Volver al juego', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', rifleShown: 'Rifle visible', rifleHidden: 'Rifle oculto',
     mainMenu: 'Menú principal', rotateTitle: 'GIRA EL TELÉFONO', rotateBody: 'Rat Sniper se juega en horizontal. El juego está en pausa hasta que lo gires.',
     fullscreen: 'Pantalla completa', pause: 'Pausa', sacks: ['PIENSO', 'AVENA', 'MAÍZ'],
-    sp: { king: 'Rey rata', ufo: 'Rata OVNI', jackal: 'Chacal', zombie: 'Zombi', clown: 'Payaso', xmas: 'Navideña', pirate: 'Pirata', drunk: 'Borracha', albino: 'Albina', mohawk: 'Cresta', french: 'Francesa', blind: 'Ciega', alpha: 'Alfa' },
+    sp: { king: 'Rey rata', ufo: 'Rata OVNI', jackal: 'Chacal', boar: 'Jabalí', zombie: 'Zombi', clown: 'Payaso', xmas: 'Navideña', pirate: 'Pirata', drunk: 'Borracha', albino: 'Albina', mohawk: 'Cresta', french: 'Francesa', blind: 'Ciega', alpha: 'Alfa' },
     say: { round: 'Ronda superada', head: 'Tiro a la cabeza', king: 'El rey rata', noAmmo: 'Sin munición', noTime: 'Se acabó el tiempo' }, speechLang: 'es-ES',
     bullets: 'Balas', coins: 'Monedas', shopTitle: 'Recarga', bonusLine: '+{n} balas por sobrevivir la noche', buy5: '5 balas · 4 monedas', buy15: '15 balas · 10 monedas',
     poor: 'No tienes monedas suficientes', startNow: 'Empezar ya', gameOver: 'FIN DEL JUEGO', outOfAmmo: 'Te quedaste sin balas', nightsSurvived: 'Noches superadas', ratsKilled: 'Ratas abatidas',
@@ -67,7 +67,7 @@ const STR = {
     paused: 'PAUSE', resume: 'Retour au jeu', soundOn: 'Son activé', soundOff: 'Son coupé', rifleShown: 'Fusil visible', rifleHidden: 'Fusil masqué',
     mainMenu: 'Menu principal', rotateTitle: 'TOURNE TON TÉLÉPHONE', rotateBody: 'Rat Sniper se joue en paysage. Le jeu est en pause jusqu’à ce que tu le tournes.',
     fullscreen: 'Plein écran', pause: 'Pause', sacks: ['GRAIN', 'AVOINE', 'MAÏS'],
-    sp: { king: 'Roi des rats', ufo: 'Rat OVNI', jackal: 'Chacal', zombie: 'Zombie', clown: 'Clown', xmas: 'Noël', pirate: 'Pirate', drunk: 'Ivrogne', albino: 'Albinos', mohawk: 'Crête', french: 'Français', blind: 'Aveugle', alpha: 'Alpha' },
+    sp: { king: 'Roi des rats', ufo: 'Rat OVNI', jackal: 'Chacal', boar: 'Sanglier', zombie: 'Zombie', clown: 'Clown', xmas: 'Noël', pirate: 'Pirate', drunk: 'Ivrogne', albino: 'Albinos', mohawk: 'Crête', french: 'Français', blind: 'Aveugle', alpha: 'Alpha' },
     say: { round: 'Manche terminée', head: 'En pleine tête', king: 'Le roi des rats', noAmmo: 'Plus de munitions', noTime: 'Temps écoulé' }, speechLang: 'fr-FR',
     bullets: 'Balles', coins: 'Pièces', shopTitle: 'Ravitaillement', bonusLine: '+{n} balles pour avoir survécu à la nuit', buy5: '5 balles · 4 pièces', buy15: '15 balles · 10 pièces',
     poor: 'Pas assez de pièces', startNow: 'Commencer', gameOver: 'PARTIE TERMINÉE', outOfAmmo: 'Tu n’as plus de balles', nightsSurvived: 'Nuits survécues', ratsKilled: 'Rats abattus',
@@ -85,7 +85,7 @@ const STR = {
     paused: 'מושהה', resume: 'חזרה למשחק', soundOn: 'סאונד פועל', soundOff: 'סאונד כבוי', rifleShown: 'הרובה מוצג', rifleHidden: 'הרובה מוסתר',
     mainMenu: 'תפריט ראשי', rotateTitle: 'סובבו את הטלפון לרוחב', rotateBody: 'משחקים ב-Rat Sniper לרוחב. המשחק מושהה עד שתסובבו את הטלפון.',
     fullscreen: 'מסך מלא', pause: 'השהיה', sacks: ['מספוא', 'שיבולת', 'תירס'],
-    sp: { king: 'מלך העכברושים', ufo: 'עכברוש עב״ם', jackal: 'תן', zombie: 'זומבי', clown: 'ליצן', xmas: 'חג המולד', pirate: 'פיראט', drunk: 'שיכור', albino: 'לבקן', mohawk: 'מוהוק', french: 'צרפתי', blind: 'עיוור', alpha: 'אלפא' },
+    sp: { king: 'מלך העכברושים', ufo: 'עכברוש עב״ם', jackal: 'תן', boar: 'חזיר בר', zombie: 'זומבי', clown: 'ליצן', xmas: 'חג המולד', pirate: 'פיראט', drunk: 'שיכור', albino: 'לבקן', mohawk: 'מוהוק', french: 'צרפתי', blind: 'עיוור', alpha: 'אלפא' },
     say: { round: 'הסיבוב הושלם', head: 'פגיעה בראש', king: 'מלך העכברושים', noAmmo: 'נגמרה התחמושת', noTime: 'נגמר הזמן' }, speechLang: 'he-IL',
     bullets: 'כדורים', coins: 'מטבעות', shopTitle: 'חידוש תחמושת', bonusLine: '+{n} כדורים על שרידת הלילה', buy5: '5 כדורים · 4 מטבעות', buy15: '15 כדורים · 10 מטבעות',
     poor: 'אין מספיק מטבעות', startNow: 'להתחיל עכשיו', gameOver: 'המשחק נגמר', outOfAmmo: 'נגמרו לך הכדורים', nightsSurvived: 'לילות ששרדת', ratsKilled: 'עכברושים שחוסלו',
@@ -142,7 +142,7 @@ const BOSS_TIME = 40;                     // the king digs back in and escapes i
 const AMMO_START = 15, NIGHT_BONUS = 5, HEAD_BONUS = 1;
 const PRICE_STEP = 5;                                      // packs cost 1 coin more every 5 nights
 const PACKS = [[5, 4], [15, 10]];                          // [bullets, price in coins]
-const BOUNTY = { rat: 1, alpha: 2, rare: 3, ufo: 5, king: 10, jackal: 2 };
+const BOUNTY = { rat: 1, alpha: 2, rare: 3, ufo: 5, king: 10, jackal: 2, boar: 5 };
 const GAME_URL = 'https://ratsniper.o-vertman.workers.dev/';
 /* difficulty: each grows a little every night (night 1 = 0) up to a cap */
 const LVL = () => Math.max(0, G.night - 1);
@@ -1230,10 +1230,14 @@ function fire() {
   // a jackal in front of the rat (nearer the shooter) takes the shot instead, and the other way round
   let jz = G.jackal ? jackalHit(G.jackal, ax, ay) : null;
   if (jz && best && best.y > G.jackal.y) jz = null; else if (jz) best = null;
+  // the boar the same way, against whichever of the two is nearer
+  let bz = G.boar ? boarHit(G.boar, ax, ay) : null;
+  const frontY = best ? best.y : jz ? G.jackal.y : -1;
+  if (bz && frontY > G.boar.y) bz = null; else if (bz) { best = null; jz = null; }
   // clutter in front of the target takes the bullet instead
   let blocker = null, ufoZone = null;
   for (const o of G.obs) if (obsHit(o, ax, ay) && (!blocker || o.y > blocker.y)) blocker = o;
-  const targetY = best ? best.y : jz ? G.jackal.y : null;
+  const targetY = best ? best.y : jz ? G.jackal.y : bz ? G.boar.y : null;
   if (blocker && targetY !== null && blocker.y < targetY) blocker = null;
   sfxShot(G.rifle);
   G.kick = 1; G.kickX = rand(-1, 1); G.flash = G.rifle ? 0.55 : 1; G.rifleKick = 1;
@@ -1241,6 +1245,7 @@ function fire() {
   G.shotFx = G.rifle ? { tier: G.rifle, t: 0, x: ax, y: ay, seed: Math.random() * 1000 } : null;
   if (blocker) { best = null; hitObstacle(blocker, ax, ay); }
   else if (jz) shootJackal(G.jackal, jz, ax, ay);
+  else if (bz) shootBoar(G.boar, bz, ax, ay);
   else if (best) hitRat(best, hit, ax, ay);
   else if (G.ufo && (ufoZone = ufoHit(G.ufo, ax, ay))) shootUfo(G.ufo, ufoZone);
   else if (G.owl && owlHit(G.owl, ax, ay)) flushOwl(G.owl);   // no points, it just leaves
@@ -1325,6 +1330,8 @@ function blast(x, y) {
   if (G.ufo && G.ufo.state === 'fly' && inBlast(G.ufo.x, G.ufo.y, 42 * G.ufo.s, 12 * G.ufo.s)) shootUfo(G.ufo, 'body');
   const jk = G.jackal;
   if (jk && jk.alive && inBlast(jk.x, jk.y - 112 * jk.sc, 92 * jk.sc, 30 * jk.sc)) shootJackal(jk, 'body', jk.x, jk.y - 112 * jk.sc);
+  const bo = G.boar;
+  if (bo && bo.alive && inBlast(bo.x, bo.y - 90 * bo.sc, 100 * bo.sc, 34 * bo.sc)) shootBoar(bo, 'body', bo.x, bo.y - 90 * bo.sc, true);
   if (G.owl && !G.owl.fly && inBlast(G.owl.x, G.owl.y - 22 * G.owl.s, 13 * G.owl.s, 20 * G.owl.s)) flushOwl(G.owl);
   scare(x, null);
   // that was the last thing to shoot or throw: the night ends
@@ -1440,7 +1447,7 @@ const elNight = $('#hud-night'), elTime = $('#hud-time'), elBar = $('#hud-bar'),
 const elSplash = $('#splash'), elStart = $('#start'), elHint = $('#hint'), elRing = $('#sp-ring'), elBarWrap = $('#hud-l .bar');
 
 // special kills this night, shown on the cleared screen (rarest first)
-const SPECIALS = [['king', 'King rat'], ['ufo', 'UFO rat'], ['jackal', 'Jackal'], ['zombie', 'Zombie'], ['clown', 'Clown'], ['xmas', 'X-mas'], ['pirate', 'Pirate'],
+const SPECIALS = [['king', 'King rat'], ['ufo', 'UFO rat'], ['boar', 'Wild boar'], ['jackal', 'Jackal'], ['zombie', 'Zombie'], ['clown', 'Clown'], ['xmas', 'X-mas'], ['pirate', 'Pirate'],
   ['drunk', 'Drunk'], ['albino', 'Albino'], ['mohawk', 'Mohawk'], ['french', 'French'], ['blind', 'Blind'], ['alpha', 'Alpha']];
 function countSpecial(k) { if (k) { G.nightSpecial[k] = (G.nightSpecial[k] || 0) + 1; G.gameSpecial[k] = (G.gameSpecial[k] || 0) + 1; } }
 // bounty for a kill, with a little "+N" rising from where it died
@@ -1559,6 +1566,8 @@ function startRound(n) {
   G.ufoT = !G.boss && Math.random() < UFO_CHANCE ? rand(4, 22) : 0;   // ultra rare: shows up partway through some nights
   G.jackal = null;
   G.jackalT = !G.boss && n >= JACKAL_FROM_NIGHT && Math.random() < JACKAL_CHANCE ? rand(4, 22) : 0;
+  G.boar = null;
+  G.boarT = !G.boss && n >= BOAR_FROM_NIGHT && Math.random() < BOAR_CHANCE ? rand(3, 18) : 0;
   if (G.boss) {
     // boss night: one king rat, no clock, a health bar and metal
     const k = makeKing(); G.rats.push(k); bossBar(k);
@@ -1695,7 +1704,7 @@ $('#sound').addEventListener('click', () => setMuted(!A.muted));
 // leave the current game and go back to the start screen, with rats roaming behind it again
 function goHome() {
   sendRats();   // quitting mid-night: those kills still count
-  G.mode = 'menu'; G.boss = false; G.bossEndT = 0; G.ufo = null; G.ufoT = 0; ufoHumStop(); G.jackal = null; G.jackalT = 0; G.armed = false; G.nade = null;
+  G.mode = 'menu'; G.boss = false; G.bossEndT = 0; G.ufo = null; G.ufoT = 0; ufoHumStop(); G.jackal = null; G.jackalT = 0; G.boar = null; G.boarT = 0; G.armed = false; G.nade = null;
   G.rats = []; G.parts = []; G.decals = []; G.puffs = []; G.tails = [];
   for (let i = 0; i < 4; i++) spawnRat(true);
   G.owl = makeOwl();
@@ -1905,6 +1914,8 @@ function update(dt) {
   if (G.ufoT > 0 && G.mode === 'play') { G.ufoT -= dt; if (G.ufoT <= 0) { G.ufo = spawnUfo(); ufoHumStart(); } }
   if (G.jackalT > 0 && G.mode === 'play') { G.jackalT -= dt; if (G.jackalT <= 0) G.jackal = spawnJackal(); }
   if (G.jackal) { jackalTick(G.jackal, dt); if (G.jackal.gone) G.jackal = null; }
+  if (G.boarT > 0 && G.mode === 'play') { G.boarT -= dt; if (G.boarT <= 0) G.boar = spawnBoar(); }
+  if (G.boar) { boarTick(G.boar, dt); if (G.boar.gone) G.boar = null; }
   if (G.ufo) {
     ufoTick(G.ufo, dt);
     if (G.ufo.state === 'fly') ufoHumLevel(0.07 * Math.max(0.15, 1 - Math.abs(wrapD(G.ufo.x - G.aimX)) / viewW));
@@ -3138,6 +3149,241 @@ function drawJackal(g, ph, dead = false) {
   g.restore();
 }
 
+/* ---------- the wild boar: on some nights one wanders across, stops once to root in the dirt; 3 hits, 5 coins ---------- */
+const BOAR_CHANCE = 0.3, BOAR_FROM_NIGHT = 3, BOAR_HP = 3;
+const BOAR_LANES = [0, 1, 2, 3];          // never on the path nearest the shooter
+const BOAR_SPEED = 190, BOAR_CHARGE = 560, BOAR_STRIDE = 110, BOAR_ROOT = 2.4;
+function spawnBoar() {
+  const lane = BOAR_LANES[Math.random() * BOAR_LANES.length | 0], L = LANES[lane], side = Math.random() < 0.5 ? -1 : 1;
+  sfxBoar();
+  return { x: mod(G.aimX + side * (viewW / 2 + 180), W), y: L.y + rand(-L.j, L.j), lane, sc: L.sc, dir: -side,
+    ph: Math.random() * 6, alive: true, hp: BOAR_HP, state: 'walk', t: 0, run: 0, slide: 0, dirtT: 0, deadT: 0, hurtT: 0,
+    rootAt: viewW / 2 + 180 + rand(-0.25, 0.2) * viewW, wounds: [] };
+}
+const boarHead = b => b.state === 'root' ? Math.min(1, b.t / 0.3, (BOAR_ROOT - b.t) / 0.3) : 0;   // 0 head up .. 1 snout in the dirt
+function boarTick(b, dt) {
+  b.hurtT = Math.max(0, b.hurtT - dt);
+  if (!b.alive) {
+    b.deadT += dt;
+    if (b.slide > 1) { b.x = mod(b.x + b.dir * b.slide * dt, W); b.slide *= Math.exp(-dt * 6); }
+    return;
+  }
+  if (b.state === 'root') {
+    // snout down, digging: dirt flies, a grunt now and then
+    b.t += dt; b.ph += dt * 1.5;
+    if (boarHead(b) > 0.6 && (b.dirtT -= dt) <= 0) {
+      b.dirtT = 0.07;
+      const s = b.sc;
+      G.parts.push({ kind: 'dust', x: b.x + b.dir * 150 * s, y: b.y - 4 * s, vx: b.dir * rand(-30, 90) * s, vy: rand(-150, -50) * s, size: rand(3, 7) * s, life: rand(0.4, 0.8), max: 0.8 });
+    }
+    if (b.t >= BOAR_ROOT) { b.state = 'walk'; b.t = 0; }
+    return;
+  }
+  const sp = (b.state === 'charge' ? BOAR_CHARGE : BOAR_SPEED) * b.sc;
+  b.x = mod(b.x + b.dir * sp * dt, W); b.run += sp * dt;
+  b.ph += sp * dt / (BOAR_STRIDE * b.sc) * Math.PI * 2;
+  if (b.state === 'walk' && b.rootAt && b.run >= b.rootAt) { b.state = 'root'; b.t = 0; b.rootAt = 0; sfxBoar(true); }
+  if (b.state === 'charge' && b.wounds.length && Math.random() < dt * 12) {   // bleeding as it runs
+    const [wx, wy] = b.wounds[Math.random() * b.wounds.length | 0];
+    G.parts.push({ kind: 'blood', col: BLOOD, x: b.x + b.dir * wx * b.sc, y: b.y + wy * b.sc, vx: rand(-20, 20), vy: rand(0, 40),
+      ground: b.y + rand(-3, 4), size: rand(1.4, 2.6) * b.sc, life: 2, sc: b.sc });
+  }
+  if (b.run > viewW + 800) b.gone = true;
+}
+// head (snout and tusks included) or body; legs and tail don't count
+function boarHit(b, ax, ay) {
+  if (!b.alive) return null;
+  const lx = wrapD(ax - b.x) / b.sc * b.dir, ly = (ay - b.y) / b.sc, d = boarHead(b);
+  let ex = (lx - 112 + d * 30) / 50, ey = (ly + 100 - d * 38) / 32;
+  if (ex * ex + ey * ey <= 1) return 'head';
+  ex = (lx + 12) / 100; ey = (ly + 104) / 46;
+  return ex * ex + ey * ey <= 1 ? 'body' : null;
+}
+function shootBoar(b, zone, ax, ay, blasted = false) {
+  const head = !blasted && zone === 'head', dmg = blasted ? NADE_DMG * hpMul() : rifleDmg() * (head ? 2 : 1);
+  const s = b.sc * 1.6, body = { sc: s, y: b.y }, delay = 0.04 + 0.025 * (LANES.length - 1 - b.lane);
+  b.hp -= dmg; b.hurtT = 0.25;
+  spray(body, ax, ay, 16, BLOOD);
+  G.puffs.push({ x: ax, y: ay, r: 4 * s, max: 30 * s, life: 0.35, t: 0, col: [45, 12, 14] });
+  sfxHit(delay);
+  if (b.hp > 0) {
+    // wounded: squeals and charges off at full tilt, no more stopping
+    if (head) headshot();
+    if (b.wounds.length < 8) b.wounds.push([wrapD(ax - b.x) / b.sc * b.dir, (ay - b.y) / b.sc]);
+    b.state = 'charge'; b.t = 0; b.rootAt = 0;
+    sfxSqueal(delay + 0.03, 0.8);
+    return;
+  }
+  b.alive = false; b.deadT = 0; b.slide = (b.state === 'charge' ? BOAR_CHARGE : BOAR_SPEED) * b.sc * 0.5;
+  countSpecial('boar');
+  payBounty('boar', head, b.x, b.y - 130 * b.sc);
+  G.decals.push({ x: b.x + b.dir * 20 * b.sc, y: b.y + 1, rx: 4 * b.sc, target: rand(50, 65) * b.sc, ry: 0.3 });
+  if (head) { spray(body, ax, ay, 12, BRAIN, 1.2, 1.3); headshot(); }
+  sfxSqueal(delay + 0.02, 1);
+}
+// dead: rolls onto its back and slides to a stop; flinches red for a moment when hit
+function drawBoarAt(g, b, sx, sy) {
+  g.save(); g.translate(sx, sy);
+  if (!b.alive) {
+    const k = Math.min(1, b.deadT / 0.35), s = b.sc;
+    g.translate(0, -Math.sin(k * Math.PI) * 24 * s + k * 70 * s);
+    g.translate(0, -96 * s); g.rotate(Math.PI * k * b.dir); g.translate(0, 96 * s);
+  } else if (b.hurtT > 0) g.translate(-b.dir * b.hurtT * 24 * b.sc, 0);
+  g.scale(b.sc * b.dir, b.sc);
+  drawBoar(g, b.alive ? b.ph : 0.6, boarHead(b), b.wounds, !b.alive);
+  g.restore();
+}
+// low grunts when it turns up (shorter, snuffling ones while it roots); a pig's squeal when it's hit
+function sfxBoar(snuffle = false) {
+  const c = A.ctx; if (!c) return; const t0 = c.currentTime + 0.08;
+  const grunt = (t, f, dur, v) => {
+    const o = c.createOscillator(), g = c.createGain(), f1 = c.createBiquadFilter(), am = c.createOscillator(), ag = c.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(f * 1.15, t); o.frequency.exponentialRampToValueAtTime(f * 0.8, t + dur);
+    am.frequency.value = 34; ag.gain.value = v * 0.6; am.connect(ag); ag.connect(g.gain);   // the rattle in a grunt
+    f1.type = 'lowpass'; f1.frequency.value = 520; f1.Q.value = 3;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(f1); f1.connect(g); g.connect(A.sfx); g.connect(A.rev);
+    o.start(t); am.start(t); o.stop(t + dur + 0.05); am.stop(t + dur + 0.05);
+  };
+  const n = snuffle ? 4 : 3;
+  for (let i = 0; i < n; i++) grunt(t0 + i * (snuffle ? 0.32 : 0.42) + Math.random() * 0.06, snuffle ? 140 : rand(95, 115), snuffle ? 0.12 : 0.22, snuffle ? 0.09 : 0.14);
+}
+function sfxSqueal(delay, len = 1) {
+  const c = A.ctx; if (!c) return; const t = c.currentTime + delay, d = 0.55 * len;
+  const o = c.createOscillator(), o2 = c.createOscillator(), vib = c.createOscillator(), vg = c.createGain(), g = c.createGain(), f = c.createBiquadFilter();
+  o.type = 'sawtooth'; o2.type = 'square';
+  o.frequency.setValueAtTime(800, t); o.frequency.linearRampToValueAtTime(1500, t + d * 0.25); o.frequency.exponentialRampToValueAtTime(700, t + d);
+  o2.frequency.setValueAtTime(805, t); o2.frequency.linearRampToValueAtTime(1512, t + d * 0.25); o2.frequency.exponentialRampToValueAtTime(706, t + d);
+  vib.frequency.value = 22; vg.gain.value = 60; vib.connect(vg); vg.connect(o.frequency); vg.connect(o2.frequency);
+  f.type = 'bandpass'; f.frequency.value = 1600; f.Q.value = 1.1;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.1, t + 0.03); g.gain.setValueAtTime(0.1, t + d * 0.6); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+  o.connect(f); o2.connect(f); f.connect(g); g.connect(A.sfx); g.connect(A.rev);
+  [o, o2, vib].forEach(x => { x.start(t); x.stop(t + d + 0.05); });
+}
+// Boar drawing: side view facing right, feet on y = 0, in rat-sized world units.
+// ph is the walk phase, down (0..1) lowers the head to root, wounds are local [x, y] marks.
+function drawBoar(g, ph, down = 0, wounds = [], dead = false) {
+  const OUT = 'rgba(10,12,11,.9)';
+  const bob = -Math.abs(Math.sin(ph)) * 2.5;
+  const coat = (y0, y1, c) => { const gr = g.createLinearGradient(0, y0, 0, y1); c.forEach((col, i) => gr.addColorStop(i / (c.length - 1), col)); return gr; };
+  const COAT = ['#2a2e2c', '#3d4240', '#5a5f5c'];
+  // short sturdy legs, each as a tapered polyline ending in a dark cloven hoof
+  const limb = (pts, w0, w1, col) => {
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    for (let pass = 0; pass < 2; pass++) for (let i = 0; i < pts.length - 1; i++) {
+      const w = w0 + (w1 - w0) * (i / (pts.length - 2 || 1));
+      g.strokeStyle = pass ? col : OUT; g.lineWidth = pass ? w : w + 3;
+      g.beginPath(); g.moveTo(pts[i][0], pts[i][1]); g.lineTo(pts[i + 1][0], pts[i + 1][1]); g.stroke();
+    }
+    const [px, py] = pts[pts.length - 1];
+    g.fillStyle = '#121413'; g.beginPath(); g.moveTo(px - 6, py - 7); g.lineTo(px + 6, py - 7); g.lineTo(px + 9, py); g.lineTo(px - 5, py); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(120,126,123,.5)'; g.lineWidth = 1; g.beginPath(); g.moveTo(px + 2, py - 6); g.lineTo(px + 3, py); g.stroke();
+  };
+  const ground = (y, lift) => lift > 0.1 ? y : Math.min(y, 0);
+  const leg = (hind, far) => {
+    const off = (hind ? Math.PI : 0) + (far ? Math.PI : 0);
+    const a = Math.sin(ph + off), lift = Math.max(0, Math.cos(ph + off));
+    const col = far ? '#252927' : '#4a4f4c';
+    if (!hind) {
+      const sx = far ? 50 : 42, sy = -84 + bob;
+      const t1 = a * 0.4, ex = sx + 38 * Math.sin(t1), ey = sy + 38 * Math.cos(t1);
+      const t2 = t1 - lift * 1.0, px = ex + 40 * Math.sin(t2), py = ground(ey + 40 * Math.cos(t2) + 6, lift);
+      limb([[sx, sy], [ex, ey], [px, py - 6]], far ? 14 : 17, far ? 7 : 8, col);
+    } else {
+      const hx = far ? -66 : -76, hy = -90 + bob;
+      const t1 = a * 0.4 + 0.25, kx = hx + 36 * Math.sin(t1), ky = hy + 36 * Math.cos(t1);
+      const t2 = t1 - 0.9 - lift * 0.3, xx = kx + 26 * Math.sin(t2), xy = ky + 26 * Math.cos(t2);
+      const t3 = -0.05 + lift * 0.6, px = xx + 30 * Math.sin(t3), py = ground(xy + 30 * Math.cos(t3) + 6, lift);
+      limb([[hx, hy], [kx, ky], [xx, xy], [px, py - 6]], far ? 18 : 22, far ? 7 : 8, col);
+    }
+  };
+  // ground shadow
+  g.fillStyle = 'rgba(10,12,11,.34)'; g.beginPath(); g.ellipse(-5, 0, 110, 8, 0, 0, Math.PI * 2); g.fill();
+  leg(false, true); leg(true, true);
+  g.save(); g.translate(0, bob);
+  // thin tail with a tuft, flicking
+  const tw = Math.sin(ph * 1.3) * 5;
+  g.strokeStyle = OUT; g.lineWidth = 5; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(-108, -120); g.quadraticCurveTo(-124, -112, -122 + tw, -88); g.stroke();
+  g.strokeStyle = '#3a3f3c'; g.lineWidth = 2.5; g.beginPath(); g.moveTo(-108, -120); g.quadraticCurveTo(-124, -112, -122 + tw, -88); g.stroke();
+  g.fillStyle = '#1a1d1b'; g.beginPath(); g.ellipse(-122 + tw, -82, 4, 9, 0, 0, Math.PI * 2); g.fill();
+  // body: high humped shoulders sloping down to a narrower rump, deep belly
+  g.beginPath();
+  g.moveTo(-112, -112);
+  g.bezierCurveTo(-112, -136, -70, -146, -20, -150);
+  g.bezierCurveTo(20, -158, 56, -158, 76, -136);
+  g.bezierCurveTo(90, -116, 86, -80, 66, -66);
+  g.bezierCurveTo(30, -54, -20, -56, -60, -64);
+  g.bezierCurveTo(-98, -70, -114, -88, -112, -112);
+  g.closePath();
+  g.fillStyle = coat(-158, -56, COAT); g.fill(); g.strokeStyle = OUT; g.lineWidth = 2.4; g.stroke();
+  // coarse bristly coat
+  g.save(); g.clip();
+  let s = 11; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+  g.lineWidth = 1.2;
+  for (let i = 0; i < 140; i++) {
+    const x = -112 + r() * 196, y = -158 + r() * 100, l = 4 + r() * 6;
+    g.strokeStyle = r() < 0.6 ? 'rgba(12,14,13,.5)' : 'rgba(150,156,153,.22)';
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x - l, y + l * 0.35); g.stroke();
+  }
+  g.fillStyle = 'rgba(8,10,9,.35)'; g.beginPath(); g.ellipse(-10, -60, 90, 14, 0, 0, Math.PI * 2); g.fill();   // shadowed belly
+  for (const [wx, wy] of wounds) {   // bullet wounds, dark and wet
+    g.fillStyle = 'rgba(70,10,12,.95)'; g.beginPath(); g.ellipse(wx, wy, 5, 4, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(70,10,12,.6)'; g.beginPath(); g.ellipse(wx - 1, wy + 8, 2.5, 7, 0, 0, Math.PI * 2); g.fill();
+  }
+  g.restore();
+  // stiff bristle mane along the spine, tallest over the shoulders
+  g.strokeStyle = '#141615'; g.lineWidth = 2.2; g.lineCap = 'round';
+  for (let i = 0; i <= 22; i++) {
+    const t = i / 22, x = -90 + t * 160;
+    const y = t < 0.5 ? -138 - t * 2 * 12 : -150 - (t - 0.5) * 2 * 6 + Math.max(0, t - 0.8) * 60;
+    const h = 8 + 12 * Math.sin(t * Math.PI) * (t > 0.4 ? 1.3 : 0.8);
+    g.beginPath(); g.moveTo(x, y + 4); g.lineTo(x - 5, y - h); g.stroke();
+  }
+  // head: a long wedge pivoting down at the neck when it roots
+  g.save();
+  g.translate(64, -118 + down * 8); g.rotate(down * 0.85); g.translate(-64, 118);
+  g.beginPath();
+  g.moveTo(58, -146);
+  g.bezierCurveTo(78, -150, 96, -138, 110, -118);
+  g.lineTo(150, -88);
+  g.bezierCurveTo(156, -84, 157, -72, 152, -66);
+  g.lineTo(130, -64);
+  g.bezierCurveTo(108, -62, 82, -70, 62, -80);
+  g.closePath();
+  g.fillStyle = coat(-150, -62, ['#303432','#474c49', '#5c615e']); g.fill(); g.strokeStyle = OUT; g.lineWidth = 2.3; g.stroke();
+  // wrinkles on the snout, mouth line
+  g.strokeStyle = 'rgba(10,12,11,.55)'; g.lineWidth = 1.2;
+  for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(124 + i * 7, -98 + i * 5); g.quadraticCurveTo(128 + i * 7, -88 + i * 5, 126 + i * 7, -80 + i * 4); g.stroke(); }
+  g.strokeStyle = OUT; g.lineWidth = 1.6; g.beginPath(); g.moveTo(150, -68); g.quadraticCurveTo(126, -70, 104, -72); g.stroke();
+  // flat round snout disc with nostrils
+  g.fillStyle = '#4c514e'; g.beginPath(); g.ellipse(154, -77, 6, 12, -0.15, 0, Math.PI * 2); g.fill(); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
+  g.fillStyle = '#0b0d0c'; g.beginPath(); g.ellipse(156, -81, 1.8, 2.8, 0, 0, Math.PI * 2); g.fill(); g.beginPath(); g.ellipse(156, -73, 1.8, 2.8, 0, 0, Math.PI * 2); g.fill();
+  // tusk curving up out of the mouth
+  g.beginPath(); g.moveTo(130, -68); g.quadraticCurveTo(142, -70, 141, -88); g.quadraticCurveTo(138, -76, 128, -73); g.closePath();
+  g.fillStyle = '#dfe4e1'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 1.4; g.stroke();
+  // ear: small, pointed, laid back
+  g.beginPath(); g.moveTo(66, -142); g.quadraticCurveTo(62, -164, 50, -172); g.quadraticCurveTo(76, -168, 82, -146); g.closePath();
+  g.fillStyle = '#2f3331'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
+  g.fillStyle = 'rgba(150,156,153,.3)'; g.beginPath(); g.moveTo(68, -146); g.quadraticCurveTo(64, -160, 56, -166); g.quadraticCurveTo(72, -160, 76, -148); g.closePath(); g.fill();
+  // small eye: eyeshine under the IR lamp (a dark slit once it's dead)
+  const ex = 100, ey = -122, R = 10;
+  if (dead) { g.strokeStyle = OUT; g.lineWidth = 2; g.beginPath(); g.moveTo(ex - 4, ey); g.lineTo(ex + 4, ey); g.stroke(); } else {
+    const eg = g.createRadialGradient(ex, ey, 0, ex, ey, R);
+    eg.addColorStop(0, 'rgba(255,255,255,1)'); eg.addColorStop(0.2, 'rgba(240,250,245,.95)'); eg.addColorStop(0.5, 'rgba(220,240,230,.3)'); eg.addColorStop(1, 'rgba(220,240,230,0)');
+    g.fillStyle = eg; g.beginPath(); g.arc(ex, ey, R, 0, Math.PI * 2); g.fill();
+  }
+  g.restore();
+  g.restore();
+  // near legs, then the near ham and shoulder over their tops so they grow out of the body
+  leg(true, false); leg(false, false);
+  g.save(); g.translate(0, bob);
+  g.fillStyle = coat(-150, -56, COAT);
+  g.beginPath(); g.ellipse(-78, -98, 30, 30, -0.2, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(42, -96, 24, 28, 0.15, 0, Math.PI * 2); g.fill();
+  g.restore();
+}
+
 /* ---------- yard clutter: dirt mounds and junk that rats can pass behind ---------- */
 const OBS_TYPES = [['mound', 0.28], ['can', 0.17], ['bag', 0.12], ['box', 0.11], ['bottle', 0.1], ['ebottle', 0.12], ['bucket', 0.1]];
 const OBS_W = { mound: 130, can: 22, bag: 58, box: 48, bottle: 30, ebottle: 16, bucket: 36 };
@@ -3339,9 +3585,11 @@ function render() {
   if (G.owl) { const x = rel(G.owl.x); if (vis(x)) ents.push([G.owl.fly ? 0 : G.owl.y, 2, G.owl, x]); }
   if (G.ufo) { const x = rel(G.ufo.x); if (vis(x)) ents.push([G.ufo.state === 'fly' ? 540 : G.ufo.y, 3, G.ufo, x]); }
   if (G.jackal) { const x = rel(G.jackal.x); if (x > -300 && x < viewW + 300) ents.push([G.jackal.y, 4, G.jackal, x]); }
+  if (G.boar) { const x = rel(G.boar.x); if (x > -300 && x < viewW + 300) ents.push([G.boar.y, 5, G.boar, x]); }
   ents.sort((a, b) => a[0] - b[0]);
   for (const [, k, e, x] of ents) {
-    if (k === 4) drawJackalAt(ctx, e, x, e.y - top);
+    if (k === 5) drawBoarAt(ctx, e, x, e.y - top);
+    else if (k === 4) drawJackalAt(ctx, e, x, e.y - top);
     else if (k === 3) drawUfo(ctx, e, x, e.y - top);
     else if (k === 2) drawOwl(ctx, e, x, e.y - top);
     else if (k) drawObs(ctx, e, x, e.y - top);

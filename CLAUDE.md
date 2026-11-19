@@ -186,10 +186,18 @@ Gameplay
   player). One hit kills (head or body; legs and tail miss), 2 coins (+1 head shot), "Jackal" badge, not counted as a
   rat; grenades kill it too; clutter blocks shots. Dies flipped on its back like the rats. Yips when it appears, yelps
   when hit. Code: `spawnJackal`, `jackalTick`, `jackalHit`, `shootJackal`, `drawJackal` (trot via `ph`), `drawJackalAt`.
+- Wild boar (v0.0.35, owner-approved look): on ~30% of ordinary nights from night 3 (`BOAR_CHANCE`, `BOAR_FROM_NIGHT`,
+  never boss nights; can share a night with the jackal) one walks slowly across on any path but the nearest
+  (`BOAR_LANES`), grunting. Once per visit it stops near the middle of the view for `BOAR_ROOT` s with its snout in the
+  dirt (dirt flies, snuffles). `BOAR_HP` 3, not scaled by `hpMul`; rifle damage and head shots as for rats; a grenade
+  does its usual 2 × `hpMul` (so it survives one before night 7). Wounded: squeals and charges off at `BOAR_CHARGE`,
+  bleeding, no more stops. 5 coins (+1 head shot), "Wild boar" badge, not counted as a rat; legs and tail miss; clutter
+  blocks shots. Dies rolled onto its back. Code: `spawnBoar`, `boarTick`, `boarHead`, `boarHit`, `shootBoar`,
+  `drawBoar`, `drawBoarAt`, `sfxBoar`, `sfxSqueal`.
 - Rats counted per night and per game; special kills shown as badges on the cleared and game over screens.
 
 Economy (tuned with the bot, v0.0.14)
-- Start 15 bullets. Every shot costs 1. Bounty in coins: rat 1, alpha 2, rare 3, jackal 2, UFO 5, king 10, +1 head shot.
+- Start 15 bullets. Every shot costs 1. Bounty in coins: rat 1, alpha 2, rare 3, jackal 2, boar 5, UFO 5, king 10, +1 head shot.
   Coins appear as rising, spinning coin icons (one per coin). The HUD shows the coin total (v0.0.31, `#hud-coins`,
   `updateCoins`) under the bullets in the top-right corner, with a bump when coins come in.
 - Running dry **ends the night early** (no night bonus). Finishing a night pays **+5 bullets**.

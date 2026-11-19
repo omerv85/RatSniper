@@ -8,6 +8,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
   '.wav': 'audio/wav', '.svg': 'image/svg+xml' };
 const EXPOSE = 'window.__t = { G, A, fire, update, startRound, buyPack, makeRat, voice, setLang, VERSION,\n' +
   '  hitTest, setArmed, throwNade, startGame, packPrice, cheapest, hpMul, UPGRADE_PRICE, RIFLES, PACKS,\n' +
+  '  spawnBoar, boarHit, shootBoar, drawBoar, spawnJackal, drawJackal, render,\n' +
   '  setHpStep: v => { HP_STEP = v; } };\n';
 
 http.createServer((req, res) => {
