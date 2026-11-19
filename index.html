@@ -158,6 +158,11 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 #hud-ammo svg { width: 12px; height: 30px; }
 #hud-ammo span { font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
 #hud-ammo.low { color: var(--amber); animation: pulse .4s ease-in-out infinite alternate; }
+/* coins under the bullets, in amber like the shop prices */
+#hud-coins { top: calc(env(safe-area-inset-top, 0px) + 88px); right: calc(env(safe-area-inset-right, 0px) + 14px); display: flex; align-items: center; gap: 8px; color: var(--amber); }
+#hud-coins svg { width: 20px; height: 20px; }
+#hud-coins span { font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+#hud-coins.bump { animation: bump .28s ease-out; }
 /* between nights: results on one side, the shop on the other (stacked on narrow screens) */
 #splash .split { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: clamp(16px, 5vw, 56px); max-width: 100%; }
 .shop { border: 1px solid rgba(228,233,230,.2); background: rgba(5,8,7,.55); padding: clamp(10px, 2.5vmin, 18px) clamp(14px, 3vmin, 22px); }
@@ -290,6 +295,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
   <span id="hud-kills">0</span>
 </div>
 <div class="hud" id="hud-ammo" hidden><svg aria-hidden="true"><use href="#bullet"/></svg><span id="hud-ammo-n">10</span></div>
+<div class="hud" id="hud-coins" hidden><svg aria-hidden="true"><use href="#coin"/></svg><span id="hud-coins-n">0</span></div>
 <div class="hud" id="hud-boss" hidden>
   <div class="boss-name" data-i18n="kingRat">KING RAT</div>
   <div class="boss-bar"><i id="boss-fill"></i></div>
@@ -333,7 +339,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.30</div>
+    <div class="ver" id="ver">version 0.0.31</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -438,7 +444,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.30';
+const VERSION = '0.0.31';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -1826,15 +1832,21 @@ function countSpecial(k) { if (k) { G.nightSpecial[k] = (G.nightSpecial[k] || 0)
 // bounty for a kill, with a little "+N" rising from where it died
 function payBounty(kind, head, x, y) {
   const n = BOUNTY[kind] + (head ? HEAD_BONUS : 0);
-  G.coins += n;
+  G.coins += n; updateCoins(true);
   // one coin per coin earned, each floating up and fading at its own pace
   for (let i = 0; i < n; i++) {
     G.pops.push({ x: x + rand(-8, 8), y, t: -i * 0.07, life: rand(0.9, 1.5), vx: rand(-28, 28), rise: rand(45, 80), spin: rand(4, 9) });
   }
 }
+// the coin counter in the HUD; bump: a little pop when coins come in
+function updateCoins(bump = false) {
+  $('#hud-coins-n').textContent = G.coins;
+  if (bump) { const e = $('#hud-coins'); e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); }
+}
 function updateAmmo() {
   $('#hud-ammo-n').textContent = G.ammo;
   $('#hud-ammo').classList.toggle('low', G.ammo <= 3);
+  updateCoins();
   updateNadeBtn();   // the grenade button pulses once the bullets are gone
 }
 // between nights: the night bonus, wallet and the two packs
@@ -1885,7 +1897,7 @@ function gameOver() {
     `<span class="chip${k === 'alpha' ? '' : ' rare'}"><b>${STR[LANG].sp[k] || label}</b> ×${G.gameSpecial[k]}</span>`).join('');
   G.lastResult = { nights, kills };
   setShareLink();
-  elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elHint.hidden = true; $('#hud-ammo').hidden = true;
+  elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elHint.hidden = true; $('#hud-ammo').hidden = true; $('#hud-coins').hidden = true;
   elPauseBtn.hidden = true; elSplash.hidden = true;
   $('#over').hidden = false;
   setMusic('night');
@@ -2024,7 +2036,7 @@ function startGame(night) {
   try { if (!VOICE_DATA[LANG] && window.speechSynthesis) { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } } catch (e) {}
   try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
   elStart.hidden = true;
-  elHudL.hidden = elHudR.hidden = elHudB.hidden = false; $('#hud-ammo').hidden = false;
+  elHudL.hidden = elHudR.hidden = elHudB.hidden = false; $('#hud-ammo').hidden = false; $('#hud-coins').hidden = false;
   elPauseBtn.hidden = false;
   G.ammo = AMMO_START; G.coins = 0; G.gameSpecial = {}; G.outT = 0; G.pops = []; updateAmmo();
   G.grenades = 0; G.armed = false; G.nade = null; G.nadeHinted = false;
@@ -2058,7 +2070,7 @@ function goHome() {
   for (let i = 0; i < 4; i++) spawnRat(true);
   G.owl = makeOwl();
   elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elSplash.hidden = elHint.hidden = true;
-  $('#hud-ammo').hidden = true; $('#over').hidden = true;
+  $('#hud-ammo').hidden = true; $('#over').hidden = true; $('#hud-coins').hidden = true;
   elStart.hidden = false; showUpdate();
   setMusic('night');
   setUserPause(false);

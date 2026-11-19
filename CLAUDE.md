@@ -166,7 +166,8 @@ Gameplay
 
 Economy (tuned with the bot, v0.0.14)
 - Start 15 bullets. Every shot costs 1. Bounty in coins: rat 1, alpha 2, rare 3, jackal 2, UFO 5, king 10, +1 head shot.
-  Coins appear as rising, spinning coin icons (one per coin).
+  Coins appear as rising, spinning coin icons (one per coin). The HUD shows the coin total (v0.0.31, `#hud-coins`,
+  `updateCoins`) under the bullets in the top-right corner, with a bump when coins come in.
 - Running dry **ends the night early** (no night bonus). Finishing a night pays **+5 bullets**.
 - Shop between nights (15 s countdown + "Start now"): a row of item cards (icon, amount, coin price):
   5 bullets for 4 coins, 15 for 10, 1 grenade for 6; all +1 coin every 5 nights (`PRICE_STEP`).
