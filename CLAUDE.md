@@ -96,7 +96,9 @@ Owner preferences:
   `window.__t = { G, A, fire, update, startRound, buyPack, makeRat, voice, setLang, VERSION }` added just before
   `const fontsReady = document` (done in memory, nothing is written), then drive the game from the console. Add more
   names in `dev/serve.js` when needed. The script is wrapped in a function, so its names aren't global otherwise.
-- **Balance testing bot**: the economy was tuned with a bot that plays whole games inside the real code,
+- **Balance testing bot** (`dev/bot.js`, saved since v0.0.34; usage at its top: load it in `/test` and call `botRun`).
+  Long runs block the page: start them without awaiting (store results on `window`) and poll.
+  The economy was first tuned with a bot that plays whole games inside the real code,
   fast-forwarded (`G.paused = true`, then call `update(1/30)` in a loop). Skill levels:
   casual (reaction 1.0 s, aim error σ 13 world units), average (0.75 s, σ 9), good (0.55 s, σ 6). It waits for
   rats to stop, leads moving ones, sometimes aims for the head, and buys greedily. Results at the time of
@@ -148,6 +150,18 @@ Gameplay
   `drawHand`, `drawGrenade`, `drawBombSight`, `sfxPin`/`sfxThrow`/`sfxNade`. A night ends early only when both bullets
   and grenades are gone; while bullets are at 0 and a grenade is left, the grenade button pulses amber (v0.0.27).
   Bot: ~2.5 kills per grenade.
+- Rifles (v0.0.34, owner-approved looks): four in turn, bought in the shop and kept for the game (`RIFLES`, `G.rifle`
+  0-3, reset each game): sniper (the original), **laser** (pale angular body, red light strip, open red-dot sight, battery
+  with charge lights), **plasma** (dark, coil-wrapped barrel glowing violet, glass plasma tank, violet scope lens),
+  **railgun** (two rails with blue arcs, collars, capacitor cells, digital sight). Same bullets for all. Damage = tier
+  (1-4, `rifleDmg`), head shots double it. Each has its own shot sound (`sfxShot(tier)`) and shot effect (`drawShotFx`:
+  laser beam, flying plasma ball with a burst ring, railgun trail with a corkscrew; the sniper keeps its muzzle flash).
+  Glow colours `RIFLE_COL`. Drawn in `drawRifle` (tier 0 is the old model untouched; energy rifles share its 3D helpers).
+  Shop card `#shop-rifle` shows the next rifle in its colour; price `UPGRADE_PRICE[G.rifle]` (10/20/30, bot-tuned,
+  results in the comment there) + the usual night step.
+- Tougher rats (v0.0.34): every `HP_STEP` nights all rats, alphas, zombies and kings get one more multiple of health
+  (`hpMul`: nights 1-6 ×1, 7-12 ×2 ...). A grenade does 2 × `hpMul` so it keeps its strength. The shop shows a red
+  "Rats get tougher from the next night" line before each step (`#shop-warn`). Jackal, UFO and owl are unchanged.
 - Boss every 5th night: king rat, **8 hits** (was 10 until v0.0.14), rages after each hit, bleeds/growls under half health,
   explodes with rib cage on death; health bar plus a **40 s timer** (`BOSS_TIME`, v0.0.24; the bot kills him in 6-13 s, humans are slower); heavy-metal music.
   If the king is still alive when time runs out, he digs back into his hole (`kingEscape`: the dig-out run in reverse,

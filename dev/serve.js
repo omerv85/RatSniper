@@ -6,7 +6,9 @@ const ROOT = path.join(__dirname, '..'), PORT = +process.argv[2] || 8768;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg',
   '.wav': 'audio/wav', '.svg': 'image/svg+xml' };
-const EXPOSE = 'window.__t = { G, A, fire, update, startRound, buyPack, makeRat, voice, setLang, VERSION };\n';
+const EXPOSE = 'window.__t = { G, A, fire, update, startRound, buyPack, makeRat, voice, setLang, VERSION,\n' +
+  '  hitTest, setArmed, throwNade, startGame, packPrice, cheapest, hpMul, UPGRADE_PRICE, RIFLES, PACKS,\n' +
+  '  setHpStep: v => { HP_STEP = v; } };\n';
 
 http.createServer((req, res) => {
   let url = decodeURIComponent(req.url.split('?')[0]);
@@ -17,7 +19,8 @@ http.createServer((req, res) => {
       return send(200, html, TYPES['.html']);
     }
     if (url === '/test.js') {
-      const js = fs.readFileSync(path.join(ROOT, 'game.js'), 'utf8').replace('const fontsReady = document', EXPOSE + 'const fontsReady = document');
+      const js = fs.readFileSync(path.join(ROOT, 'game.js'), 'utf8').replace('const fontsReady = document', EXPOSE + 'const fontsReady = document')
+        .replace('const HP_STEP =', 'let HP_STEP =');   // so the balance bot (dev/bot.js) can try other values
       return send(200, js, TYPES['.js']);
     }
     if (url.endsWith('/')) url += 'index.html';

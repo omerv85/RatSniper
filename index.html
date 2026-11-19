@@ -50,6 +50,11 @@
     <rect x="1.5" y="12" width="9" height="17" rx="1" fill="currentColor"/>
     <rect x="1" y="28.5" width="10" height="2.5" rx="1" fill="currentColor"/>
   </symbol>
+  <symbol id="rifle" viewBox="0 0 48 16">
+    <path d="M1 9 L12 7 L14 6 L40 6 L40 5 L47 5 L47 7.5 L40 7.5 L40 8.5 L22 8.5 L20 12 L16 12 L15 10 L9 11.5 L2 14 Z" fill="currentColor"/>
+    <rect x="17" y="1.5" width="15" height="3" rx="1.2" fill="currentColor"/>
+    <rect x="20" y="4" width="2" height="2.5" fill="currentColor"/><rect x="27" y="4" width="2" height="2.5" fill="currentColor"/>
+  </symbol>
   <symbol id="coin" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="10.5" fill="currentColor"/>
     <circle cx="12" cy="12" r="7" fill="none" stroke="#0a0d0c" stroke-width="1.6" opacity=".55"/>
@@ -119,7 +124,7 @@
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.33</div>
+    <div class="ver" id="ver">version 0.0.34</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -182,9 +187,11 @@
       <div class="items">
         <button class="item" type="button" data-pack="0"><span class="qty"><svg aria-hidden="true"><use href="#bullet"/></svg><b class="n">+5</b></span><span class="price"><svg aria-hidden="true"><use href="#coin"/></svg><b class="c">4</b></span></button>
         <button class="item" type="button" data-pack="1"><span class="qty"><svg aria-hidden="true"><use href="#bullet"/></svg><b class="n">+15</b></span><span class="price"><svg aria-hidden="true"><use href="#coin"/></svg><b class="c">10</b></span></button>
+        <button class="item rifle" type="button" data-pack="rifle" id="shop-rifle"><span class="qty"><svg class="r" aria-hidden="true"><use href="#rifle"/></svg><b class="n">Laser</b></span><span class="price"><svg aria-hidden="true"><use href="#coin"/></svg><b class="c">10</b></span></button>
         <button class="item" type="button" data-pack="nade"><span class="qty"><svg class="g" aria-hidden="true"><use href="#grenade"/></svg><b class="n">+1</b></span><span class="price"><svg aria-hidden="true"><use href="#coin"/></svg><b class="c">6</b></span></button>
       </div>
       <div class="sub poor" id="shop-msg" hidden data-i18n="poor">Not enough coins</div>
+      <div class="sub warn" id="shop-warn" hidden data-i18n="tougher">Rats get tougher from the next night</div>
       <div class="next-row">
         <div class="ring" aria-hidden="true">
           <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="44"/><circle class="prog" id="sp-ring" cx="50" cy="50" r="44"/></svg>

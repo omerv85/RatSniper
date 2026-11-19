@@ -2,7 +2,7 @@
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.33';
+const VERSION = '0.0.34';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -19,6 +19,7 @@ const STR = {
     poor: 'Not enough coins', startNow: 'Start now', gameOver: 'GAME OVER', outOfAmmo: 'You ran out of bullets', nightsSurvived: 'Nights survived', ratsKilled: 'Rats killed',
     best: 'Best', newBest: 'New best!', shareWa: 'Share on WhatsApp', playAgain: 'Play again',
     noBonus: 'Out of bullets: no night bonus', needAmmo: 'Buy bullets to start the next night', words: { bullet: ['bullet', 'bullets'], coin: ['coin', 'coins'], player: ['player', 'players'], rat: ['rat', 'rats'], grenade: ['grenade', 'grenades'] }, playedBy: 'Played by {n} {w}', ratsTotal: '{n} {w} killed',
+    rifles: ['Sniper', 'Laser', 'Plasma', 'Railgun'], tougher: 'Rats get tougher from the next night',
     grenade: 'Grenade', grenades: 'Grenades', nadeHint: 'GRENADE IN HAND · LIFT TO THROW',
     shareMsg: 'My Rat Sniper score: {k} rats killed, {n} nights survived. Can you beat that? {url}',
   },
@@ -36,6 +37,7 @@ const STR = {
     poor: 'Не хватает монет', startNow: 'Начать сейчас', gameOver: 'ИГРА ОКОНЧЕНА', outOfAmmo: 'Закончились патроны', nightsSurvived: 'Ночей пережито', ratsKilled: 'Крыс убито',
     best: 'Рекорд', newBest: 'Новый рекорд!', shareWa: 'Поделиться в WhatsApp', playAgain: 'Играть снова',
     noBonus: 'Патроны кончились: без бонуса за ночь', needAmmo: 'Купите патроны, чтобы начать следующую ночь', words: { bullet: ['патрон', 'патрона', 'патронов'], coin: ['монета', 'монеты', 'монет'], player: ['игрок', 'игрока', 'игроков'], rat: ['крыса', 'крысы', 'крыс'], grenade: ['граната', 'гранаты', 'гранат'] }, playedBy: 'Уже сыграли: {n} {w}', ratsTotal: 'уничтожено крыс: {n}',
+    rifles: ['Снайперка', 'Лазер', 'Плазма', 'Рельсотрон'], tougher: 'Со следующей ночи крысы крепче',
     grenade: 'Граната', grenades: 'Гранаты', nadeHint: 'ГРАНАТА В РУКЕ · ОТПУСТИ — БРОСОК',
     shareMsg: 'Мой результат в Rat Sniper: ночей пережито — {n}, крыс убито — {k}. Сможешь лучше? {url}',
   },
@@ -53,6 +55,7 @@ const STR = {
     poor: 'No tienes monedas suficientes', startNow: 'Empezar ya', gameOver: 'FIN DEL JUEGO', outOfAmmo: 'Te quedaste sin balas', nightsSurvived: 'Noches superadas', ratsKilled: 'Ratas abatidas',
     best: 'Récord', newBest: '¡Nuevo récord!', shareWa: 'Compartir por WhatsApp', playAgain: 'Jugar de nuevo',
     noBonus: 'Sin balas: no hay bonificación de la noche', needAmmo: 'Compra balas para empezar la siguiente noche', words: { bullet: ['bala', 'balas'], coin: ['moneda', 'monedas'], player: ['jugador', 'jugadores'], rat: ['rata', 'ratas'], grenade: ['granada', 'granadas'] }, playedBy: 'Jugado por {n} {w}', ratsTotal: '{n} {w} abatidas',
+    rifles: ['Francotirador', 'Láser', 'Plasma', 'Cañón de riel'], tougher: 'Las ratas serán más duras desde la próxima noche',
     grenade: 'Granada', grenades: 'Granadas', nadeHint: 'GRANADA EN MANO · SUELTA PARA LANZAR',
     shareMsg: 'Sobreviví {n} noches y abatí {k} ratas en Rat Sniper. ¿Puedes superarlo? {url}',
   },
@@ -70,6 +73,7 @@ const STR = {
     poor: 'Pas assez de pièces', startNow: 'Commencer', gameOver: 'PARTIE TERMINÉE', outOfAmmo: 'Tu n’as plus de balles', nightsSurvived: 'Nuits survécues', ratsKilled: 'Rats abattus',
     best: 'Record', newBest: 'Nouveau record !', shareWa: 'Partager sur WhatsApp', playAgain: 'Rejouer',
     noBonus: 'Plus de balles : pas de bonus de nuit', needAmmo: 'Achète des balles pour commencer la nuit suivante', words: { bullet: ['balle', 'balles'], coin: ['pièce', 'pièces'], player: ['joueur', 'joueurs'], rat: ['rat', 'rats'], grenade: ['grenade', 'grenades'] }, playedBy: 'Joué par {n} {w}', ratsTotal: '{n} {w} abattus',
+    rifles: ['Sniper', 'Laser', 'Plasma', 'Railgun'], tougher: 'Les rats seront plus coriaces dès la nuit prochaine',
     grenade: 'Grenade', grenades: 'Grenades', nadeHint: 'GRENADE EN MAIN · RELÂCHE POUR LANCER',
     shareMsg: 'J’ai survécu {n} nuits et abattu {k} rats dans Rat Sniper. Tu fais mieux ? {url}',
   },
@@ -87,6 +91,7 @@ const STR = {
     poor: 'אין מספיק מטבעות', startNow: 'להתחיל עכשיו', gameOver: 'המשחק נגמר', outOfAmmo: 'נגמרו לך הכדורים', nightsSurvived: 'לילות ששרדת', ratsKilled: 'עכברושים שחוסלו',
     best: 'שיא', newBest: 'שיא חדש!', shareWa: 'שיתוף בוואטסאפ', playAgain: 'לשחק שוב',
     noBonus: 'נגמרו הכדורים: אין בונוס לילה', needAmmo: 'קנו כדורים כדי להתחיל את הלילה הבא', words: { bullet: ['כדור', 'כדורים'], coin: ['מטבע', 'מטבעות'], player: ['שחקן', 'שחקנים'], rat: ['עכברוש', 'עכברושים'], grenade: ['רימון', 'רימונים'] }, playedBy: 'שחקנים עד כה: {n}', ratsTotal: 'עכברושים שחוסלו: {n}',
+    rifles: ['צלף', 'לייזר', 'פלזמה', 'רובה מסילה'], tougher: 'מהלילה הבא העכברושים קשוחים יותר',
     grenade: 'רימון', grenades: 'רימונים', nadeHint: 'רימון ביד · שחררו לזריקה',
     shareMsg: 'שרדתי {n} לילות וחיסלתי {k} עכברושים ב-Rat Sniper. מסוגלים יותר? {url}',
   },
@@ -148,6 +153,16 @@ const DIFF = {
   flee:   () => Math.min(2.2, 1 + 0.07 * LVL()),           // how fast scared rats run
 };
 const SHOT_COOLDOWN = 0.55;
+/* rifles: bought in turn in the shop, kept for the rest of the game. Same bullets for all; each does one more damage
+   (head shots double it). Rats and kings grow tougher every HP_STEP nights, so the upgrades keep shots worth a bullet. */
+const RIFLES = ['sniper', 'laser', 'plasma', 'railgun'];
+// coins for rifle 2, 3, 4 (plus the usual +1 every PRICE_STEP nights). Bot results (mean nights, capped at 40):
+// strong aim: old game 40, never upgrading 18, 10/20/30 37 (upgrades ~nights 3/5/10); average aim: old 31, never 11,
+// 10/20/30 23 (nights 5/10/17). 10/10/10 had the railgun by night 7-9; 15/30/45 left average players without upgrades.
+const UPGRADE_PRICE = [10, 20, 30];
+const HP_STEP = 6;                                          // night 1-6: 1 hit per "hit point", 7-12: 2, 13-18: 3 ...
+const hpMul = (n = G.night) => 1 + Math.floor(Math.max(0, (n || 1) - 1) / HP_STEP);
+const rifleDmg = () => (G.rifle || 0) + 1;
 /* grenade: sold in the shop, one use each. Tap the button to take one in hand, lift to throw it at the crosshair.
    It blows up everything inside an oval on the ground (sized to the depth it lands at) for 2 damage, like a head shot. */
 const NADE_PRICE = 6, NADE_DMG = 2;
@@ -731,8 +746,49 @@ function noiseBurst(t, dest, { type = 'bandpass', f0 = 1000, f1 = f0, q = 1, pea
   n.start(t, Math.random() * 1.5); n.stop(t + dur + 0.05);
   return g;
 }
-function sfxShot() {
+// a tone gliding from f0 to f1 (exponential), with a quick attack and decay; returns its gain node
+function sweep(t, dest, { type = 'sine', f0, f1 = f0, dur, peak, attack = 0.004, filter = null }) {
+  const c = A.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  let node = o;
+  if (filter) { const f = c.createBiquadFilter(); f.type = filter.type; f.frequency.setValueAtTime(filter.f0, t); f.frequency.exponentialRampToValueAtTime(filter.f1 || filter.f0, t + dur); f.Q.value = filter.q || 1; o.connect(f); node = f; }
+  node.connect(g); g.connect(dest); o.start(t); o.stop(t + dur + 0.05);
+  return g;
+}
+function sfxShot(tier = 0) {
   const c = A.ctx; if (!c) return; const t = c.currentTime;
+  if (tier === 1) {
+    // laser: a bright falling "pew" with a sizzle, then a soft rising whine as the battery recharges
+    const p = sweep(t, A.sfx, { type: 'square', f0: 2600, f1: 220, dur: 0.2, peak: 0.16, filter: { type: 'lowpass', f0: 6000, f1: 1200 } });
+    p.connect(A.echo);
+    sweep(t, A.sfx, { type: 'sawtooth', f0: 1300, f1: 140, dur: 0.16, peak: 0.08 });
+    noiseBurst(t, A.sfx, { type: 'highpass', f0: 5000, f1: 3000, q: 0.7, peak: 0.25, dur: 0.12, attack: 0.002 });
+    sweep(t + 0.22, A.sfx, { f0: 500, f1: 1600, dur: 0.3, peak: 0.035, attack: 0.15 });
+    return;
+  }
+  if (tier === 2) {
+    // plasma: a deep wobbling "thoom" with a bubbling hiss, then a low hum coming back up
+    const c2 = A.ctx, o = c2.createOscillator(), lfo = c2.createOscillator(), lg = c2.createGain(), f = c2.createBiquadFilter(), g = c2.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(260, t); o.frequency.exponentialRampToValueAtTime(55, t + 0.4);
+    lfo.frequency.value = 38; lg.gain.value = 60; lfo.connect(lg); lg.connect(o.frequency);
+    f.type = 'lowpass'; f.frequency.setValueAtTime(3200, t); f.frequency.exponentialRampToValueAtTime(260, t + 0.4); f.Q.value = 6;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+    o.connect(f); f.connect(g); g.connect(A.sfx); g.connect(A.echo); o.start(t); lfo.start(t); o.stop(t + 0.5); lfo.stop(t + 0.5);
+    sweep(t, A.sfx, { f0: 140, f1: 40, dur: 0.35, peak: 0.7 });
+    noiseBurst(t, A.sfx, { f0: 1800, f1: 500, q: 3, peak: 0.3, dur: 0.3, attack: 0.004 });
+    sweep(t + 0.25, A.sfx, { type: 'triangle', f0: 90, f1: 220, dur: 0.3, peak: 0.07, attack: 0.12 });
+    return;
+  }
+  if (tier === 3) {
+    // railgun: an electric snap and a hard supersonic crack, a metallic ring off the rails, then the capacitors whining back up
+    noiseBurst(t, A.sfx, { type: 'highpass', f0: 2500, f1: 900, q: 0.6, peak: 1, dur: 0.2, attack: 0.001 }).connect(A.rev);
+    sweep(t, A.sfx, { type: 'sawtooth', f0: 90, f1: 60, dur: 0.12, peak: 0.3, filter: { type: 'bandpass', f0: 1200, q: 2 } });
+    sweep(t, A.sfx, { f0: 120, f1: 30, dur: 0.4, peak: 0.9 });
+    for (const [fr, v] of [[3400, 0.06], [5100, 0.04], [7300, 0.025]]) sweep(t + 0.005, A.sfx, { f0: fr, f1: fr * 0.98, dur: 0.6, peak: v, attack: 0.002 }).connect(A.echo);
+    sweep(t + 0.12, A.sfx, { f0: 300, f1: 3200, dur: 0.42, peak: 0.04, attack: 0.3 });
+    return;
+  }
   const crack = noiseBurst(t, A.sfx, { type: 'highpass', f0: 700, f1: 400, q: 0.5, peak: 1, dur: 0.24, attack: 0.002 });
   crack.connect(A.echo); const rs = c.createGain(); rs.gain.value = 0.6; crack.connect(rs); rs.connect(A.rev);
   const o = c.createOscillator(), og = c.createGain();
@@ -743,6 +799,13 @@ function sfxShot() {
   noiseBurst(t + 0.34, A.sfx, { f0: 2600, q: 4, peak: 0.25, dur: 0.035, attack: 0.001 });
   noiseBurst(t + 0.42, A.sfx, { f0: 1700, q: 3, peak: 0.22, dur: 0.05, attack: 0.001 });
   noiseBurst(t + 0.5, A.sfx, { f0: 2300, q: 4, peak: 0.28, dur: 0.035, attack: 0.001 });
+}
+// rifle upgrade bought: a rising power-up and a click as it locks in
+function sfxUpgrade() {
+  const c = A.ctx; if (!c) return; const t = c.currentTime;
+  [0, 4, 7, 12].forEach((s, i) => sweep(t + i * 0.07, A.sfx, { type: 'triangle', f0: 440 * Math.pow(2, s / 12), dur: 0.25, peak: 0.12 }));
+  sweep(t, A.sfx, { f0: 200, f1: 1600, dur: 0.35, peak: 0.05, attack: 0.2 });
+  noiseBurst(t + 0.34, A.sfx, { f0: 2400, q: 4, peak: 0.3, dur: 0.04, attack: 0.001 });
 }
 function sfxPing(delay, glass) {
   const c = A.ctx; if (!c) return; const t = c.currentTime + delay;
@@ -941,7 +1004,7 @@ const G = {
   mode: 'menu', night: 1, time: ROUND_TIME, breakT: 0, kills: 0, nightKills: 0,
   aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [], tails: [],
   spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, nightSpecial: {}, gameSpecial: {}, ammo: AMMO_START, coins: 0, outT: 0, pops: [], lastResult: null, firstNight: 1, hintTO: 0,
-  grenades: 0, armed: false, nade: null, throwT: -9, wpn: 0, nadeHinted: false,
+  grenades: 0, armed: false, nade: null, throwT: -9, wpn: 0, nadeHinted: false, rifle: 0, shotFx: null,
 };
 const diff = () => DIFF.speed();
 const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
@@ -960,7 +1023,7 @@ function kingEscape() {
 function makeKing() {
   const lane = Math.random() < 0.5 ? 2 : 3, side = Math.random() < 0.5 ? -1 : 1;
   const r = makeRat(G.aimX + side * viewW * 0.18, lane, -side, true);
-  r.king = true; r.sc = r.ls * KING_SIZE; r.hp = r.maxHp = KING_HP; r.t = rand(2, 3);
+  r.king = true; r.sc = r.ls * KING_SIZE; r.hp = r.maxHp = KING_HP * hpMul(); r.t = rand(2, 3);
   r.coat = { k: 'king', patches: [], nick: true, nickFar: false, facePatch: false };
   r.growlT = 2; r.dripT = 0;
   // four kings in turn: night 5 the plain king, 10 armored (viking), 15 cyborg, 20 demon, then again from 25
@@ -1014,7 +1077,7 @@ function makeRat(x, lane, dir, alpha = false, variant = null) {
     x: mod(x, W), y: L.y + rand(-L.j, L.j), lane, ls, sc: ls * (alpha ? ALPHA_SIZE : 1), dir,
     state: 'walk', t: rand(0.8, 2.6), phase: Math.random() * 10, rear: variant === 'blind' ? 1.6 : 0, rearTarget: 0,
     alive: true, deadT: 0, blink: 0, sniff: Math.random() * 10, fur: makeFur(),
-    alpha, hp: alpha || variant === 'zombie' ? 2 : 1, rage: false, wounds: [], jx: 0, jy: 0, jerkT: 0, pause: 0, turnT: 0, coat,
+    alpha, hp: (alpha || variant === 'zombie' ? 2 : 1) * hpMul(), rage: false, wounds: [], jx: 0, jy: 0, jerkT: 0, pause: 0, turnT: 0, coat,
     variant, hair: variant === 'mohawk' ? Array.from({ length: 46 }, () => [Math.random(), Math.random(), Math.random()]) : null,
   };
 }
@@ -1172,8 +1235,10 @@ function fire() {
   for (const o of G.obs) if (obsHit(o, ax, ay) && (!blocker || o.y > blocker.y)) blocker = o;
   const targetY = best ? best.y : jz ? G.jackal.y : null;
   if (blocker && targetY !== null && blocker.y < targetY) blocker = null;
-  sfxShot();
-  G.kick = 1; G.kickX = rand(-1, 1); G.flash = 1; G.rifleKick = 1;
+  sfxShot(G.rifle);
+  G.kick = 1; G.kickX = rand(-1, 1); G.flash = G.rifle ? 0.55 : 1; G.rifleKick = 1;
+  // the energy rifles draw their shot (beam, bolt, rail trail) from the muzzle to where it landed
+  G.shotFx = G.rifle ? { tier: G.rifle, t: 0, x: ax, y: ay, seed: Math.random() * 1000 } : null;
   if (blocker) { best = null; hitObstacle(blocker, ax, ay); }
   else if (jz) shootJackal(G.jackal, jz, ax, ay);
   else if (best) hitRat(best, hit, ax, ay);
@@ -1278,7 +1343,8 @@ function spray(r, ax, ay, n, col, power = 1, size = 1, dcol = null) {
 function hitRat(r, hit, ax, ay, blasted = false, n = 0) {
   if (hit.zone === 'tail') { snipTail(r, hit.t); return; }   // no damage: just a shorter tail
   const delay = blasted ? 0.03 + n * 0.05 : 0.04 + 0.025 * (LANES.length - 1 - r.lane);
-  const head = !blasted && hit.zone === 'head', dmg = head || blasted ? 2 : 1;   // a head shot or a grenade counts as two hits
+  // a head shot doubles the rifle's damage; a grenade does two "hits" of tonight's toughness, so it stays as strong as ever
+  const head = !blasted && hit.zone === 'head', dmg = blasted ? NADE_DMG * hpMul() : rifleDmg() * (head ? 2 : 1);
   if (r.hp > dmg && r.variant === 'zombie') {
     // the zombie shrugs off its first body hit and keeps shambling
     r.hp -= dmg;
@@ -1407,7 +1473,8 @@ function plural(n, forms) {
   return forms[n === 1 ? 0 : 1];
 }
 const itemLabel = (word, n, c) => `${n} ${plural(n, STR[LANG].words[word])} · ${c} ${plural(c, STR[LANG].words.coin)}`;
-const packPrice = i => i === 'nade' ? NADE_PRICE + Math.floor(G.night / PRICE_STEP) : PACKS[i][1] + Math.floor(G.night / PRICE_STEP);
+const packPrice = i => (i === 'nade' ? NADE_PRICE : i === 'rifle' ? UPGRADE_PRICE[G.rifle] : PACKS[i][1]) + Math.floor(G.night / PRICE_STEP);
+const packKey = b => b.dataset.pack === 'nade' || b.dataset.pack === 'rifle' ? b.dataset.pack : +b.dataset.pack;
 const cheapest = () => Math.min(...PACKS.map((_, i) => packPrice(i)));   // bullets only: a grenade can't keep you in the game
 // nothing left to shoot or throw, and no coins for bullets
 const broke = () => G.ammo <= 0 && G.grenades <= 0 && G.coins < cheapest();
@@ -1415,8 +1482,20 @@ function renderShop() {
   $('#shop-bonus').textContent = G.earlyEnd ? tr(G.earlyEnd === 'escape' ? 'escapedNoBonus' : 'noBonus') : tr('bonusLine', { n: NIGHT_BONUS });
   $('#shop-bonus').classList.toggle('poor', !!G.earlyEnd);
   $('#shop-ammo').textContent = G.ammo; $('#shop-coins').textContent = G.coins; $('#shop-nades').textContent = G.grenades;
-  document.querySelectorAll('.item').forEach(b => {
-    const i = b.dataset.pack === 'nade' ? 'nade' : +b.dataset.pack, n = i === 'nade' ? 1 : PACKS[i][0], price = packPrice(i);
+  // a warning when the next night is the first of a tougher stretch
+  $('#shop-warn').hidden = hpMul(G.night + 1) <= hpMul(G.night);
+  // the next rifle up, in its glow colour; gone once you have the railgun
+  const rb = $('#shop-rifle'), next = G.rifle + 1;
+  rb.hidden = next >= RIFLES.length;
+  if (!rb.hidden) {
+    const price = packPrice('rifle'), name = STR[LANG].rifles[next];
+    rb.querySelector('.n').textContent = name; rb.querySelector('.c').textContent = price;
+    rb.querySelector('.qty').style.color = RIFLE_COL[next](1);
+    rb.setAttribute('aria-label', `${name} · ${price} ${plural(price, STR[LANG].words.coin)}`);
+    rb.classList.toggle('cant', G.coins < price);
+  }
+  document.querySelectorAll('.item:not(.rifle)').forEach(b => {
+    const i = packKey(b), n = i === 'nade' ? 1 : PACKS[i][0], price = packPrice(i);
     b.querySelector('.n').textContent = '+' + n;
     b.querySelector('.c').textContent = price;
     b.setAttribute('aria-label', itemLabel(i === 'nade' ? 'grenade' : 'bullet', n, price));
@@ -1424,14 +1503,17 @@ function renderShop() {
   });
 }
 function buyPack(i) {
+  if (i === 'rifle' && G.rifle >= RIFLES.length - 1) return;
   const price = packPrice(i);
   if (G.coins < price) { $('#shop-msg').textContent = tr('poor'); $('#shop-msg').hidden = false; return; }
   G.coins -= price; $('#shop-msg').hidden = true;
-  if (i === 'nade') { G.grenades++; sfxPin(); count({ grenades: 1 }); } else { G.ammo += PACKS[i][0]; sfxPing(0, false); }
+  if (i === 'nade') { G.grenades++; sfxPin(); count({ grenades: 1 }); }
+  else if (i === 'rifle') { G.rifle++; sfxUpgrade(); }
+  else { G.ammo += PACKS[i][0]; sfxPing(0, false); }
   updateAmmo(); renderShop();
-  for (const id of [i === 'nade' ? '#shop-nades' : '#shop-ammo', '#shop-coins']) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
+  for (const id of [i === 'nade' ? '#shop-nades' : i === 'rifle' ? null : '#shop-ammo', '#shop-coins']) if (id) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
 }
-document.querySelectorAll('.item').forEach(b => b.addEventListener('click', () => buyPack(b.dataset.pack === 'nade' ? 'nade' : +b.dataset.pack)));
+document.querySelectorAll('.item').forEach(b => b.addEventListener('click', () => buyPack(packKey(b))));
 // the end: out of bullets mid-night
 function gameOver() {
   if (G.mode !== 'play' && G.mode !== 'cleared') return;
@@ -1587,7 +1669,7 @@ function startGame(night) {
   elHudL.hidden = elHudR.hidden = elHudB.hidden = false; $('#hud-ammo').hidden = false; $('#hud-coins').hidden = false;
   elPauseBtn.hidden = false;
   G.ammo = AMMO_START; G.coins = 0; G.gameSpecial = {}; G.outT = 0; G.pops = []; updateAmmo();
-  G.grenades = 0; G.armed = false; G.nade = null; G.nadeHinted = false;
+  G.grenades = 0; G.armed = false; G.nade = null; G.nadeHinted = false; G.rifle = 0; G.shotFx = null;
   sendRats();   // anything left from a previous game
   let first = 0; try { if (!localStorage.getItem('rs-played')) { localStorage.setItem('rs-played', '1'); first = 1; } } catch (e) {}
   count({ games: 1, players: first });   // first game on this device
@@ -1846,7 +1928,8 @@ function update(dt) {
   for (const tl of G.tails) tl.age += dt;
   for (const d of G.decals) if (d.target && d.rx < d.target) d.rx = Math.min(d.target, d.rx + dt * 14 * (d.target / 28));
   G.kick *= Math.exp(-dt * 9);
-  G.rifleKick = (G.rifleKick || 0) * Math.exp(-dt * 7); G.flash *= Math.exp(-dt * 22);
+  G.rifleKick = (G.rifleKick || 0) * Math.exp(-dt * 7);
+  if (G.shotFx && (G.shotFx.t += dt) > SHOT_FX_T) G.shotFx = null; G.flash *= Math.exp(-dt * 22);
 
   if (G.mode === 'play' || G.mode === 'cleared') {
     const s = Math.ceil(G.time);
@@ -3322,8 +3405,10 @@ function render() {
   if (G.nade) drawNadeFlight(rel, top);
   if (G.mode !== 'menu' && G.mode !== 'over') {
     // swapping weapons: one drops out of view before the other comes up
+    G.muzzleScr = null;
     if (showRifle && G.wpn < 0.5) drawRifle(G.wpn * 2);
     if (showRifle && G.wpn > 0.5) drawHand((1 - G.wpn) * 2);
+    if (G.shotFx) drawShotFx(rel, top);
     if (G.armed) drawBombSight(); else drawCrosshair();
   }
   if (drag.id !== null && G.mode === 'play') drawStick();
@@ -3452,6 +3537,74 @@ function drawNadeFlight(rel, top) {
   const r0 = 26 * u, r1 = Math.max(2.5 * dpr, 13 * scAt(n.y) * P);
   drawGrenade(x, y, r0 * Math.pow(r1 / r0, Math.pow(k, 0.6)), n.t * n.spin, false);
 }
+/* ---------- energy rifle shots: drawn over the scene from the muzzle to where the shot landed ---------- */
+const RIFLE_COL = [null, a => `rgba(255,62,52,${a})`, a => `rgba(176,104,255,${a})`, a => `rgba(80,200,255,${a})`];
+const RIFLE_HOT = [null, '#ffd2c8', '#efdcff', '#d8f6ff'];
+const SHOT_FX_T = 0.6, PLASMA_FLIGHT = 0.1;
+function drawShotFx(rel, top) {
+  const f = G.shotFx, k = f.t, u = dpr, col = RIFLE_COL[f.tier], hot = RIFLE_HOT[f.tier];
+  const tx = rel(f.x) * P, ty = (f.y - top) * P, sc = scAt(f.y);
+  const [mx, my] = G.muzzleScr || [cv.width * 0.62, cv.height * 1.02];   // rifle hidden: from just below the screen
+  const glow = (x, y, r, a) => {
+    if (r <= 0 || a <= 0) return;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, hot); g.addColorStop(0.2, col(a)); g.addColorStop(1, col(0));
+    ctx.globalAlpha = Math.min(1, a); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+  };
+  const ray = (x0, y0, x1, y1, w0, w1, c) => {   // a tapered stroke: wide at the muzzle, thin in the distance
+    const L = Math.hypot(x1 - x0, y1 - y0) || 1, nx = -(y1 - y0) / L, ny = (x1 - x0) / L;
+    ctx.fillStyle = c; ctx.beginPath();
+    ctx.moveTo(x0 + nx * w0, y0 + ny * w0); ctx.lineTo(x1 + nx * w1, y1 + ny * w1);
+    ctx.lineTo(x1 - nx * w1, y1 - ny * w1); ctx.lineTo(x0 - nx * w0, y0 - ny * w0); ctx.closePath(); ctx.fill();
+  };
+  const ring = (r, a, w) => { if (a <= 0) return; ctx.strokeStyle = col(a); ctx.lineWidth = w; ctx.beginPath(); ctx.ellipse(tx, ty, r, r * 0.45, 0, 0, Math.PI * 2); ctx.stroke(); };
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.shadowColor = col(1); ctx.shadowBlur = 10 * u;
+  if (f.tier === 1) {
+    // LASER: an instant pencil-thin beam that dies in a moment, a flare at the lens and a burning dot where it lands
+    const a = Math.max(0, 1 - k / 0.18);
+    if (a > 0) {
+      ray(mx, my, tx, ty, 5 * u * a, 1.6 * u * a, col(0.45 * a));
+      ray(mx, my, tx, ty, 1.6 * u, 0.6 * u, `rgba(255,235,230,${a.toFixed(3)})`);
+      glow(mx, my, 26 * u * a, a);
+    }
+    glow(tx, ty, (10 + 14 * sc) * u * Math.max(0, 1 - k / 0.45), Math.max(0, 1 - k / 0.45));
+  } else if (f.tier === 2) {
+    // PLASMA: a violet ball that flies out (shrinking with distance) and bursts in a ring on arrival
+    const e = Math.min(1, k / PLASMA_FLIGHT), lerp = (a, b, s) => a + (b - a) * s;
+    if (k < PLASMA_FLIGHT) {
+      const x = lerp(mx, tx, e), y = lerp(my, ty, e), r = lerp(22 * u, (6 + 8 * sc) * u, e);
+      const e0 = Math.max(0, e - 0.35);
+      ray(lerp(mx, tx, e0), lerp(my, ty, e0), x, y, r * 0.25, r * 0.7, col(0.35));
+      glow(x, y, r * 2, 1); glow(x, y, r, 1);
+      glow(mx, my, 30 * u * (1 - e), 1 - e);
+    } else {
+      const b = (k - PLASMA_FLIGHT) / (SHOT_FX_T - PLASMA_FLIGHT), R = (16 + 60 * sc) * u;
+      glow(tx, ty, R * (0.6 + 0.6 * b), Math.max(0, 1 - b * 1.6));
+      ring(R * (0.3 + 1.1 * b), Math.max(0, 0.9 - b), 3 * u * (1 - b) + 0.5);
+      ring(R * (0.2 + 0.7 * b), Math.max(0, 0.6 - b), 2 * u);
+    }
+  } else {
+    // RAILGUN: a hard white-blue slug trail, a corkscrew of charged air around it that hangs and spreads, a flash where it hits
+    const a = Math.max(0, 1 - k / 0.22), b = k / SHOT_FX_T;
+    if (a > 0) {
+      ray(mx, my, tx, ty, 9 * u * a, 2.5 * u * a, col(0.5 * a));
+      ray(mx, my, tx, ty, 2.4 * u * a, 0.8 * u * a, `rgba(235,250,255,${a.toFixed(3)})`);
+      glow(mx, my, 40 * u * a, a);
+    }
+    const L = Math.hypot(tx - mx, ty - my) || 1, nx = -(ty - my) / L, ny = (tx - mx) / L, N = 70;
+    ctx.shadowBlur = 6 * u; ctx.strokeStyle = col(Math.max(0, 0.85 * (1 - b))); ctx.lineWidth = 1.6 * u * (1 - b * 0.6);
+    ctx.beginPath();
+    for (let i = 0; i <= N; i++) {
+      const s = i / N, amp = (9 - 7 * s) * u * (1 + 1.6 * b), w = Math.sin(s * 24 + f.seed) * amp;
+      const x = mx + (tx - mx) * s + nx * w, y = my + (ty - my) * s + ny * w - b * 10 * u;   // the trail drifts up as it fades
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.stroke();
+    glow(tx, ty, (14 + 30 * sc) * u * (1 - b * 0.5), Math.max(0, 1 - b * 2));
+    ring((10 + 50 * sc) * u * (0.3 + b), Math.max(0, 0.8 - b), 2 * u);
+  }
+  ctx.restore();
+}
 // with a grenade in hand the cross becomes a bomb outline, and a dashed oval shows what the blast would cover
 function drawBombSight() {
   const u = dpr, cx = Math.round(cv.width / 2) + 0.5, cy = Math.round(cv.height / 2) + 0.5;
@@ -3497,14 +3650,14 @@ function drawRifle(drop = 0) {
     ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = 1.2 * dpr; ctx.stroke();
   };
   // a box section along the rifle: we see its top face and its right side
-  const box = (t0, t1, w, h, top, side, lift = 0) => {
-    const c = (t, sx, sy) => at(t, lift - sy * h, sx * w);
+  const box = (t0, t1, w, h, top, side, lift = 0, right = 0) => {
+    const c = (t, sx, sy) => at(t, lift - sy * h, sx * w + right);
     quad([c(t0, 1, -1), c(t0, 1, 1), c(t1, 1, 1), c(t1, 1, -1)], side);
     quad([c(t0, -1, -1), c(t0, 1, -1), c(t1, 1, -1), c(t1, -1, -1)], top);
   };
   // a round tube along the rifle, shaded with a light top edge; optional cap drawn at the near end
-  const tube = (t0, t1, r0, r1, up, cols, cap, capRatio = 0.85) => {
-    const p0 = at(t0, up), p1 = at(t1, up), [ax, ay] = P(p0), [bx, by] = P(p1), ra = R(p0, r0), rb = R(p1, r1);
+  const tube = (t0, t1, r0, r1, up, cols, cap, capRatio = 0.85, right = 0) => {
+    const p0 = at(t0, up, right), p1 = at(t1, up, right), [ax, ay] = P(p0), [bx, by] = P(p1), ra = R(p0, r0), rb = R(p1, r1);
     let dx = bx - ax, dy = by - ay; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
     let nx = -dy, ny = dx; if (ny > 0) { nx = -nx; ny = -ny; }
     ctx.beginPath();
@@ -3523,6 +3676,8 @@ function drawRifle(drop = 0) {
   ctx.save();
   // held low in the corner so it covers less of the yard
   ctx.translate(Wc * 0.03, Hc * 0.16 + drop * Hc * 0.75);
+  const tier = G.rifle || 0;
+  if (tier === 0) {
   // barrel and muzzle brake, furthest away
   tube(0.32, 0.97, 0.010, 0.009, 0, GLOSS);
   tube(0.95, 1.0, 0.014, 0.014, 0, MATTE);
@@ -3575,6 +3730,144 @@ function drawRifle(drop = 0) {
     ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(a, b, Rf, 0, Math.PI * 2); ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
   }
+  } else {
+  // ---- energy weapons: same frame, own parts; the glow colour tells them apart (laser red, plasma violet, railgun blue) ----
+  const col = RIFLE_COL[tier], hot = RIFLE_HOT[tier];
+  const pulse = 0.75 + 0.25 * Math.sin(G.clock * 4), charge = Math.min(1, since / SHOT_COOLDOWN);
+  // additive glow: a tapered bar along the rifle, a round glow, a glowing polyline
+  const beam = (t0, t1, r0, r1, up, right, a, blur = 10) => {
+    const p0 = at(t0, up, right), p1 = at(t1, up, right), [ax, ay] = P(p0), [bx, by] = P(p1), ra = R(p0, r0), rb = R(p1, r1);
+    const L = Math.hypot(bx - ax, by - ay) || 1, nx = -(by - ay) / L, ny = (bx - ax) / L;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.shadowColor = col(Math.min(1, a)); ctx.shadowBlur = blur * dpr; ctx.fillStyle = col(a);
+    ctx.beginPath(); ctx.moveTo(ax + nx * ra, ay + ny * ra); ctx.lineTo(bx + nx * rb, by + ny * rb);
+    ctx.lineTo(bx - nx * rb, by - ny * rb); ctx.lineTo(ax - nx * ra, ay - ny * ra); ctx.closePath(); ctx.fill(); ctx.restore();
+  };
+  const glowDot = (p, r, a) => {
+    const [x, y] = P(p), rr = Math.max(2 * dpr, R(p, r));
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createRadialGradient(x, y, 0, x, y, rr);
+    g.addColorStop(0, hot); g.addColorStop(0.25, col(a)); g.addColorStop(1, col(0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, rr, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  };
+  const gline = (pts, w, a) => {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.shadowColor = col(1); ctx.shadowBlur = 8 * dpr; ctx.strokeStyle = col(a); ctx.lineWidth = w;
+    ctx.beginPath(); pts.forEach((p, i) => { const [x, y] = P(p); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    ctx.strokeStyle = `rgba(255,255,255,${(a * 0.6).toFixed(3)})`; ctx.lineWidth = w * 0.35; ctx.stroke(); ctx.restore();
+  };
+  // the face of a box nearest us (it looks back at the shooter), e.g. a sight's screen
+  const backFace = (t, w, h, lift, right, fill) => {
+    const c = (sx, sy) => at(t, lift - sy * h, sx * w + right);
+    quad([c(-1, -1), c(1, -1), c(1, 1), c(-1, 1)], fill);
+    const [x0, y0] = P(c(-1, -1)), [x1, y1] = P(c(1, 1)); return { x0, y0, x1, y1, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+  };
+  // a row of charge lights on a side panel; they fill back up during the cooldown
+  const chargeBar = (t0, t1, n, up, right) => {
+    const d = (t1 - t0) / n;
+    for (let i = 0; i < n; i++) {
+      const on = charge >= (i + 1) / n, a0 = t0 + i * d, a1 = a0 + d * 0.65;
+      const pts = [at(a0, up + 0.004, right), at(a1, up + 0.004, right), at(a1, up - 0.004, right), at(a0, up - 0.004, right)];
+      quad(pts, on ? col(0.95) : 'rgba(30,20,20,.9)');
+      if (on) glowDot(at((a0 + a1) / 2, up, right), 0.012, 0.35);
+    }
+  };
+
+  if (tier === 1) {
+    // LASER: clean angular rifle in pale polymer (bright under the IR lamp), square emitter shroud with a red light strip
+    const PALE_T = '#8b918e', PALE_S = '#474c4a', DARK_T = '#2b2f2e', DARK_S = '#141716';
+    box(0.86, 1.0, 0.021, 0.021, '#6c7270', '#30353a', 0.004);                       // emitter head
+    glowDot(at(1.0, 0.004), 0.02, 0.55 * pulse);                                    // lens glowing at the tip
+    box(0.3, 0.87, 0.015, 0.015, PALE_T, PALE_S, 0.004);                            // square shroud
+    for (let t = 0.8; t > 0.34; t -= 0.07) box(t, t + 0.022, 0.0155, 0.0155, DARK_T, DARK_S, 0.004);   // cooling slots
+    beam(0.31, 0.86, 0.0018, 0.0018, 0.004, 0.0158, 0.85 * pulse, 8);               // red strip down the side
+    box(0.05, 0.33, 0.024, 0.026, PALE_T, PALE_S, -0.02);                           // forend
+    box(-0.32, 0.06, 0.028, 0.03, PALE_T, PALE_S, -0.02);                           // stock
+    beam(-0.3, 0.3, 0.002, 0.002, -0.012, 0.03, 0.55 * pulse, 6);                   // stripe along the stock and forend
+    box(-0.12, 0.1, 0.019, 0.02, DARK_T, DARK_S, 0.02);                             // receiver
+    box(-0.09, 0.05, 0.012, 0.017, '#3a3f3e', '#1c201f', 0.012, 0.03);              // battery pack instead of a bolt
+    chargeBar(-0.08, 0.04, 4, 0.012, 0.0422);
+    box(0.0, 0.08, 0.01, 0.012, DARK_T, DARK_S, 0.045);                             // sight mount
+    // open reflex sight: a base, a window frame you can see the yard through, tinted glass and the red dot floating in it
+    box(-0.04, 0.07, 0.019, 0.005, '#3b403f', '#1a1d1c', 0.054);
+    { const f = backFace(-0.03, 0.017, 0.013, 0.072, 0, 'rgba(255,70,60,.12)');
+      const lg = ctx.createLinearGradient(f.x0, f.y0, f.x1, f.y1);
+      lg.addColorStop(0, 'rgba(255,160,150,.22)'); lg.addColorStop(0.45, 'rgba(255,60,50,0)'); lg.addColorStop(1, 'rgba(255,90,80,.12)');
+      ctx.fillStyle = lg; ctx.fillRect(Math.min(f.x0, f.x1), Math.min(f.y0, f.y1), Math.abs(f.x1 - f.x0), Math.abs(f.y1 - f.y0)); }
+    box(-0.036, -0.028, 0.0025, 0.015, '#4a504e', '#1f2322', 0.072, -0.0175);       // left post
+    box(-0.036, -0.028, 0.0025, 0.015, '#4a504e', '#1f2322', 0.072, 0.0175);        // right post
+    box(-0.036, -0.028, 0.02, 0.0025, '#5a605e', '#262a29', 0.088);                 // top bar
+    glowDot(at(-0.03, 0.072), 0.006, 1);
+  } else if (tier === 2) {
+    // PLASMA: chunky dark gun, a barrel wrapped in magnetic coils glowing violet between them, a glass plasma tank on the side
+    const D_T = '#36323d', D_S = '#19171d', M_T = '#4a4652', M_S = '#221f27';
+    tube(0.3, 0.98, 0.009, 0.008, 0, GLOSS);
+    beam(0.32, 0.97, 0.02, 0.018, 0, 0, 0.5 * pulse, 16);                           // plasma channel showing between the coils
+    tube(0.95, 1.03, 0.02, 0.032, 0, MATTE);                                        // flared muzzle
+    glowDot(at(1.03), 0.045, 0.7 * pulse);
+    for (let t = 0.86; t > 0.34; t -= 0.085) {
+      tube(t, t + 0.045, 0.027, 0.027, 0, ['#5a5560', '#26232b', '#0b0a0d']);       // coil
+      for (let k = 0; k < 3; k++) beam(t + 0.008 + k * 0.012, t + 0.012 + k * 0.012, 0.0275, 0.0275, 0, 0, 0.3, 4);   // windings
+    }
+    box(0.05, 0.33, 0.03, 0.03, D_T, D_S, -0.022);                                  // forend
+    box(-0.32, 0.06, 0.032, 0.032, D_T, D_S, -0.022);                               // stock
+    box(-0.12, 0.1, 0.022, 0.024, M_T, M_S, 0.016);                                 // receiver
+    // plasma tank on the right: end caps, glass, a writhing violet core and bubbles drifting forward
+    { const TU = 0.032, TR = 0.034;                                                 // tank height and offset
+    tube(0.05, 0.075, 0.019, 0.019, TU, MATTE, null, 0.85, TR);
+    { const g = tube(-0.08, 0.06, 0.016, 0.016, TU, ['rgba(200,180,230,.35)', 'rgba(60,40,90,.55)', 'rgba(10,6,16,.8)'], null, 0.85, TR);
+      const pts = []; for (let i = 0; i <= 10; i++) { const t = -0.075 + i * 0.0135; pts.push(at(t, TU + Math.sin(G.clock * 9 + i * 1.3) * 0.006, TR + Math.cos(G.clock * 7 + i) * 0.004)); }
+      beam(-0.075, 0.055, 0.011, 0.011, TU, TR, 0.22 * pulse, 16);
+      gline(pts, 2.4 * dpr, 0.9);
+      for (let i = 0; i < 4; i++) { const k = (G.clock * 0.35 + i / 4) % 1; glowDot(at(-0.075 + k * 0.13, TU + Math.sin(i * 2.1 + G.clock * 3) * 0.007, TR), 0.004, 0.7); }
+      ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.beginPath(); ctx.ellipse(g.ax, g.ay, g.ra * 0.2, g.ra * 0.6, g.ang + 0.3, 0, Math.PI * 2); ctx.fill(); }
+    tube(-0.105, -0.075, 0.019, 0.019, TU, MATTE, '#141216', 0.85, TR); }
+    chargeBar(-0.1, 0.04, 5, -0.006, 0.0225);                                       // charge lights along the receiver
+    // stubby scope with a violet lens
+    for (const t of [0.02, 0.12]) box(t, t + 0.025, 0.014, 0.018, M_T, M_S, 0.045);
+    tube(0.13, 0.2, 0.021, 0.026, SCOPE_UP, GLOSS);
+    tube(0.0, 0.15, 0.02, 0.02, SCOPE_UP, GLOSS);
+    { const eye = tube(-0.04, 0.005, 0.027, 0.024, SCOPE_UP, MATTE, '#070808'), r = eye.ra * 0.78;
+      const lg = ctx.createRadialGradient(eye.ax - r * 0.3, eye.ay - r * 0.35, r * 0.05, eye.ax, eye.ay, r);
+      lg.addColorStop(0, 'rgba(210,170,255,.9)'); lg.addColorStop(0.45, 'rgba(70,30,110,.95)'); lg.addColorStop(1, 'rgba(10,4,16,1)');
+      ctx.fillStyle = lg; ctx.beginPath(); ctx.ellipse(eye.ax, eye.ay, r, r * 0.85, eye.ang, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.beginPath(); ctx.ellipse(eye.ax - r * 0.42, eye.ay - r * 0.3, r * 0.1, r * 0.3, eye.ang + 0.4, 0, Math.PI * 2); ctx.fill(); }
+  } else {
+    // RAILGUN: two long rails with blue arcs crackling between them, held by square collars; capacitor bank and a digital sight
+    const S_T = '#5d6567', S_S = '#262c2e', B_T = '#3a4144', B_S = '#1a1e20';
+    box(0.24, 1.0, 0.012, 0.007, S_T, S_S, -0.028);                                 // lower rail
+    beam(0.25, 0.99, 0.018, 0.016, 0, 0, 0.16 * pulse, 14);                         // charged gap
+    for (let k = 0; k < 4; k++) {                                                   // arcs, re-struck every frame
+      const t = 0.27 + Math.random() * 0.68, pts = [];
+      for (let i = 0; i <= 6; i++) pts.push(at(t + (Math.random() - 0.5) * 0.03, -0.021 + i * 0.007, (Math.random() - 0.5) * 0.012));
+      gline(pts, 1.6 * dpr, 0.5 + 0.5 * Math.random());
+    }
+    box(0.24, 1.0, 0.012, 0.007, S_T, S_S, 0.028);                                  // upper rail
+    for (let t = 0.9; t > 0.25; t -= 0.19) {                                        // collars with a lit band
+      box(t, t + 0.035, 0.022, 0.04, B_T, B_S, 0);
+      beam(t + 0.004, t + 0.031, 0.002, 0.002, 0, 0.0225, 0.9 * pulse, 8);
+    }
+    box(0.0, 0.3, 0.028, 0.032, B_T, B_S, -0.01);                                   // heavy forend block
+    box(-0.32, 0.02, 0.03, 0.03, B_T, B_S, -0.02);                                  // stock
+    box(-0.14, 0.08, 0.024, 0.026, '#4a5255', '#22282a', 0.016);                    // receiver
+    // capacitor bank on the right: three cells with blue bands that light up as it recharges
+    for (const [up, rt] of [[0.044, 0.032], [0.026, 0.038], [0.008, 0.032]]) {
+      tube(-0.11, 0.05, 0.0085, 0.0085, up, ['#6f777a', '#2c3234', '#0c0e0f'], '#16191a', 0.85, rt);
+      beam(-0.07, -0.06, 0.0089, 0.0089, up, rt, 0.85 * charge, 6);
+      beam(0.0, 0.01, 0.0089, 0.0089, up, rt, 0.85 * charge, 6);
+    }
+    // digital sight: a box with a screen facing us showing a thin reticle and a charge readout
+    box(0.0, 0.07, 0.01, 0.012, B_T, B_S, 0.045);
+    box(-0.04, 0.11, 0.021, 0.017, '#454c4f', '#1e2325', 0.07);
+    { const f = backFace(-0.04, 0.018, 0.0145, 0.07, 0, '#03141c');
+      const w = f.x1 - f.x0, h = f.y1 - f.y0;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = col(0.85); ctx.lineWidth = 1 * dpr; ctx.shadowColor = col(1); ctx.shadowBlur = 4 * dpr;
+      ctx.beginPath(); ctx.moveTo(f.cx - w * 0.3, f.cy); ctx.lineTo(f.cx + w * 0.3, f.cy); ctx.moveTo(f.cx, f.cy - h * 0.3); ctx.lineTo(f.cx, f.cy + h * 0.3); ctx.stroke();
+      ctx.strokeRect(f.cx - w * 0.12, f.cy - h * 0.12, w * 0.24, h * 0.24);
+      ctx.fillStyle = col(0.9); ctx.fillRect(f.x0 + w * 0.12, f.y1 + h * -0.18, w * 0.76 * charge, h * 0.07);   // charge bar
+      ctx.restore(); }
+  }
+  }
+  { const [mx, my] = P(at(1.03)); G.muzzleScr = [mx + Wc * 0.03, my + Hc * 0.16 + drop * Hc * 0.75]; }   // where shots start (drawShotFx)
   ctx.restore();
 }
 // faint joystick under the finger: a ring where it first touched and a dot where it is now

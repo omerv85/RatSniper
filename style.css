@@ -158,6 +158,9 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 .item .price { display: flex; align-items: center; gap: 5px; font-size: 15px; line-height: 1; color: var(--amber); font-variant-numeric: tabular-nums; }
 .item .price svg { width: 14px; height: 14px; }
 .item.cant { opacity: .4; }
+.item.rifle .qty { font-size: 15px; letter-spacing: .04em; text-transform: uppercase; }
+.item.rifle .qty svg.r { width: 34px; height: 12px; }
+.sub.warn { color: #ff6b5e; }
 .poor { color: var(--amber); }
 .next-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .next-row .ring { width: 58px; }
