@@ -145,6 +145,16 @@ Gameplay
   announcer "Ran out of time". This stops an idle player sitting on night 5 forever. Whenever a boss night ends with the
   king alive (escaped or ran dry), the results title is a red "THE KING LIVES" instead of "CLEARED" and the announcer
   skips "Round cleared" (v0.0.27, `kingLived`, `renderBossLine`).
+- Four kings in turn (v0.0.30, owner-approved looks, set in `makeKing` from the night): night 5 the plain king, 10 the
+  **armored** viking king (`r.armored`: horned helmet with nose guard, banded back plates, shoulder plates;
+  `drawArmor`, `drawVikingHelmet`), 15 the **cyborg** king (`r.cyborg`: steel shell over the rump with vents, steel
+  skull and toothed jaw, red mechanical eye with a scanning beam, antenna, circuit hatch and cables, piston legs, steel
+  tail; `drawCyborgBody`, `drawCyborgHead`, `mechLeg`, `drawCyborgTail`; the owner had the red core on his back
+  removed), 20 the **demon** king (`r.demon`: ember-red skin with pulsing lava cracks, bat wings with smouldering
+  edges, curled ram horns on the crown, burning eye, embers, dark tail with a burning tip, broken shackle on the
+  foreleg; `drawDemonSkin`, `drawDemonWing`, `drawDemonTop`, `drawDemonTailFire`, `drawShackle`; back spikes were
+  tried and removed), then again from 25. Looks only: all take 8 hits. The dressed-up kings never stare at the
+  camera (the front-facing face has no costume).
 - Owl (60% of nights) sits on a background ledge; shooting it only makes it fly off (no reward).
 - UFO rat (12% of nights): flies over the yard, hovers with a beam; shooting it down = kill.
 - Jackal (v0.0.29, owner-approved look): on ~40% of ordinary nights from night 2 (`JACKAL_CHANCE`, never boss nights) one
