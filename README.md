@@ -2,7 +2,7 @@
 
 A night-vision sniper game for phones. You're a farmer defending the barnyard from rats, one 30-second night at a time.
 
-**Play:** https://omerv85.github.io/RatSniper/
+**Play:** https://ratsniper.o-vertman.workers.dev/
 
 ## How to play
 

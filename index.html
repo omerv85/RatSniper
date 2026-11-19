@@ -16,8 +16,8 @@
 <meta property="og:site_name" content="Rat Sniper">
 <meta property="og:title" content="Rat Sniper">
 <meta property="og:description" content="Night-vision sniper game: defend the farmyard from rats. How many nights can you last?">
-<meta property="og:url" content="https://omerv85.github.io/RatSniper/">
-<meta property="og:image" content="https://omerv85.github.io/RatSniper/share.jpg">
+<meta property="og:url" content="https://ratsniper.o-vertman.workers.dev/">
+<meta property="og:image" content="https://ratsniper.o-vertman.workers.dev/share.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -327,7 +327,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.24</div>
+    <div class="ver" id="ver">version 0.0.25</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -432,7 +432,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.24';
+const VERSION = '0.0.25';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -567,7 +567,7 @@ const AMMO_START = 15, NIGHT_BONUS = 5, HEAD_BONUS = 1;
 const PRICE_STEP = 5;                                      // packs cost 1 coin more every 5 nights
 const PACKS = [[5, 4], [15, 10]];                          // [bullets, price in coins]
 const BOUNTY = { rat: 1, alpha: 2, rare: 3, ufo: 5, king: 10 };
-const GAME_URL = 'https://omerv85.github.io/RatSniper/';
+const GAME_URL = 'https://ratsniper.o-vertman.workers.dev/';
 /* difficulty: each grows a little every night (night 1 = 0) up to a cap */
 const LVL = () => Math.max(0, G.night - 1);
 const DIFF = {

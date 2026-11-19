@@ -3,7 +3,11 @@
 Read this first. It explains what the game is, how the code is laid out, how to ship a change, and the
 design decisions the owner (GitHub user `omerv85`) has already made, so you don't undo them.
 
-- Live game: https://omerv85.github.io/RatSniper/ (GitHub Pages, branch `main`, root folder)
+- Live game: https://ratsniper.o-vertman.workers.dev/ (Cloudflare, since v0.0.25: a Worker named `ratsniper` on the
+  owner's Cloudflare account serving the repo's files, connected to GitHub, so every push to `main` is published
+  automatically in about a minute; Cloudflare tells browsers to re-check the page on every load, so there's no cache
+  delay). `.assetsignore` keeps `CLAUDE.md`, `README.md` and `worker/` off the website. GitHub Pages
+  (omerv85.github.io/RatSniper) was switched off at the owner's request; the address change reset players' saved data.
 - Repo: https://github.com/omerv85/RatSniper
 - Current version: see `const VERSION` near the top of the script in `index.html`
 

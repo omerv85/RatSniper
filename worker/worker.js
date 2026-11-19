@@ -16,7 +16,7 @@ const ALLOWED = {
   homeOpens: 1,        // opened from the home-screen icon
   updates: 1,          // tapped "update"
 };
-const GAME_ORIGIN = 'https://omerv85.github.io';
+const GAME_ORIGIN = 'https://ratsniper.o-vertman.workers.dev';   // where the game is hosted (Cloudflare, since v0.0.25)
 const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
