@@ -10,8 +10,6 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<!-- visitor counts (GoatCounter: no cookies, no personal data; it skips localhost, so local testing isn't counted) -->
-<script data-goatcounter="https://omerv85.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <meta name="description" content="A night-vision rat sniping game for touch screens."><title>Rat Sniper</title>
 <!-- link previews (WhatsApp, Telegram, Facebook, X...): title, line and the big picture -->
 <meta property="og:type" content="website">
@@ -97,6 +95,8 @@ html, body {
 .btn:active { background: rgba(69,255,122,.2); }
 .btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 .btn.btn-update { font-size: 15px; letter-spacing: .14em; }
+.players { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; color: rgba(228,233,230,.6); text-transform: uppercase; margin-top: -4px; }
+.players b { color: var(--phos); font-weight: 400; }
 .start-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 18px; }
 .btn.btn-install { font-size: 13px; letter-spacing: .12em; padding: 8px 14px; min-height: 40px; gap: 8px; }
 .btn-install svg { width: 16px; height: 16px; }
@@ -151,7 +151,7 @@ html, body {
 .lang-select:focus-visible { outline: 2px solid var(--phos); outline-offset: 2px; }
 #pause .lang-pick { margin-top: 4px; }
 /* Hebrew letters don't take the wide tracking the Latin stencil and mono faces use */
-html[lang="he"] .btn, html[lang="he"] .rules, html[lang="he"] .rules b, html[lang="he"] .sub, html[lang="he"] .fine, html[lang="he"] .lang-pick,
+html[lang="he"] .btn, html[lang="he"] .rules, html[lang="he"] .rules b, html[lang="he"] .sub, html[lang="he"] .fine, html[lang="he"] .players, html[lang="he"] .lang-pick,
 html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="he"] .night, html[lang="he"] .ver, html[lang="he"] #hud-boss .boss-name { letter-spacing: .02em; }
 /* ammo counter under the kill count; it pulses amber when you're nearly out */
 #hud-ammo { top: calc(env(safe-area-inset-top, 0px) + 50px); right: calc(env(safe-area-inset-right, 0px) + 14px); display: flex; align-items: center; gap: 8px; color: var(--ink); }
@@ -328,13 +328,14 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.21</div>
+    <div class="ver" id="ver">version 0.0.22</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
       <span data-i18n-html="ruleAim"><b>DRAG</b> to aim</span>
       <span data-i18n-html="ruleFire"><b>LIFT</b> to fire</span>
     </div>
+    <div class="players" id="players" hidden></div>
     <div class="btns">
       <button class="btn" id="go" type="button" data-i18n="start">Start night 1</button>
     </div>
@@ -432,7 +433,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.21';
+const VERSION = '0.0.22';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -448,7 +449,7 @@ const STR = {
     bullets: 'Bullets', coins: 'Coins', shopTitle: 'Restock', bonusLine: '+{n} bullets for surviving the night', buy5: '5 bullets · 4 coins', buy15: '15 bullets · 10 coins',
     poor: 'Not enough coins', startNow: 'Start now', gameOver: 'GAME OVER', outOfAmmo: 'You ran out of bullets', nightsSurvived: 'Nights survived', ratsKilled: 'Rats killed',
     best: 'Best', newBest: 'New best!', shareWa: 'Share on WhatsApp', playAgain: 'Play again',
-    noBonus: 'Out of bullets: no night bonus', needAmmo: 'Buy bullets to start the next night', words: { bullet: ['bullet', 'bullets'], coin: ['coin', 'coins'], grenade: ['grenade', 'grenades'] },
+    noBonus: 'Out of bullets: no night bonus', needAmmo: 'Buy bullets to start the next night', words: { bullet: ['bullet', 'bullets'], coin: ['coin', 'coins'], player: ['player', 'players'], rat: ['rat', 'rats'], grenade: ['grenade', 'grenades'] }, playedBy: 'Played by {n} {w}', ratsTotal: '{n} {w} killed',
     grenade: 'Grenade', grenades: 'Grenades', nadeHint: 'GRENADE IN HAND · LIFT TO THROW',
     shareMsg: 'My Rat Sniper score: {k} rats killed, {n} nights survived. Can you beat that? {url}',
   },
@@ -465,7 +466,7 @@ const STR = {
     bullets: 'Патроны', coins: 'Монеты', shopTitle: 'Пополнение', bonusLine: '+{n} патрона за пережитую ночь', buy5: '5 патронов · 4 монеты', buy15: '15 патронов · 10 монет',
     poor: 'Не хватает монет', startNow: 'Начать сейчас', gameOver: 'ИГРА ОКОНЧЕНА', outOfAmmo: 'Закончились патроны', nightsSurvived: 'Ночей пережито', ratsKilled: 'Крыс убито',
     best: 'Рекорд', newBest: 'Новый рекорд!', shareWa: 'Поделиться в WhatsApp', playAgain: 'Играть снова',
-    noBonus: 'Патроны кончились: без бонуса за ночь', needAmmo: 'Купите патроны, чтобы начать следующую ночь', words: { bullet: ['патрон', 'патрона', 'патронов'], coin: ['монета', 'монеты', 'монет'], grenade: ['граната', 'гранаты', 'гранат'] },
+    noBonus: 'Патроны кончились: без бонуса за ночь', needAmmo: 'Купите патроны, чтобы начать следующую ночь', words: { bullet: ['патрон', 'патрона', 'патронов'], coin: ['монета', 'монеты', 'монет'], player: ['игрок', 'игрока', 'игроков'], rat: ['крыса', 'крысы', 'крыс'], grenade: ['граната', 'гранаты', 'гранат'] }, playedBy: 'Уже сыграли: {n} {w}', ratsTotal: 'уничтожено крыс: {n}',
     grenade: 'Граната', grenades: 'Гранаты', nadeHint: 'ГРАНАТА В РУКЕ · ОТПУСТИ — БРОСОК',
     shareMsg: 'Мой результат в Rat Sniper: ночей пережито — {n}, крыс убито — {k}. Сможешь лучше? {url}',
   },
@@ -482,7 +483,7 @@ const STR = {
     bullets: 'Balas', coins: 'Monedas', shopTitle: 'Recarga', bonusLine: '+{n} balas por sobrevivir la noche', buy5: '5 balas · 4 monedas', buy15: '15 balas · 10 monedas',
     poor: 'No tienes monedas suficientes', startNow: 'Empezar ya', gameOver: 'FIN DEL JUEGO', outOfAmmo: 'Te quedaste sin balas', nightsSurvived: 'Noches superadas', ratsKilled: 'Ratas abatidas',
     best: 'Récord', newBest: '¡Nuevo récord!', shareWa: 'Compartir por WhatsApp', playAgain: 'Jugar de nuevo',
-    noBonus: 'Sin balas: no hay bonificación de la noche', needAmmo: 'Compra balas para empezar la siguiente noche', words: { bullet: ['bala', 'balas'], coin: ['moneda', 'monedas'], grenade: ['granada', 'granadas'] },
+    noBonus: 'Sin balas: no hay bonificación de la noche', needAmmo: 'Compra balas para empezar la siguiente noche', words: { bullet: ['bala', 'balas'], coin: ['moneda', 'monedas'], player: ['jugador', 'jugadores'], rat: ['rata', 'ratas'], grenade: ['granada', 'granadas'] }, playedBy: 'Jugado por {n} {w}', ratsTotal: '{n} {w} abatidas',
     grenade: 'Granada', grenades: 'Granadas', nadeHint: 'GRANADA EN MANO · SUELTA PARA LANZAR',
     shareMsg: 'Sobreviví {n} noches y abatí {k} ratas en Rat Sniper. ¿Puedes superarlo? {url}',
   },
@@ -499,7 +500,7 @@ const STR = {
     bullets: 'Balles', coins: 'Pièces', shopTitle: 'Ravitaillement', bonusLine: '+{n} balles pour avoir survécu à la nuit', buy5: '5 balles · 4 pièces', buy15: '15 balles · 10 pièces',
     poor: 'Pas assez de pièces', startNow: 'Commencer', gameOver: 'PARTIE TERMINÉE', outOfAmmo: 'Tu n’as plus de balles', nightsSurvived: 'Nuits survécues', ratsKilled: 'Rats abattus',
     best: 'Record', newBest: 'Nouveau record !', shareWa: 'Partager sur WhatsApp', playAgain: 'Rejouer',
-    noBonus: 'Plus de balles : pas de bonus de nuit', needAmmo: 'Achète des balles pour commencer la nuit suivante', words: { bullet: ['balle', 'balles'], coin: ['pièce', 'pièces'], grenade: ['grenade', 'grenades'] },
+    noBonus: 'Plus de balles : pas de bonus de nuit', needAmmo: 'Achète des balles pour commencer la nuit suivante', words: { bullet: ['balle', 'balles'], coin: ['pièce', 'pièces'], player: ['joueur', 'joueurs'], rat: ['rat', 'rats'], grenade: ['grenade', 'grenades'] }, playedBy: 'Joué par {n} {w}', ratsTotal: '{n} {w} abattus',
     grenade: 'Grenade', grenades: 'Grenades', nadeHint: 'GRENADE EN MAIN · RELÂCHE POUR LANCER',
     shareMsg: 'J’ai survécu {n} nuits et abattu {k} rats dans Rat Sniper. Tu fais mieux ? {url}',
   },
@@ -516,7 +517,7 @@ const STR = {
     bullets: 'כדורים', coins: 'מטבעות', shopTitle: 'חידוש תחמושת', bonusLine: '+{n} כדורים על שרידת הלילה', buy5: '5 כדורים · 4 מטבעות', buy15: '15 כדורים · 10 מטבעות',
     poor: 'אין מספיק מטבעות', startNow: 'להתחיל עכשיו', gameOver: 'המשחק נגמר', outOfAmmo: 'נגמרו לך הכדורים', nightsSurvived: 'לילות ששרדת', ratsKilled: 'עכברושים שחוסלו',
     best: 'שיא', newBest: 'שיא חדש!', shareWa: 'שיתוף בוואטסאפ', playAgain: 'לשחק שוב',
-    noBonus: 'נגמרו הכדורים: אין בונוס לילה', needAmmo: 'קנו כדורים כדי להתחיל את הלילה הבא', words: { bullet: ['כדור', 'כדורים'], coin: ['מטבע', 'מטבעות'], grenade: ['רימון', 'רימונים'] },
+    noBonus: 'נגמרו הכדורים: אין בונוס לילה', needAmmo: 'קנו כדורים כדי להתחיל את הלילה הבא', words: { bullet: ['כדור', 'כדורים'], coin: ['מטבע', 'מטבעות'], player: ['שחקן', 'שחקנים'], rat: ['עכברוש', 'עכברושים'], grenade: ['רימון', 'רימונים'] }, playedBy: 'שחקנים עד כה: {n}', ratsTotal: 'עכברושים שחוסלו: {n}',
     grenade: 'רימון', grenades: 'רימונים', nadeHint: 'רימון ביד · שחררו לזריקה',
     shareMsg: 'שרדתי {n} לילות וחיסלתי {k} עכברושים ב-Rat Sniper. מסוגלים יותר? {url}',
   },
@@ -586,10 +587,17 @@ const mod = (a, n) => ((a % n) + n) % n;
 const wrapD = d => mod(d + W / 2, W) - W / 2;
 const rand = (a, b) => a + Math.random() * (b - a);
 const $ = s => document.querySelector(s);
-// game events for the owner's GoatCounter dashboard (shown there as paths like "event/game-start").
-// Nothing identifies the player; if the counter script didn't load (blocked, offline) this does nothing.
-function track(name) {
-  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'event/' + name, title: name, event: true }); } catch (e) {}
+// Game counters, kept by the owner's Cloudflare Worker (source in worker/): count({ rats: 12, nights: 1 }) adds to
+// the all-time and daily totals. Only numbers are sent, nothing about the player. Sent with sendBeacon so it still
+// goes out while the page is closing; failures are ignored. Local copies don't count unless window.__countLocal is set.
+const COUNTER = 'https://rat-sniper.o-vertman.workers.dev';
+function count(nums) {
+  try {
+    if (/^(localhost|127\.|\[::1\])/.test(location.hostname) && !window.__countLocal) return;
+    const body = JSON.stringify(nums);
+    if (navigator.sendBeacon && navigator.sendBeacon(COUNTER + '/add', new Blob([body], { type: 'text/plain' }))) return;
+    fetch(COUNTER + '/add', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+  } catch (e) {}
 }
 function rng(seed) {
   return function () {
@@ -1800,7 +1808,7 @@ function buyPack(i) {
   const price = packPrice(i);
   if (G.coins < price) { $('#shop-msg').textContent = tr('poor'); $('#shop-msg').hidden = false; return; }
   G.coins -= price; $('#shop-msg').hidden = true;
-  if (i === 'nade') { G.grenades++; sfxPin(); track('grenade-bought'); } else { G.ammo += PACKS[i][0]; sfxPing(0, false); }
+  if (i === 'nade') { G.grenades++; sfxPin(); count({ grenades: 1 }); } else { G.ammo += PACKS[i][0]; sfxPing(0, false); }
   updateAmmo(); renderShop();
   for (const id of [i === 'nade' ? '#shop-nades' : '#shop-ammo', '#shop-coins']) { const p = $(id).parentElement; p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
 }
@@ -1828,7 +1836,7 @@ function setShareLink() {
   const msg = tr('shareMsg', { n: G.lastResult.nights, k: G.lastResult.kills, url: GAME_URL });
   $('#ov-share').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
 }
-$('#ov-share').addEventListener('click', () => track('share-whatsapp'));
+$('#ov-share').addEventListener('click', () => count({ shares: 1 }));
 $('#ov-again').addEventListener('click', () => { $('#over').hidden = true; startGame(1); });
 $('#ov-home').addEventListener('click', () => { $('#over').hidden = true; goHome(); });
 function renderSpecials() {
@@ -1867,9 +1875,18 @@ function startRound(n) {
   elNight.textContent = n;
   elKills.textContent = G.kills;
 }
+// rats killed since the last report go to the counter (kills are reported per night, on quitting and when the
+// page is hidden mid-night, without counting any twice)
+function sendRats(nights = 0) {
+  const rats = G.kills - (G.killsSent || 0);
+  if (rats > 0 || nights > 0) count({ rats: Math.max(0, rats), nights });
+  G.killsSent = G.kills;
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && G.mode === 'play') sendRats(); });
 function endRound(early = false) {
   if (G.mode !== 'play') return;
   G.earlyEnd = early;
+  sendRats(early ? 0 : 1);   // the night's kills, and the night itself if it was survived
   // ran dry and can't afford even the small pack: straight to game over, no cleared screen
   if (early && broke()) { G.mode = 'cleared'; gameOver(); return; }
   G.mode = 'cleared'; G.breakT = BREAK_TIME; drag.id = null; G.armed = false; G.nade = null; updateNadeBtn();
@@ -1883,8 +1900,7 @@ function endRound(early = false) {
   $('#sp-boss').hidden = !G.boss;
   setMusic('night');
   elSplash.hidden = false;
-  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(early ? 'noAmmo' : G.boss ? null : 'noTime');
-    if ([5, 10, 15, 20, 30, 40, 50].includes(G.night)) track('cleared-night-' + G.night); }
+  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(early ? 'noAmmo' : G.boss ? null : 'noTime'); }
   // surviving the night pays a few bullets; then the shop is open until the next night
   // a full night pays a few bullets; running dry forfeits it. Broke with no bullets means the game is over.
   if (!early) G.ammo += NIGHT_BONUS;
@@ -1939,9 +1955,10 @@ function startGame(night) {
   elPauseBtn.hidden = false;
   G.ammo = AMMO_START; G.coins = 0; G.gameSpecial = {}; G.outT = 0; G.pops = []; updateAmmo();
   G.grenades = 0; G.armed = false; G.nade = null; G.nadeHinted = false;
-  track('game-start');
-  try { if (!localStorage.getItem('rs-played')) { localStorage.setItem('rs-played', '1'); track('new-player'); } } catch (e) {}   // first game on this device
-  G.kills = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
+  sendRats();   // anything left from a previous game
+  let first = 0; try { if (!localStorage.getItem('rs-played')) { localStorage.setItem('rs-played', '1'); first = 1; } } catch (e) {}
+  count({ games: 1, players: first });   // first game on this device
+  G.kills = 0; G.killsSent = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
   startRound(night);
 }
 $('#go').addEventListener('click', () => startGame(1));
@@ -1962,6 +1979,7 @@ $('#resume').addEventListener('click', () => setUserPause(false));
 $('#sound').addEventListener('click', () => setMuted(!A.muted));
 // leave the current game and go back to the start screen, with rats roaming behind it again
 function goHome() {
+  sendRats();   // quitting mid-night: those kills still count
   G.mode = 'menu'; G.boss = false; G.bossEndT = 0; G.ufo = null; G.ufoT = 0; ufoHumStop(); G.armed = false; G.nade = null;
   G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
   for (let i = 0; i < 4; i++) spawnRat(true);
@@ -2000,7 +2018,7 @@ function langChanged() {
   setMuted(A.muted); setShowRifle(showRifle);
   if (!elHint.hidden) elHint.textContent = tr(G.armed ? 'nadeHint' : G.boss ? 'bossHint' : 'hint');
   if (!elSplash.hidden) { renderSpecials(); renderNextLine(); renderShop(); }
-  showUpdate();
+  showUpdate(); showPlayers();
   if (!$('#install-help').hidden) $('#install-help').textContent = tr(isIos() ? 'installIos' : 'installOther');
   setShareLink();
   if (grImg) buildScenery(Pgr);
@@ -2061,9 +2079,8 @@ function updateInstallBtn() {
   if ($('#install').hidden) $('#install-help').hidden = true;
 }
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; updateInstallBtn(); });
-window.addEventListener('appinstalled', () => { installEvt = null; updateInstallBtn(); track('installed'); });
+window.addEventListener('appinstalled', () => { installEvt = null; updateInstallBtn(); count({ installs: 1 }); });
 $('#install').addEventListener('click', () => {
-  track('install-tapped');
   if (installEvt) {
     const ev = installEvt; installEvt = null;
     ev.prompt();
@@ -2075,8 +2092,22 @@ $('#install').addEventListener('click', () => {
   $('#start .fine').hidden = true;   // make room on short landscape screens
 });
 updateInstallBtn();
-// opened from the home-screen icon: counted once the counter script has loaded
-if (installed()) window.addEventListener('load', () => setTimeout(() => track('opened-from-home-screen'), 1500));
+// "Played by N players · M rats killed" on the start screen, from the counter's all-time totals (read once per load;
+// the counter caches them for a minute). Shown as soon as they arrive, whatever the numbers; hidden if the counter
+// can't be reached, and while an update waits.
+const totals = { players: 0, rats: 0, ok: false };
+function showPlayers() {
+  const el = $('#players'), w = STR[LANG].words, b = n => `<b>${n.toLocaleString(LANG)}</b>`;
+  el.hidden = !totals.ok || !!G.newVersion;
+  if (!totals.ok) return;
+  el.innerHTML = tr('playedBy', { n: b(totals.players), w: plural(totals.players, w.player) }) + ' · ' +
+    tr('ratsTotal', { n: b(totals.rats), w: plural(totals.rats, w.rat) });
+}
+fetch(COUNTER + '/totals').then(r => r.ok ? r.json() : null).then(j => {
+  if (j) { totals.players = +j.players || 0; totals.rats = +j.rats || 0; totals.ok = true; showPlayers(); }
+}).catch(() => {});
+// opened from the home-screen icon
+if (installed()) count({ homeOpens: 1 });
 
 // Update check: a page left open (or the home-screen app) keeps running the version it loaded. While the main menu
 // is showing in the foreground, at most once a minute, ask GitHub for version.json (a few bytes, never the cached
@@ -2092,6 +2123,7 @@ function showUpdate() {
   b.textContent = tr('updateBtn', { v: nv });
   $('#go').hidden = true; $('#start .fine').hidden = true; $('#install-help').hidden = true;
   $('#start .lede').hidden = true; $('#start .rules').hidden = true;   // no tagline or controls: just the update
+  showPlayers();
   updateInstallBtn(); updateFsBtn();
 }
 function checkUpdate() {
@@ -2101,7 +2133,7 @@ function checkUpdate() {
     if (j && j.v && newer(j.v, VERSION)) { G.newVersion = j.v; if (G.mode === 'menu') showUpdate(); }
   }).catch(() => {});
 }
-$('#update').addEventListener('click', () => { track('update-tapped'); setTimeout(() => location.reload(), 150); });
+$('#update').addEventListener('click', () => { count({ updates: 1 }); setTimeout(() => location.reload(), 150); });
 setInterval(checkUpdate, 5000);
 document.addEventListener('visibilitychange', checkUpdate);
 document.addEventListener('visibilitychange', applyPause);

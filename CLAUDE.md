@@ -19,13 +19,23 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
 - `index.html`: **the entire game** in one file: HTML, CSS and one inline script (canvas 2D graphics,
   Web Audio sound, everything generated in code). Recorded voice clips are embedded as base64 WAV in
   `VOICE_DATA`. No build step, no dependencies besides Google Fonts
-  (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew) and the GoatCounter script.
-- Analytics (v0.0.21): GoatCounter, dashboard at https://omerv85.goatcounter.com (the owner's account). No cookies,
-  no personal data; it ignores localhost, so local tests aren't counted. Page views count automatically; game events go
-  through `track(name)` and show up as `event/<name>`: `new-player` (first game on a device, from a `rs-played`
-  flag in localStorage, so the total is distinct devices), `game-start`, `cleared-night-N` (5, 10, 15, 20, 30, 40,
-  50), `grenade-bought`, `share-whatsapp`, `install-tapped`, `installed`, `opened-from-home-screen`, `update-tapped`.
-  Keep events few and never send anything that identifies a player.
+  (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew), plus the counter below.
+- `worker/worker.js`, `worker/schema.sql`: the game's counter (v0.0.22, replaced GoatCounter from v0.0.21).
+  A Cloudflare Worker at https://rat-sniper.o-vertman.workers.dev on the owner's Cloudflare account, with a D1
+  database `rat_sniper` bound as `DB` (table `counters(name, value)`; all-time rows plus daily rows `name:YYYY-MM-DD`,
+  UTC). The repo copy is the source; the owner deploys it by pasting it into the Cloudflare dashboard
+  (Workers & Pages → rat-sniper → Edit code → Deploy), so tell them when it changes.
+  - `POST /add` with a JSON body of numbers, e.g. `{"rats":12,"nights":1}`. Only the names in `ALLOWED` count,
+    each capped per message (rats 300). Only accepted from the game's origin (and localhost, for tests).
+  - `GET /totals` (cached 60 s) feeds the start screen; `GET /stats` is the owner's page: all-time and last 30 days.
+  - In the game: `count({...})` (sendBeacon, ignores failures, does nothing on localhost unless
+    `window.__countLocal` is set). Sent: `{games, players}` at game start (`players` 1 only on a device's first game,
+    from the `rs-played` localStorage flag, so the total is distinct devices); `sendRats()` sends kills not yet
+    reported plus `nights: 1` for a survived night, at each night's end, on quitting to the menu and when the page is
+    hidden mid-night (`G.killsSent` prevents double counting); `grenades`, `shares`, `installs`, `homeOpens`,
+    `updates` on those actions. Never send anything that identifies a player.
+  - Start screen: "Played by N players · M rats killed" (`showPlayers`), always shown once the totals load
+    (the owner's choice, even at zero); hidden if the counter can't be reached and while an update waits.
 - `README.md`: short public description.
 - `manifest.webmanifest`, `icon-192.png`, `icon-512.png` (also used as the maskable icon), `apple-touch-icon.png` (180):
   "Add to home screen" support (v0.0.17). The installed game opens full screen in landscape. The icon is a green
