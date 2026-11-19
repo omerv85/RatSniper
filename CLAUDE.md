@@ -131,12 +131,15 @@ Gameplay
   throw (0.42 s flight), then an explosion that does **2 damage** to every rat in the oval (`NADE_RX`/`NADE_RY`, scaled
   by depth with `scAt`), also downs the UFO, flushes the owl and breaks bottles. Code: `setArmed`, `throwNade`, `blast`,
   `drawHand`, `drawGrenade`, `drawBombSight`, `sfxPin`/`sfxThrow`/`sfxNade`. A night ends early only when both bullets
-  and grenades are gone. Bot: ~2.5 kills per grenade.
+  and grenades are gone; while bullets are at 0 and a grenade is left, the grenade button pulses amber (v0.0.27).
+  Bot: ~2.5 kills per grenade.
 - Boss every 5th night: king rat, **8 hits** (was 10 until v0.0.14), rages after each hit, bleeds/growls under half health,
   explodes with rib cage on death; health bar plus a **40 s timer** (`BOSS_TIME`, v0.0.24; the bot kills him in 6-13 s, humans are slower); heavy-metal music.
   If the king is still alive when time runs out, he digs back into his hole (`kingEscape`: the dig-out run in reverse,
   `r.sinking`; he can still be shot until he's under) and the night ends with **no bonus**: "The king rat escaped",
-  announcer "Round cleared. Ran out of time". This stops an idle player sitting on night 5 forever.
+  announcer "Ran out of time". This stops an idle player sitting on night 5 forever. Whenever a boss night ends with the
+  king alive (escaped or ran dry), the results title is a red "THE KING LIVES" instead of "CLEARED" and the announcer
+  skips "Round cleared" (v0.0.27, `kingLived`, `renderBossLine`).
 - Owl (60% of nights) sits on a background ledge; shooting it only makes it fly off (no reward).
 - UFO rat (12% of nights): flies over the yard, hovers with a beam; shooting it down = kill.
 - Rats counted per night and per game; special kills shown as badges on the cleared and game over screens.

@@ -195,6 +195,12 @@ html[lang="he"] #hint, html[lang="he"] .chip, html[lang="he"] .lbl, html[lang="h
 #nade-btn .cnt { position: absolute; top: -5px; right: -5px; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px;
   display: grid; place-items: center; font-family: var(--f-mono); font-size: 13px; line-height: 1; color: #0a0d0c; background: var(--amber); }
 #nade-btn.armed { color: var(--phos); border-color: var(--phos); background: rgba(69,255,122,.18); box-shadow: 0 0 16px rgba(69,255,122,.5); }
+/* out of bullets but still holding a grenade: the button pulses so you notice it */
+#nade-btn.pulse { color: var(--amber); border-color: var(--amber); animation: nade-pulse 1s ease-in-out infinite; }
+@keyframes nade-pulse { 0%, 100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255,190,74,.65); }
+  50% { transform: translateX(-50%) scale(1.14); box-shadow: 0 0 0 12px rgba(255,190,74,0); } }
+@media (prefers-reduced-motion: reduce) { #nade-btn.pulse { animation: none; box-shadow: 0 0 16px rgba(255,190,74,.6); } }
+#splash .cleared.lives { color: #ff5a48; text-shadow: 0 0 28px rgba(255,60,40,.4); }
 body.has-nade #hud-b { bottom: calc(env(safe-area-inset-bottom, 0px) + 80px); }
 body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 /* game over */
@@ -327,7 +333,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.26</div>
+    <div class="ver" id="ver">version 0.0.27</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -368,7 +374,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
     <div class="stack results">
       <p class="brand">RAT SNIPER</p>
       <p class="night"><span data-i18n="night">NIGHT</span> <span id="sp-night">1</span></p>
-      <p class="cleared" data-i18n="cleared">CLEARED</p>
+      <p class="cleared" id="sp-title">CLEARED</p>
       <p class="sub boss-slain" id="sp-boss" hidden>King rat slain</p>
       <div class="tally"><svg aria-hidden="true"><use href="#deadrat"/></svg><span>× <span id="sp-kills">0</span></span></div>
       <div class="specials" id="sp-special" hidden>
@@ -432,14 +438,14 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.26';
+const VERSION = '0.0.27';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
     tagline: "Let's go get them rats!", ruleAim: '<b>DRAG</b> to aim', ruleFire: '<b>LIFT</b> to fire',
     start: 'Start night 1', fine: 'Best in landscape · sound on', updateBtn: 'New version {v} · tap to update', install: 'Add to home screen', installIos: 'Tap Share, then "Add to Home Screen"', installOther: 'Open the browser menu, then "Add to Home screen"', version: 'version', language: 'Language',
     night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 8 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
-    headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', kingEscaped: 'The king rat escaped', escapedNoBonus: 'The king escaped: no night bonus', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
+    headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', kingEscaped: 'The king rat escaped', kingLives: 'THE KING LIVES', escapedNoBonus: 'The king escaped: no night bonus', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
     paused: 'PAUSED', resume: 'Back to the game', soundOn: 'Sound on', soundOff: 'Sound off', rifleShown: 'Rifle shown', rifleHidden: 'Rifle hidden',
     mainMenu: 'Main menu', rotateTitle: 'TURN YOUR PHONE SIDEWAYS', rotateBody: 'Rat Sniper plays in landscape. The game is paused until you rotate.',
     fullscreen: 'Go full screen', pause: 'Pause', sacks: ['FEED', 'OATS', 'CORN'],
@@ -456,7 +462,7 @@ const STR = {
     tagline: 'Вперёд, за крысами!', ruleAim: '<b>ТЯНИ</b>, чтобы целиться', ruleFire: '<b>ОТПУСТИ</b>, чтобы стрелять',
     start: 'Начать ночь 1', fine: 'Лучше горизонтально · со звуком', updateBtn: 'Новая версия {v} · нажмите, чтобы обновить', install: 'На главный экран', installIos: 'Нажмите «Поделиться», затем «На экран „Домой“»', installOther: 'Откройте меню браузера и выберите «Добавить на главный экран»', version: 'версия', language: 'Язык',
     night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 8 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
-    headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', kingEscaped: 'Король крыс сбежал', escapedNoBonus: 'Король сбежал: без бонуса за ночь', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
+    headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', kingEscaped: 'Король крыс сбежал', kingLives: 'КОРОЛЬ ЖИВ', escapedNoBonus: 'Король сбежал: без бонуса за ночь', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
     paused: 'ПАУЗА', resume: 'Вернуться в игру', soundOn: 'Звук вкл.', soundOff: 'Звук выкл.', rifleShown: 'Винтовка видна', rifleHidden: 'Винтовка скрыта',
     mainMenu: 'Главное меню', rotateTitle: 'ПОВЕРНИТЕ ТЕЛЕФОН', rotateBody: 'Rat Sniper играется в горизонтальном режиме. Игра на паузе, пока вы не повернёте телефон.',
     fullscreen: 'Во весь экран', pause: 'Пауза', sacks: ['КОРМ', 'ОВЁС', 'ЗЕРНО'],
@@ -473,7 +479,7 @@ const STR = {
     tagline: '¡Vamos a por esas ratas!', ruleAim: '<b>ARRASTRA</b> para apuntar', ruleFire: '<b>SUELTA</b> para disparar',
     start: 'Empezar noche 1', fine: 'Mejor en horizontal · con sonido', updateBtn: 'Nueva versión {v} · toca para actualizar', install: 'Añadir a la pantalla de inicio', installIos: 'Toca Compartir y luego «Añadir a pantalla de inicio»', installOther: 'Abre el menú del navegador y elige «Añadir a la pantalla de inicio»', version: 'versión', language: 'Idioma',
     night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 8 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
-    headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', kingEscaped: 'El rey rata escapó', escapedNoBonus: 'El rey escapó: sin bonificación de la noche', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
+    headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', kingEscaped: 'El rey rata escapó', kingLives: 'EL REY VIVE', escapedNoBonus: 'El rey escapó: sin bonificación de la noche', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
     paused: 'PAUSA', resume: 'Volver al juego', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', rifleShown: 'Rifle visible', rifleHidden: 'Rifle oculto',
     mainMenu: 'Menú principal', rotateTitle: 'GIRA EL TELÉFONO', rotateBody: 'Rat Sniper se juega en horizontal. El juego está en pausa hasta que lo gires.',
     fullscreen: 'Pantalla completa', pause: 'Pausa', sacks: ['PIENSO', 'AVENA', 'MAÍZ'],
@@ -490,7 +496,7 @@ const STR = {
     tagline: 'Allez, on chope ces rats !', ruleAim: '<b>GLISSE</b> pour viser', ruleFire: '<b>RELÂCHE</b> pour tirer',
     start: 'Commencer la nuit 1', fine: 'Mieux en paysage · avec le son', updateBtn: 'Nouvelle version {v} · touchez pour mettre à jour', install: 'Ajouter à l’écran d’accueil', installIos: 'Touchez Partager, puis « Sur l’écran d’accueil »', installOther: 'Ouvrez le menu du navigateur, puis « Ajouter à l’écran d’accueil »', version: 'version', language: 'Langue',
     night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 8 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
-    headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', kingEscaped: 'Le roi des rats s’est échappé', escapedNoBonus: 'Le roi s’est échappé : pas de bonus de nuit', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
+    headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', kingEscaped: 'Le roi des rats s’est échappé', kingLives: 'LE ROI VIT', escapedNoBonus: 'Le roi s’est échappé : pas de bonus de nuit', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
     paused: 'PAUSE', resume: 'Retour au jeu', soundOn: 'Son activé', soundOff: 'Son coupé', rifleShown: 'Fusil visible', rifleHidden: 'Fusil masqué',
     mainMenu: 'Menu principal', rotateTitle: 'TOURNE TON TÉLÉPHONE', rotateBody: 'Rat Sniper se joue en paysage. Le jeu est en pause jusqu’à ce que tu le tournes.',
     fullscreen: 'Plein écran', pause: 'Pause', sacks: ['GRAIN', 'AVOINE', 'MAÏS'],
@@ -507,7 +513,7 @@ const STR = {
     tagline: 'בואו נתפוס את העכברושים!', ruleAim: '<b>גררו</b> כדי לכוון', ruleFire: '<b>שחררו</b> כדי לירות',
     start: 'התחלת לילה 1', fine: 'הכי טוב לרוחב · עם סאונד', updateBtn: 'גרסה חדשה {v} · הקישו לעדכון', install: 'הוספה למסך הבית', installIos: 'הקישו על שיתוף ואז על "הוספה למסך הבית"', installOther: 'פתחו את תפריט הדפדפן ובחרו "הוספה למסך הבית"', version: 'גרסה', language: 'שפה',
     night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 8 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
-    headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', kingEscaped: 'מלך העכברושים ברח', escapedNoBonus: 'המלך ברח: אין בונוס לילה', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
+    headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', kingEscaped: 'מלך העכברושים ברח', kingLives: 'המלך חי', escapedNoBonus: 'המלך ברח: אין בונוס לילה', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
     paused: 'מושהה', resume: 'חזרה למשחק', soundOn: 'סאונד פועל', soundOff: 'סאונד כבוי', rifleShown: 'הרובה מוצג', rifleHidden: 'הרובה מוסתר',
     mainMenu: 'תפריט ראשי', rotateTitle: 'סובבו את הטלפון לרוחב', rotateBody: 'משחקים ב-Rat Sniper לרוחב. המשחק מושהה עד שתסובבו את הטלפון.',
     fullscreen: 'מסך מלא', pause: 'השהיה', sacks: ['מספוא', 'שיבולת', 'תירס'],
@@ -1290,7 +1296,8 @@ function sfxHit(delay) {
   q.connect(qg); qg.connect(A.sfx); q.start(t + 0.02); q.stop(t + 0.12);
 }
 // why: 'noAmmo' or 'noTime' is said after "Round cleared" (nothing extra when the king was killed)
-function sfxCleared(why) {
+// cleared = false (the king lived): skip "Round cleared" and only say why the night ended
+function sfxCleared(why, cleared = true) {
   const c = A.ctx;
   if (c) {
     const t = c.currentTime;
@@ -1301,7 +1308,7 @@ function sfxCleared(why) {
       o.connect(g); g.connect(A.sfx); o.start(t); o.stop(t + 2.7);
     }
   }
-  voice('round', true, why);
+  if (cleared) voice('round', true, why); else if (why) voice(why, true);
 }
 /* Announcer: recorded clips of a deep male voice, embedded in the page so every phone and laptop
    plays exactly the same audio (built-in speech voices differ per device and sound metallic on some). */
@@ -1624,6 +1631,7 @@ function updateNadeBtn() {
   b.hidden = !show || G.userPaused;
   document.body.classList.toggle('has-nade', show);
   b.classList.toggle('armed', G.armed);
+  b.classList.toggle('pulse', show && !G.armed && G.ammo <= 0 && G.grenades > 0);
   b.setAttribute('aria-pressed', String(G.armed));
   $('#nade-cnt').textContent = G.grenades;
 }
@@ -1789,6 +1797,7 @@ function payBounty(kind, head, x, y) {
 function updateAmmo() {
   $('#hud-ammo-n').textContent = G.ammo;
   $('#hud-ammo').classList.toggle('low', G.ammo <= 3);
+  updateNadeBtn();   // the grenade button pulses once the bullets are gone
 }
 // between nights: the night bonus, wallet and the two packs
 // "15 bullets · 11 coins" in the current language, with the right plural forms
@@ -1896,10 +1905,15 @@ function sendRats(nights = 0) {
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && G.mode === 'play') sendRats(); });
 // boss night result under "CLEARED": slain if the king is dead, escaped if he got away, nothing if you ran dry
+// and the big title: "CLEARED", or in red "THE KING LIVES" when a boss night ends with him alive (ran dry or escaped)
+const kingLived = () => G.boss && (G.earlyEnd === 'escape' || G.rats.some(r => r.king && r.alive));
 function renderBossLine() {
   const el = $('#sp-boss'), escaped = G.earlyEnd === 'escape', slain = G.boss && G.rats.some(r => r.king && !r.alive);
   el.hidden = !(escaped || slain);
   el.textContent = tr(escaped ? 'kingEscaped' : 'kingSlain');
+  const title = $('#sp-title'), lives = kingLived();
+  title.textContent = tr(lives ? 'kingLives' : 'cleared');
+  title.classList.toggle('lives', lives);
 }
 // early: the night ended without being survived (no bonus); why: 'ammo' (ran dry) or 'escape' (the king got away)
 function endRound(early = false, why = 'ammo') {
@@ -1919,7 +1933,7 @@ function endRound(early = false, why = 'ammo') {
   renderBossLine();
   setMusic('night');
   elSplash.hidden = false;
-  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(G.earlyEnd === 'ammo' ? 'noAmmo' : G.earlyEnd === 'escape' || !G.boss ? 'noTime' : null); }
+  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(G.earlyEnd === 'ammo' ? 'noAmmo' : G.earlyEnd === 'escape' || !G.boss ? 'noTime' : null, !kingLived()); }
   // surviving the night pays a few bullets; then the shop is open until the next night
   // a full night pays a few bullets; running dry forfeits it. Broke with no bullets means the game is over.
   if (!early) G.ammo += NIGHT_BONUS;
