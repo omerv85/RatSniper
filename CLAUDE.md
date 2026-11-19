@@ -9,7 +9,7 @@ design decisions the owner (GitHub user `omerv85`) has already made, so you don'
   delay). `.assetsignore` keeps `CLAUDE.md`, `README.md` and `worker/` off the website. GitHub Pages
   (omerv85.github.io/RatSniper) was switched off at the owner's request; the address change reset players' saved data.
 - Repo: https://github.com/omerv85/RatSniper
-- Current version: see `const VERSION` at the top of `game.js`
+- Current version: see `const VERSION` at the top of `js/game.js`
 
 ## What the game is
 
@@ -20,12 +20,27 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
 
 ## Files
 
-The game is three files (split out of one `index.html` in v0.0.33), no build step, no dependencies besides
-Google Fonts (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew), plus the counter below:
+No build step, no dependencies besides Google Fonts (Big Shoulders Stencil Display, Share Tech Mono, Rubik for
+Cyrillic/Hebrew), plus the counter below. There are no image sprites: every creature, the rifles and the scenery are
+drawn in code on a 2D canvas, and all sound except the announcer is synthesized.
 - `index.html`: the page: `<head>` (meta, Open Graph, fonts), the start/shop/pause/game-over screens and the SVG symbols.
 - `style.css`: all the styles.
-- `game.js`: the whole script, in one `(() => { 'use strict'; ... })()` wrapper (canvas 2D graphics, Web Audio sound,
-  everything generated in code). Loaded at the end of `<body>`, so it runs after the page's elements exist.
+- `js/*.js`: the script, split by topic in v0.0.36 (one `game.js` from v0.0.33, before that inside `index.html`).
+  Plain `<script>` tags at the end of `<body>`, in this order; **they share one global scope** (no wrapper, no
+  modules), so any file uses any other file's names directly. Only top-level code that runs at load time must not use
+  a later file's names; `game.js` comes last and starts the game. Each file starts with `'use strict'`.
+  - `lang.js`: `LANGS`, `STR` (all translations), `plural()`.
+  - `config.js`: tuning numbers: night timing, economy, difficulty (`DIFF`, `maxAlive`, `ratSpeed` ...), rifle and
+    grenade prices and damage, `hpMul`, boss/alpha/rare rates, owl/UFO/jackal/boar chances, speeds and health.
+  - `audio.js`: Web Audio setup, music, every `sfx*`, the announcer.
+  - `draw-scene.js`: pre-rendered scenery (`buildScenery`), night-vision overlay (`buildPost`), clutter (`drawObs`).
+  - `draw-rats.js`: rats and the four kings (tails, coats, costumes, armor/cyborg/demon parts, `drawRat`).
+  - `draw-animals.js`: `drawOwl`, `drawUfo`, `drawJackal(At)`, `drawBoar(At)`.
+  - `draw-weapons.js`: grenade and hand, the four rifles, shot effects, bomb sight, joystick, crosshair.
+  - `game.js`: everything else: state `G`, rules, spawning and behaviour, shooting, rounds and shop, input, menus,
+    `update`, `render` (puts the frame together), boot. Where code moved out, a one-line comment says where to.
+  Behaviour stays in `game.js` and only the drawing moved, e.g. the boar's `spawnBoar`/`boarTick`/`boarHit` are in
+  `game.js` and `drawBoar` is in `draw-animals.js`. A new file needs its own `<script>` tag in `index.html`.
 - `voice/<lang>/<clip>.wav`: the announcer's recorded clips (en, he; clips listed in `VOICE_CLIPS`). Until v0.0.31
   they were embedded in the page as base64 (`VOICE_DATA`, ~600 KB); since v0.0.32 `loadClips()` fetches them when
   the audio starts (first game), only for the language in use, and again on a language switch.
@@ -61,20 +76,20 @@ Google Fonts (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic
 The game was first developed as a claude.ai artifact (https://claude.ai/artifact/3pFadoARRyjL2661NMdVh5,
 private to the owner) from a fragment file that was wrapped into `index.html`. That source file lived in a
 temporary session folder and is gone; **the files in this repo are now the source of truth. Edit them
-directly.** If you also update the artifact, publish `index.html` to that URL with `style.css`, `game.js` and
+directly.** If you also update the artifact, publish `index.html` to that URL with `style.css`, `js/*.js` and
 `voice/` as supporting files.
 
 ## How to ship a change (the owner's conventions)
 
-1. Edit `game.js` / `style.css` / `index.html`.
-2. Bump the version: `const VERSION = '0.0.N'` in `game.js` **and** the static
+1. Edit `js/*.js` / `style.css` / `index.html`.
+2. Bump the version: `const VERSION = '0.0.N'` in `js/game.js` **and** the static
    `<div class="ver" id="ver">version 0.0.N</div>` in `index.html`, **and** `version.json` (`{"v":"0.0.N"}`).
    Patch number +1 per push. `version.json` drives the in-game update check (v0.0.20): while the main menu is in the
    foreground, at most once a minute, the game fetches it uncached and shows "New version … tap to update" (a reload)
    if it's newer than the running `VERSION`. A page left open or the home-screen app finds out this way. While an
    update waits it is the only button (Start, install and full screen hide) and checking stops. Traffic: about
    1.4 KB per check; nothing while the screen is off or the game is in the background. Forgetting
-   to bump it just means no prompt; bumping it without pushing the new `game.js` would prompt a useless reload.
+   to bump it just means no prompt; bumping it without pushing the new `js/game.js` would prompt a useless reload.
 3. Test (see Testing).
 4. Commit, tag `v0.0.N`, push both: `git push origin main v0.0.N`.
 5. **Tell the owner the version number** you pushed; they check it against the start screen.
@@ -93,9 +108,10 @@ Owner preferences:
 - Serve the folder locally with `node dev/serve.js` (http://localhost:8768; `.claude/launch.json` config
   `ratsniper` runs it for the browser pane) and open it at phone size, e.g. 812×375 landscape.
 - For logic checks, expose internals without touching the real files: the server serves `/test` as the game with
-  `window.__t = { G, A, fire, update, startRound, buyPack, makeRat, voice, setLang, VERSION }` added just before
-  `const fontsReady = document` (done in memory, nothing is written), then drive the game from the console. Add more
-  names in `dev/serve.js` when needed. The script is wrapped in a function, so its names aren't global otherwise.
+  `window.__t = { G, A, fire, update, startRound, buyPack, makeRat, voice, setLang, VERSION, ... }` added to
+  `js/game.js` just before `const fontsReady = document`, and `HP_STEP` made a `let` in `js/config.js` for the bot
+  (done in memory, nothing is written), then drive the game from the console. Since v0.0.36 the scripts share the
+  global scope, so the console (and `javascript_tool`) can also call any function or read any constant by name.
 - **Balance testing bot** (`dev/bot.js`, saved since v0.0.34; usage at its top: load it in `/test` and call `botRun`).
   Long runs block the page: start them without awaiting (store results on `window`) and poll.
   The economy was first tuned with a bot that plays whole games inside the real code,
@@ -105,9 +121,9 @@ Owner preferences:
   v0.0.14 (median night reached): casual ~4, average ~8, good ~30.
 - If the browser pane/tab is hidden, `requestAnimationFrame` stops and the game appears frozen. That's not a bug.
 
-## Code map (in `game.js`)
+## Code map (`js/` files)
 
-Search for these names:
+Search for these names (Grep over `js/`; see Files for which file holds what):
 - `STR`, `LANGS`, `tr()`, `applyLang()`: translations (en, ru, es, fr, he). **Every player-visible string
   goes through `STR`**, including HTML (`data-i18n`, `data-i18n-html`, `data-i18n-aria`), canvas text
   (feed sacks), share message and spoken lines. Hebrew switches the page to `dir="rtl"`. Russian plurals via `plural()`.

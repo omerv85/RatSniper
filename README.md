@@ -15,4 +15,4 @@ Best played in landscape with the sound on.
 
 ## About
 
-Plain HTML, CSS and JavaScript (`index.html`, `style.css`, `game.js`) with no build step: canvas graphics and Web Audio sound, all generated in code. The only recorded audio is the announcer (`voice/`).
+Plain HTML, CSS and JavaScript (`index.html`, `style.css`, `js/`) with no build step: canvas graphics and Web Audio sound, all generated in code. The only recorded audio is the announcer (`voice/`).

@@ -124,7 +124,7 @@
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.35</div>
+    <div class="ver" id="ver">version 0.0.36</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -226,7 +226,15 @@
   </div>
 </section>
 
-<script src="game.js"></script>
+<!-- plain scripts sharing one global scope; js/game.js last (it starts the game) -->
+<script src="js/lang.js"></script>
+<script src="js/config.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/draw-scene.js"></script>
+<script src="js/draw-rats.js"></script>
+<script src="js/draw-animals.js"></script>
+<script src="js/draw-weapons.js"></script>
+<script src="js/game.js"></script>
 
 </body>
 </html>

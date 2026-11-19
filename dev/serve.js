@@ -16,12 +16,15 @@ http.createServer((req, res) => {
   const send = (code, body, type) => { res.writeHead(code, { 'Content-Type': type, 'Cache-Control': 'no-store' }); res.end(body); };
   try {
     if (url === '/test') {
-      const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').replace('src="game.js"', 'src="test.js"');
+      const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8').replace('src="js/game.js"', 'src="/test.js"').replace('src="js/config.js"', 'src="/test-config.js"');
       return send(200, html, TYPES['.html']);
     }
     if (url === '/test.js') {
-      const js = fs.readFileSync(path.join(ROOT, 'game.js'), 'utf8').replace('const fontsReady = document', EXPOSE + 'const fontsReady = document')
-        .replace('const HP_STEP =', 'let HP_STEP =');   // so the balance bot (dev/bot.js) can try other values
+      const js = fs.readFileSync(path.join(ROOT, 'js', 'game.js'), 'utf8').replace('const fontsReady = document', EXPOSE + 'const fontsReady = document');
+      return send(200, js, TYPES['.js']);
+    }
+    if (url === '/test-config.js') {   // HP_STEP as let, so the balance bot (dev/bot.js) can try other values
+      const js = fs.readFileSync(path.join(ROOT, 'js', 'config.js'), 'utf8').replace('const HP_STEP =', 'let HP_STEP =');
       return send(200, js, TYPES['.js']);
     }
     if (url.endsWith('/')) url += 'index.html';
