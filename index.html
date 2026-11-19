@@ -327,7 +327,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.23</div>
+    <div class="ver" id="ver">version 0.0.24</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -369,7 +369,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
       <p class="brand">RAT SNIPER</p>
       <p class="night"><span data-i18n="night">NIGHT</span> <span id="sp-night">1</span></p>
       <p class="cleared" data-i18n="cleared">CLEARED</p>
-      <p class="sub boss-slain" id="sp-boss" hidden data-i18n="kingSlain">King rat slain</p>
+      <p class="sub boss-slain" id="sp-boss" hidden>King rat slain</p>
       <div class="tally"><svg aria-hidden="true"><use href="#deadrat"/></svg><span>× <span id="sp-kills">0</span></span></div>
       <div class="specials" id="sp-special" hidden>
         <div class="sub" data-i18n="special">Special kills</div>
@@ -432,14 +432,14 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.23';
+const VERSION = '0.0.24';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
     tagline: "Let's go get them rats!", ruleAim: '<b>DRAG</b> to aim', ruleFire: '<b>LIFT</b> to fire',
     start: 'Start night 1', fine: 'Best in landscape · sound on', updateBtn: 'New version {v} · tap to update', install: 'Add to home screen', installIos: 'Tap Share, then "Add to Home Screen"', installOther: 'Open the browser menu, then "Add to Home screen"', version: 'version', language: 'Language',
     night: 'NIGHT', hint: 'DRAG TO AIM · LIFT TO FIRE', bossHint: 'KING RAT · 8 HITS · HEAD SHOTS COUNT 2', kingRat: 'KING RAT',
-    headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
+    headshot: 'HEAD SHOT', cleared: 'CLEARED', kingSlain: 'King rat slain', kingEscaped: 'The king rat escaped', escapedNoBonus: 'The king escaped: no night bonus', special: 'Special kills', total: 'Total', nextBegins: 'Night {n} begins',
     paused: 'PAUSED', resume: 'Back to the game', soundOn: 'Sound on', soundOff: 'Sound off', rifleShown: 'Rifle shown', rifleHidden: 'Rifle hidden',
     mainMenu: 'Main menu', rotateTitle: 'TURN YOUR PHONE SIDEWAYS', rotateBody: 'Rat Sniper plays in landscape. The game is paused until you rotate.',
     fullscreen: 'Go full screen', pause: 'Pause', sacks: ['FEED', 'OATS', 'CORN'],
@@ -456,7 +456,7 @@ const STR = {
     tagline: 'Вперёд, за крысами!', ruleAim: '<b>ТЯНИ</b>, чтобы целиться', ruleFire: '<b>ОТПУСТИ</b>, чтобы стрелять',
     start: 'Начать ночь 1', fine: 'Лучше горизонтально · со звуком', updateBtn: 'Новая версия {v} · нажмите, чтобы обновить', install: 'На главный экран', installIos: 'Нажмите «Поделиться», затем «На экран „Домой“»', installOther: 'Откройте меню браузера и выберите «Добавить на главный экран»', version: 'версия', language: 'Язык',
     night: 'НОЧЬ', hint: 'ТЯНИ — ЦЕЛЬСЯ · ОТПУСТИ — ОГОНЬ', bossHint: 'КОРОЛЬ КРЫС · 8 ПОПАДАНИЙ · В ГОЛОВУ — ЗА ДВА', kingRat: 'КОРОЛЬ КРЫС',
-    headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
+    headshot: 'В ГОЛОВУ!', cleared: 'ЗАЧИЩЕНА', kingSlain: 'Король крыс убит', kingEscaped: 'Король крыс сбежал', escapedNoBonus: 'Король сбежал: без бонуса за ночь', special: 'Особые трофеи', total: 'Всего', nextBegins: 'Ночь {n} начинается',
     paused: 'ПАУЗА', resume: 'Вернуться в игру', soundOn: 'Звук вкл.', soundOff: 'Звук выкл.', rifleShown: 'Винтовка видна', rifleHidden: 'Винтовка скрыта',
     mainMenu: 'Главное меню', rotateTitle: 'ПОВЕРНИТЕ ТЕЛЕФОН', rotateBody: 'Rat Sniper играется в горизонтальном режиме. Игра на паузе, пока вы не повернёте телефон.',
     fullscreen: 'Во весь экран', pause: 'Пауза', sacks: ['КОРМ', 'ОВЁС', 'ЗЕРНО'],
@@ -473,7 +473,7 @@ const STR = {
     tagline: '¡Vamos a por esas ratas!', ruleAim: '<b>ARRASTRA</b> para apuntar', ruleFire: '<b>SUELTA</b> para disparar',
     start: 'Empezar noche 1', fine: 'Mejor en horizontal · con sonido', updateBtn: 'Nueva versión {v} · toca para actualizar', install: 'Añadir a la pantalla de inicio', installIos: 'Toca Compartir y luego «Añadir a pantalla de inicio»', installOther: 'Abre el menú del navegador y elige «Añadir a la pantalla de inicio»', version: 'versión', language: 'Idioma',
     night: 'NOCHE', hint: 'ARRASTRA PARA APUNTAR · SUELTA PARA DISPARAR', bossHint: 'REY RATA · 8 IMPACTOS · A LA CABEZA VALEN 2', kingRat: 'REY RATA',
-    headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
+    headshot: '¡A LA CABEZA!', cleared: 'SUPERADA', kingSlain: 'Rey rata abatido', kingEscaped: 'El rey rata escapó', escapedNoBonus: 'El rey escapó: sin bonificación de la noche', special: 'Bajas especiales', total: 'Total', nextBegins: 'Empieza la noche {n}',
     paused: 'PAUSA', resume: 'Volver al juego', soundOn: 'Sonido activado', soundOff: 'Sonido desactivado', rifleShown: 'Rifle visible', rifleHidden: 'Rifle oculto',
     mainMenu: 'Menú principal', rotateTitle: 'GIRA EL TELÉFONO', rotateBody: 'Rat Sniper se juega en horizontal. El juego está en pausa hasta que lo gires.',
     fullscreen: 'Pantalla completa', pause: 'Pausa', sacks: ['PIENSO', 'AVENA', 'MAÍZ'],
@@ -490,7 +490,7 @@ const STR = {
     tagline: 'Allez, on chope ces rats !', ruleAim: '<b>GLISSE</b> pour viser', ruleFire: '<b>RELÂCHE</b> pour tirer',
     start: 'Commencer la nuit 1', fine: 'Mieux en paysage · avec le son', updateBtn: 'Nouvelle version {v} · touchez pour mettre à jour', install: 'Ajouter à l’écran d’accueil', installIos: 'Touchez Partager, puis « Sur l’écran d’accueil »', installOther: 'Ouvrez le menu du navigateur, puis « Ajouter à l’écran d’accueil »', version: 'version', language: 'Langue',
     night: 'NUIT', hint: 'GLISSE POUR VISER · RELÂCHE POUR TIRER', bossHint: 'ROI DES RATS · 8 TOUCHES · LA TÊTE COMPTE DOUBLE', kingRat: 'ROI DES RATS',
-    headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
+    headshot: 'EN PLEINE TÊTE !', cleared: 'TERMINÉE', kingSlain: 'Roi des rats abattu', kingEscaped: 'Le roi des rats s’est échappé', escapedNoBonus: 'Le roi s’est échappé : pas de bonus de nuit', special: 'Prises spéciales', total: 'Total', nextBegins: 'La nuit {n} commence',
     paused: 'PAUSE', resume: 'Retour au jeu', soundOn: 'Son activé', soundOff: 'Son coupé', rifleShown: 'Fusil visible', rifleHidden: 'Fusil masqué',
     mainMenu: 'Menu principal', rotateTitle: 'TOURNE TON TÉLÉPHONE', rotateBody: 'Rat Sniper se joue en paysage. Le jeu est en pause jusqu’à ce que tu le tournes.',
     fullscreen: 'Plein écran', pause: 'Pause', sacks: ['GRAIN', 'AVOINE', 'MAÏS'],
@@ -507,7 +507,7 @@ const STR = {
     tagline: 'בואו נתפוס את העכברושים!', ruleAim: '<b>גררו</b> כדי לכוון', ruleFire: '<b>שחררו</b> כדי לירות',
     start: 'התחלת לילה 1', fine: 'הכי טוב לרוחב · עם סאונד', updateBtn: 'גרסה חדשה {v} · הקישו לעדכון', install: 'הוספה למסך הבית', installIos: 'הקישו על שיתוף ואז על "הוספה למסך הבית"', installOther: 'פתחו את תפריט הדפדפן ובחרו "הוספה למסך הבית"', version: 'גרסה', language: 'שפה',
     night: 'לילה', hint: 'גררו לכיוון · שחררו לירי', bossHint: 'מלך העכברושים · 8 פגיעות · פגיעה בראש שווה 2', kingRat: 'מלך העכברושים',
-    headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
+    headshot: 'פגיעה בראש!', cleared: 'הושלם', kingSlain: 'מלך העכברושים חוסל', kingEscaped: 'מלך העכברושים ברח', escapedNoBonus: 'המלך ברח: אין בונוס לילה', special: 'חיסולים מיוחדים', total: 'סה״כ', nextBegins: 'לילה {n} מתחיל',
     paused: 'מושהה', resume: 'חזרה למשחק', soundOn: 'סאונד פועל', soundOff: 'סאונד כבוי', rifleShown: 'הרובה מוצג', rifleHidden: 'הרובה מוסתר',
     mainMenu: 'תפריט ראשי', rotateTitle: 'סובבו את הטלפון לרוחב', rotateBody: 'משחקים ב-Rat Sniper לרוחב. המשחק מושהה עד שתסובבו את הטלפון.',
     fullscreen: 'מסך מלא', pause: 'השהיה', sacks: ['מספוא', 'שיבולת', 'תירס'],
@@ -560,6 +560,7 @@ const LANES = [
 ];
 const AIM_MIN = 430, AIM_MAX = 950;
 const ROUND_TIME = 30, BREAK_TIME = 15;   // the break is longer now: it's also the shop
+const BOSS_TIME = 40;                     // the king digs back in and escapes if he's still alive after this
 /* economy: every shot costs a bullet; kills pay coins; coins buy bullets between nights.
    Running out of bullets during a night ends the game. */
 const AMMO_START = 15, NIGHT_BONUS = 5, HEAD_BONUS = 1;
@@ -1386,6 +1387,15 @@ const maxAlive = () => G.mode === 'menu' ? 5 : Math.min(12, 4 + G.night);
 const stopDur = () => Math.max(0.55, rand(1.3, 2.8) - 0.13 * (G.night - 1));
 const ratSpeed = r => 72 * r.ls * (VAR_SPEED[r.variant] || 1) * (r.king ? 1.5 * (r.hp <= r.maxHp / 2 ? 1.5 : 1) : diff()) * (r.state === 'scurry' ? 2.3 * DIFF.flee() : r.state === 'rage' ? 1.9 : 1);
 const BOSS_EVERY = 5, KING_HP = 8, KING_SIZE = 3.2;    // 8 hits: there are no other rats on boss nights to pay for bullets
+// the boss night's time is up: the king digs back into his hole (he can still be shot until he's under)
+function kingEscape() {
+  const k = G.rats.find(r => r.king && r.alive);
+  if (!k) { endRound(true, 'escape'); return; }
+  k.state = 'emerge'; k.sinking = true; k.emerge = Math.min(1, k.emerge || 1); k.dirtT = 0;
+  k.rage = false; k.rear = k.rearTarget = 0; k.jx = k.jy = 0;
+  sfxAngry(0, 0.45, 1.6, 2); sfxDig(0.1, true, k.lane);
+  G.escapeT = KING_EMERGE_T + 0.7;
+}
 function makeKing() {
   const lane = Math.random() < 0.5 ? 2 : 3, side = Math.random() < 0.5 ? -1 : 1;
   const r = makeRat(G.aimX + side * viewW * 0.18, lane, -side, true);
@@ -1465,7 +1475,9 @@ function updRat(r, dt) {
   r.jx *= Math.exp(-dt * 10); r.jy *= Math.exp(-dt * 10);
   if (r.blink > 0) r.blink -= dt; else if (!r.rage && Math.random() < dt * 0.22) r.blink = 0.12;
   if (r.state === 'emerge') {
-    r.emerge += dt / (r.king ? KING_EMERGE_T : EMERGE_T);
+    // the escaping king runs the dig-out in reverse; once he's under, he's gone
+    r.emerge += (r.sinking ? -1 : 1) * dt / (r.king ? KING_EMERGE_T : EMERGE_T);
+    if (r.sinking && r.emerge <= 0) { r.emerge = 0; r.alive = false; r.gone = true; return; }
     r.dirtT -= dt;
     if (r.emerge < 0.85 && r.dirtT <= 0) {
       r.dirtT = r.king ? 0.025 : 0.045;
@@ -1473,7 +1485,7 @@ function updRat(r, dt) {
         x: r.x + rand(-26, 26) * r.sc, y: r.y - 2, vx: rand(-110, 110) * r.sc, vy: rand(-240, -80) * r.sc,
         ground: r.y + rand(-3, 6) * r.sc, size: rand(1, 2.4) * r.sc, life: 2, sc: r.sc });
     }
-    if (r.emerge >= 1) { r.state = 'walk'; r.t = rand(0.8, 2.2); }
+    if (r.emerge >= 1 && !r.sinking) { r.state = 'walk'; r.t = rand(0.8, 2.2); }
     return;
   }
   if (r.king) {
@@ -1678,7 +1690,8 @@ function hitRat(r, hit, ax, ay, blasted = false, n = 0) {
   }
   if (r.hp > dmg) {
     r.hp -= dmg; r.rage = true;
-    if (head) headshot(); r.state = 'rage'; r.t = 999; r.jerkT = 0; r.pause = 0; r.blink = 0; r.rearTarget = 0;
+    if (head) headshot();
+    if (!r.sinking) { r.state = 'rage'; r.t = 999; r.jerkT = 0; r.pause = 0; r.blink = 0; r.rearTarget = 0; }   // a sinking king keeps going down
     if (r.wounds.length < 14) r.wounds.push([hit.lx, hit.ly]);
     spray(r, ax, ay, 12, BLOOD, 1, r.king ? 0.6 : 1);
     G.puffs.push({ x: ax, y: ay, r: 3 * r.sc, max: 26 * r.sc, life: 0.3, t: 0, col: [45, 12, 14] });
@@ -1792,7 +1805,7 @@ const cheapest = () => Math.min(...PACKS.map((_, i) => packPrice(i)));   // bull
 // nothing left to shoot or throw, and no coins for bullets
 const broke = () => G.ammo <= 0 && G.grenades <= 0 && G.coins < cheapest();
 function renderShop() {
-  $('#shop-bonus').textContent = G.earlyEnd ? tr('noBonus') : tr('bonusLine', { n: NIGHT_BONUS });
+  $('#shop-bonus').textContent = G.earlyEnd ? tr(G.earlyEnd === 'escape' ? 'escapedNoBonus' : 'noBonus') : tr('bonusLine', { n: NIGHT_BONUS });
   $('#shop-bonus').classList.toggle('poor', !!G.earlyEnd);
   $('#shop-ammo').textContent = G.ammo; $('#shop-coins').textContent = G.coins; $('#shop-nades').textContent = G.grenades;
   document.querySelectorAll('.item').forEach(b => {
@@ -1847,7 +1860,7 @@ function renderSpecials() {
 }
 function renderNextLine() { $('#sp-next-line').innerHTML = tr('nextBegins', { n: `<b>${G.night + 1}</b>` }); }
 function startRound(n) {
-  G.night = n; G.nightKills = 0; G.time = ROUND_TIME; G.nightSpecial = {};
+  G.night = n; G.nightKills = 0; G.time = n % BOSS_EVERY === 0 ? BOSS_TIME : ROUND_TIME; G.nightSpecial = {}; G.escapeT = 0;
   G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
   G.spawnT = 1.2; G.lastShot = -9; G.armed = false; G.nade = null; G.throwT = -9; G.wpn = 0;
   for (const o of G.obs) o.broken = false;   // a fresh empty bottle each night
@@ -1865,7 +1878,7 @@ function startRound(n) {
     elHint.textContent = tr('hint');
   }
   elBossHud.hidden = !G.boss;
-  elTime.hidden = elBarWrap.hidden = G.boss;
+  elTime.hidden = elBarWrap.hidden = false;   // boss nights have a clock too (BOSS_TIME)
   setMusic(G.boss ? 'boss' : 'night');
   if (G.boss || n === G.firstNight) { elHint.hidden = false; elHint.classList.remove('gone'); clearTimeout(G.hintTO); G.hintTO = setTimeout(() => elHint.classList.add('gone'), 4500); }
   G.mode = 'play';
@@ -1882,9 +1895,16 @@ function sendRats(nights = 0) {
   G.killsSent = G.kills;
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && G.mode === 'play') sendRats(); });
-function endRound(early = false) {
+// boss night result under "CLEARED": slain if the king is dead, escaped if he got away, nothing if you ran dry
+function renderBossLine() {
+  const el = $('#sp-boss'), escaped = G.earlyEnd === 'escape', slain = G.boss && G.rats.some(r => r.king && !r.alive);
+  el.hidden = !(escaped || slain);
+  el.textContent = tr(escaped ? 'kingEscaped' : 'kingSlain');
+}
+// early: the night ended without being survived (no bonus); why: 'ammo' (ran dry) or 'escape' (the king got away)
+function endRound(early = false, why = 'ammo') {
   if (G.mode !== 'play') return;
-  G.earlyEnd = early;
+  G.earlyEnd = early ? why : false; G.escapeT = 0;
   sendRats(early ? 0 : 1);   // the night's kills, and the night itself if it was survived
   // ran dry and can't afford even the small pack: straight to game over, no cleared screen
   if (early && broke()) { G.mode = 'cleared'; gameOver(); return; }
@@ -1896,10 +1916,10 @@ function endRound(early = false) {
   renderNextLine();
   $('#sp-count').textContent = BREAK_TIME;
   elRing.style.strokeDashoffset = '0';
-  $('#sp-boss').hidden = !G.boss;
+  renderBossLine();
   setMusic('night');
   elSplash.hidden = false;
-  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(early ? 'noAmmo' : G.boss ? null : 'noTime'); }
+  if (G.voicedNight !== G.night) { G.voicedNight = G.night; sfxCleared(G.earlyEnd === 'ammo' ? 'noAmmo' : G.earlyEnd === 'escape' || !G.boss ? 'noTime' : null); }
   // surviving the night pays a few bullets; then the shop is open until the next night
   // a full night pays a few bullets; running dry forfeits it. Broke with no bullets means the game is over.
   if (!early) G.ammo += NIGHT_BONUS;
@@ -2016,7 +2036,7 @@ document.querySelectorAll('.lang-select').forEach(sel => {
 function langChanged() {
   setMuted(A.muted); setShowRifle(showRifle);
   if (!elHint.hidden) elHint.textContent = tr(G.armed ? 'nadeHint' : G.boss ? 'bossHint' : 'hint');
-  if (!elSplash.hidden) { renderSpecials(); renderNextLine(); renderShop(); }
+  if (!elSplash.hidden) { renderSpecials(); renderNextLine(); renderShop(); renderBossLine(); }
   showUpdate(); showPlayers();
   if (!$('#install-help').hidden) $('#install-help').textContent = tr(isIos() ? 'installIos' : 'installOther');
   setShareLink();
@@ -2147,7 +2167,7 @@ function update(dt) {
     // the last bullet has been fired: end the game once it has landed, unless that shot just won the boss night
     G.outT -= dt;
     // the last bullet has landed: the night ends early (unless that shot just won the boss night)
-    if (G.outT <= 0 && !(G.boss && G.bossEndT > 0)) endRound(true);
+    if (G.outT <= 0 && !(G.boss && (G.bossEndT > 0 || G.escapeT > 0))) endRound(true);
   }
   for (const p of G.pops) p.t += dt;
   G.pops = G.pops.filter(p => p.t < p.life);
@@ -2162,6 +2182,12 @@ function update(dt) {
     } else if (G.bossEndT > 0) {
       G.bossEndT -= dt;
       if (G.bossEndT <= 0) endRound();
+    } else if (G.escapeT > 0) {
+      G.escapeT -= dt;
+      if (G.escapeT <= 0) endRound(true, 'escape');
+    } else {
+      G.time -= dt;
+      if (G.time <= 0) { G.time = 0; kingEscape(); }
     }
   } else if (G.mode === 'cleared') {
     G.breakT -= dt;
@@ -2177,6 +2203,7 @@ function update(dt) {
     if (G.spawnT <= 0 && alive < maxAlive()) { spawnRat(Math.random() < 0.35); G.spawnT = rand(0.8, 1.7) / diff(); }
   }
   for (const r of G.rats) { updRat(r, dt); if (r.king && r.alive) kingTick(r, dt); }
+  if (G.rats.some(r => r.gone)) G.rats = G.rats.filter(r => !r.gone);   // the escaped king
   for (const o of G.obs) if (o.hopT > 0) o.hopT = Math.max(0, o.hopT - dt);
   if (G.owl) { owlTick(G.owl, dt); if (G.owl.gone) G.owl = null; }
   if (G.ufoT > 0 && G.mode === 'play') { G.ufoT -= dt; if (G.ufoT <= 0) { G.ufo = spawnUfo(); ufoHumStart(); } }
@@ -2206,9 +2233,9 @@ function update(dt) {
 
   if (G.mode === 'play' || G.mode === 'cleared') {
     const s = Math.ceil(G.time);
-    elTime.textContent = `0:${String(s).padStart(2, '0')}`;
-    elTime.classList.toggle('warn', G.mode === 'play' && G.time <= 5);
-    elBar.style.transform = `scaleX(${(G.time / ROUND_TIME).toFixed(3)})`;
+    elTime.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    elTime.classList.toggle('warn', G.mode === 'play' && G.time <= (G.boss ? 10 : 5));
+    elBar.style.transform = `scaleX(${(G.time / (G.boss ? BOSS_TIME : ROUND_TIME)).toFixed(3)})`;
   }
 }
 
