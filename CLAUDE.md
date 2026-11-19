@@ -123,6 +123,11 @@ Gameplay
 - Rare variants every 15th non-alpha spawn (counter resets per game): zombie (2 body hits), clown, x-mas, pirate,
   drunk, albino, mohawk, French moustache, blind (walks upright with a cane). Rare variants don't stare at the camera.
   Removed by the owner: "old" and "gremlin".
+- Tail shots (v0.0.28): the tail is a third hit zone (after head and body; `tailCurve`/`tailPoint` give the same wagging
+  Bézier the drawing uses). A hit snips it at that point (`snipTail`): no damage, no coins, a squeal, a little blood,
+  the rat bolts; the rat keeps a stub (`r.tailCut`, never below `TAIL_MIN`) with a raw red end, and the cut piece drops
+  where it was, twitches ~2 s and lies there until the night ends (`G.tails`, drawn with `drawTailPart`). Snipping the
+  stub again shortens it further.
 - Rats sometimes stare at the camera (~2 s), dig out of the ground when spawning in view, scurry away from
   shots (away from the shot point), pass behind clutter (mounds, cans, bags, boxes, bottles, buckets) that blocks shots.
 - Grenade (v0.0.15): bought in the shop (6 coins, +1 every 5 nights; none at the start). Tap the round button

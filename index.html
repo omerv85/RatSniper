@@ -333,7 +333,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.27</div>
+    <div class="ver" id="ver">version 0.0.28</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -438,7 +438,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.27';
+const VERSION = '0.0.28';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -1385,7 +1385,7 @@ function setMuted(m) {
 /* ---------- game state ---------- */
 const G = {
   mode: 'menu', night: 1, time: ROUND_TIME, breakT: 0, kills: 0, nightKills: 0,
-  aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [],
+  aimX: 380, aimY: 650, rats: [], parts: [], decals: [], puffs: [], obs: [], tails: [],
   spawnT: 0, kick: 0, kickX: 0, flash: 0, lastShot: -9, clock: 0, paused: false, voicedNight: 0, spawnCount: 0, rareCount: 0, boss: false, bossEndT: 0, userPaused: false, ufo: null, ufoT: 0, owl: null, nightSpecial: {}, gameSpecial: {}, ammo: AMMO_START, coins: 0, outT: 0, pops: [], lastResult: null, firstNight: 1, hintTO: 0,
   grenades: 0, armed: false, nade: null, throwT: -9, wpn: 0, nadeHinted: false,
 };
@@ -1554,6 +1554,7 @@ function hitTest(r, ax, ay) {
     if (dy > 0) return null;                       // the part still underground can't be hit
     ly -= (1 - emergeEase(r)) * SINK;
   }
+  const tlx = lx, tly = ly;   // the tail stays on the ground when the rat rears up, so it's tested unrotated
   if (r.rear > 0.01) {
     const a = r.rear * 0.62, vx = lx + 38, vy = ly + 6, c = Math.cos(a), s = Math.sin(a);
     lx = vx * c - vy * s - 38; ly = vx * s + vy * c - 6;
@@ -1563,7 +1564,33 @@ function hitTest(r, ax, ay) {
   if (hx * hx + hy * hy <= 1) return { zone: 'head', lx, ly };
   const bx = lx / 58, by = (ly + 26) / (r.alpha ? 29 : 26);
   if (bx * bx + by * by <= 1) return { zone: 'body', lx, ly };
+  // the tail (not while digging out): the nearest point on what's left of it, with a little slack because it's thin
+  const cut = r.tailCut ?? 1;
+  if (r.state !== 'emerge' && cut > TAIL_MIN + 0.02) {
+    const P = tailCurve(r);
+    let best = null;
+    for (let i = 0; i <= 30; i++) {
+      const t = TAIL_MIN + (cut - TAIL_MIN) * i / 30, [x, y, , , hw] = tailPoint(P, t), d = Math.hypot(tlx - x, tly - y);
+      if (d <= hw + 2.5 && (!best || d < best.d)) best = { d, t };
+    }
+    if (best) return { zone: 'tail', t: best.t, lx: tlx, ly: tly };
+  }
   return null;
+}
+const TAIL_MIN = 0.12;   // a stub this long always stays on the rat
+
+// a shot through the tail snips it there: no damage, the rat squeals and bolts, the cut piece drops to the ground
+function snipTail(r, t) {
+  const P = tailCurve(r), [x, y] = tailPoint(P, t), s = r.sc;
+  const wx = r.x + r.jx + x * s * r.dir, wy = r.y + r.jy + y * s;
+  if (G.tails.length > 40) G.tails.shift();
+  G.tails.push({ x: r.x + r.jx, y: r.y, dir: r.dir, sc: s, P, t0: t, t1: r.tailCut ?? 1, variant: r.variant, age: 0 });
+  r.tailCut = t;
+  spray({ sc: s, y: r.y }, wx, wy, 7, BLOOD, 0.7, 0.8);
+  G.puffs.push({ x: wx, y: wy, r: 2 * s, max: 12 * s, life: 0.25, t: 0, col: [45, 12, 14] });
+  const delay = 0.04 + 0.025 * (LANES.length - 1 - r.lane);
+  sfxHit(delay); sfxAngry(delay + 0.03, 1.6, 0.8, 0.5);   // short, high squeal
+  if (!r.king && r.state !== 'rage') { r.state = 'scurry'; r.t = 2; r.turnT = 0.4; r.rearTarget = 0; }
 }
 
 function fire() {
@@ -1685,6 +1712,7 @@ function spray(r, ax, ay, n, col, power = 1, size = 1, dcol = null) {
   }
 }
 function hitRat(r, hit, ax, ay, blasted = false, n = 0) {
+  if (hit.zone === 'tail') { snipTail(r, hit.t); return; }   // no damage: just a shorter tail
   const delay = blasted ? 0.03 + n * 0.05 : 0.04 + 0.025 * (LANES.length - 1 - r.lane);
   const head = !blasted && hit.zone === 'head', dmg = head || blasted ? 2 : 1;   // a head shot or a grenade counts as two hits
   if (r.hp > dmg && r.variant === 'zombie') {
@@ -1870,7 +1898,7 @@ function renderSpecials() {
 function renderNextLine() { $('#sp-next-line').innerHTML = tr('nextBegins', { n: `<b>${G.night + 1}</b>` }); }
 function startRound(n) {
   G.night = n; G.nightKills = 0; G.time = n % BOSS_EVERY === 0 ? BOSS_TIME : ROUND_TIME; G.nightSpecial = {}; G.escapeT = 0;
-  G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
+  G.rats = []; G.parts = []; G.decals = []; G.puffs = []; G.tails = [];
   G.spawnT = 1.2; G.lastShot = -9; G.armed = false; G.nade = null; G.throwT = -9; G.wpn = 0;
   for (const o of G.obs) o.broken = false;   // a fresh empty bottle each night
   G.boss = n % BOSS_EVERY === 0; G.bossEndT = 0;
@@ -2014,7 +2042,7 @@ $('#sound').addEventListener('click', () => setMuted(!A.muted));
 function goHome() {
   sendRats();   // quitting mid-night: those kills still count
   G.mode = 'menu'; G.boss = false; G.bossEndT = 0; G.ufo = null; G.ufoT = 0; ufoHumStop(); G.armed = false; G.nade = null;
-  G.rats = []; G.parts = []; G.decals = []; G.puffs = [];
+  G.rats = []; G.parts = []; G.decals = []; G.puffs = []; G.tails = [];
   for (let i = 0; i < 4; i++) spawnRat(true);
   G.owl = makeOwl();
   elHudL.hidden = elHudR.hidden = elHudB.hidden = elBossHud.hidden = elSplash.hidden = elHint.hidden = true;
@@ -2241,6 +2269,7 @@ function update(dt) {
   G.parts = G.parts.filter(p => p.life > 0);
   for (const f of G.puffs) f.t += dt;
   G.puffs = G.puffs.filter(f => f.t < f.life);
+  for (const tl of G.tails) tl.age += dt;
   for (const d of G.decals) if (d.target && d.rx < d.target) d.rx = Math.min(d.target, d.rx + dt * 14 * (d.target / 28));
   G.kick *= Math.exp(-dt * 9);
   G.rifleKick = (G.rifleKick || 0) * Math.exp(-dt * 7); G.flash *= Math.exp(-dt * 22);
@@ -2269,21 +2298,28 @@ function drawWrapped(img, p, y0, y1, left, top) {
 
 // Tail: long, tapered and scaly. Bare rat tails throw back the IR lamp, so it is drawn pale with a dark
 // outline and dark rings, which keeps it readable on grey concrete and dirt.
-function drawTail(g, r) {
+// The tail's curve in the rat's local coordinates (a cubic Bézier from the rump to the tip, wagging as it moves).
+// t runs 0 (rump) to 1 (tip); r.tailCut (default 1) is where a shot snipped it off.
+function tailCurve(r) {
   const dead = !r.alive;
   const w = dead ? 0 : Math.sin(r.phase * 0.5 + r.sniff * 2.2) * (r.state === 'stop' ? 0.35 : 1);
-  const x0 = -50, y0 = -9;
-  const c1x = -88, c1y = dead ? -16 : -1 + w * 4;
-  const c2x = -122, c2y = dead ? -20 : -2 - w * 10;
-  const x1 = dead ? -150 : -158, y1 = dead ? -8 : -3 + w * 12;
-  const N = 22, L = [], R = [], C = [];
+  return [-50, -9, -88, dead ? -16 : -1 + w * 4, -122, dead ? -20 : -2 - w * 10, dead ? -150 : -158, dead ? -8 : -3 + w * 12];
+}
+function tailPoint(P, t) {
+  const [x0, y0, c1x, c1y, c2x, c2y, x1, y1] = P, it = 1 - t;
+  const x = it * it * it * x0 + 3 * it * it * t * c1x + 3 * it * t * t * c2x + t * t * t * x1;
+  const y = it * it * it * y0 + 3 * it * it * t * c1y + 3 * it * t * t * c2y + t * t * t * y1;
+  const tx = 3 * it * it * (c1x - x0) + 6 * it * t * (c2x - c1x) + 3 * t * t * (x1 - c2x);
+  const ty = 3 * it * it * (c1y - y0) + 6 * it * t * (c2y - c1y) + 3 * t * t * (y1 - c2y);
+  const len = Math.hypot(tx, ty) || 1;
+  return [x, y, -ty / len, tx / len, (7 * Math.pow(it, 1.3) + 1.1) / 2];   // point, normal, half-width
+}
+function drawTail(g, r) { drawTailPart(g, tailCurve(r), 0, r.tailCut ?? 1, r.variant); }
+// draws the stretch of tail between t0 and t1; a cut end gets a raw red stump
+function drawTailPart(g, P, t0, t1, variant) {
+  const N = Math.max(4, Math.round(22 * (t1 - t0))), L = [], R = [], C = [];
   for (let i = 0; i <= N; i++) {
-    const t = i / N, it = 1 - t;
-    const x = it * it * it * x0 + 3 * it * it * t * c1x + 3 * it * t * t * c2x + t * t * t * x1;
-    const y = it * it * it * y0 + 3 * it * it * t * c1y + 3 * it * t * t * c2y + t * t * t * y1;
-    const tx = 3 * it * it * (c1x - x0) + 6 * it * t * (c2x - c1x) + 3 * t * t * (x1 - c2x);
-    const ty = 3 * it * it * (c1y - y0) + 6 * it * t * (c2y - c1y) + 3 * t * t * (y1 - c2y);
-    const len = Math.hypot(tx, ty) || 1, nx = -ty / len, ny = tx / len, hw = (7 * Math.pow(it, 1.3) + 1.1) / 2;
+    const [x, y, nx, ny, hw] = tailPoint(P, t0 + (t1 - t0) * i / N);
     L.push([x + nx * hw, y + ny * hw]); R.push([x - nx * hw, y - ny * hw]); C.push([x, y, nx, ny, hw]);
   }
   g.beginPath(); g.moveTo(L[0][0], L[0][1]);
@@ -2292,15 +2328,23 @@ function drawTail(g, r) {
   g.closePath();
   g.strokeStyle = 'rgba(12,14,13,.85)'; g.lineWidth = 2.2; g.lineJoin = 'round'; g.stroke();
   const tg = g.createLinearGradient(0, -14, 0, 2);
-  const tc = r.variant === 'albino' ? ['#f4c6cf', '#d0909e'] : r.variant === 'zombie' ? ['#b4c0ad', '#7f8c78'] : ['#d2d6d3', '#8f9491'];
+  const tc = variant === 'albino' ? ['#f4c6cf', '#d0909e'] : variant === 'zombie' ? ['#b4c0ad', '#7f8c78'] : ['#d2d6d3', '#8f9491'];
   tg.addColorStop(0, tc[0]); tg.addColorStop(1, tc[1]);
   g.fillStyle = tg; g.fill();
   g.strokeStyle = 'rgba(40,44,42,.45)'; g.lineWidth = 0.7;
   for (let i = 1; i < N; i++) { const [x, y, nx, ny, hw] = C[i]; line(g, x + nx * hw, y + ny * hw, x - nx * hw, y - ny * hw); }
-  if (r.variant === 'zombie') {
+  if (variant === 'zombie' && t1 > 0.75) {
     // the tip has rotted down to bare vertebrae
-    g.strokeStyle = '#e8e2d4'; g.lineWidth = 2; line(g, C[16][0], C[16][1], C[N][0], C[N][1]);
-    g.fillStyle = '#e8e2d4'; for (let i = 16; i < N; i++) ell(g, C[i][0], C[i][1], 1.6, 1.6);
+    const a = tailPoint(P, Math.max(t0, 0.73)), b = tailPoint(P, t1);
+    g.strokeStyle = '#e8e2d4'; g.lineWidth = 2; line(g, a[0], a[1], b[0], b[1]);
+    g.fillStyle = '#e8e2d4'; for (let i = 0; i <= 6; i++) { const p = tailPoint(P, Math.max(t0, 0.73) + (t1 - Math.max(t0, 0.73)) * i / 6); ell(g, p[0], p[1], 1.6, 1.6); }
+  }
+  // raw cut ends
+  for (const [t, cut] of [[t0, t0 > 0], [t1, t1 < 1]]) {
+    if (!cut) continue;
+    const [x, y, , , hw] = tailPoint(P, t);
+    g.fillStyle = BLOOD; ell(g, x, y, hw * 1.1, hw * 1.1);
+    g.fillStyle = 'rgba(232,150,166,.9)'; ell(g, x, y, hw * 0.45, hw * 0.45);
   }
 }
 
@@ -3108,6 +3152,15 @@ function render() {
   for (const d of G.decals) {
     const x = rel(d.x); if (!vis(x)) continue;
     ctx.fillStyle = d.col || 'rgba(34,9,11,.78)'; ell(ctx, x, d.y - top, d.rx, d.rx * d.ry);
+  }
+  // snipped-off tails lying in the dirt: they drop, twitch for a couple of seconds, then lie still
+  for (const tl of G.tails) {
+    const x = rel(tl.x); if (!vis(x)) continue;
+    const a = tl.age, fall = Math.min(1, a / 0.18), tw = Math.sin(a * 24) * Math.exp(-a * 1.6) * (a < 3 ? 1 : 0);
+    const P = tl.P.slice(); P[3] += tw * 6; P[5] -= tw * 12; P[7] += tw * 14;
+    ctx.save(); ctx.translate(x, tl.y - top + fall * 6 * tl.sc); ctx.scale(tl.sc * tl.dir, tl.sc);
+    drawTailPart(ctx, P, tl.t0, tl.t1, tl.variant);
+    ctx.restore();
   }
   // rats and clutter drawn back to front, so things nearer the shooter hide what is behind them
   const ents = [];
