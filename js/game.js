@@ -5,7 +5,7 @@
    js/draw-weapons.js. */
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.36';
+const VERSION = '0.0.37';
 // translations (LANGS, STR) and plural(): js/lang.js
 let LANG = 'en';
 try {
@@ -328,13 +328,15 @@ function fire() {
   G.kick = 1; G.kickX = rand(-1, 1); G.flash = G.rifle ? 0.55 : 1; G.rifleKick = 1;
   // the energy rifles draw their shot (beam, bolt, rail trail) from the muzzle to where it landed
   G.shotFx = G.rifle ? { tier: G.rifle, t: 0, x: ax, y: ay, seed: Math.random() * 1000 } : null;
-  if (blocker) { best = null; hitObstacle(blocker, ax, ay); }
+  let struck = true;   // for accuracy: any animal hit counts (tail snips and the owl too); clutter is a miss
+  if (blocker) { best = null; hitObstacle(blocker, ax, ay); struck = false; }
   else if (jz) shootJackal(G.jackal, jz, ax, ay);
   else if (bz) shootBoar(G.boar, bz, ax, ay);
   else if (best) hitRat(best, hit, ax, ay);
   else if (G.ufo && (ufoZone = ufoHit(G.ufo, ax, ay))) shootUfo(G.ufo, ufoZone);
   else if (G.owl && owlHit(G.owl, ax, ay)) flushOwl(G.owl);   // no points, it just leaves
-  else missPuff(ax, ay);
+  else { missPuff(ax, ay); struck = false; }
+  G.shots++; G.nightShots++; if (struck) { G.hits++; G.nightHits++; }
   scare(ax, best);
 }
 // every rat near a shot or blast panics and scurries about for 2 seconds
@@ -599,6 +601,8 @@ function buyPack(i) {
 }
 document.querySelectorAll('.item').forEach(b => b.addEventListener('click', () => buyPack(packKey(b))));
 // the end: out of bullets mid-night
+// bullets that hit an animal, as a share of bullets fired (grenades don't count); a dash before the first shot
+const accuracy = (hits, shots) => shots ? Math.round(100 * hits / shots) + '%' : '–';
 function gameOver() {
   if (G.mode !== 'play' && G.mode !== 'cleared') return;
   G.mode = 'over'; drag.id = null; G.ufo = null; ufoHumStop(); G.armed = false; G.nade = null; updateNadeBtn();
@@ -606,6 +610,7 @@ function gameOver() {
   let best = 0; try { best = +localStorage.getItem('rs-best') || 0; } catch (e) {}
   const newBest = kills > best; if (newBest) { best = kills; try { localStorage.setItem('rs-best', String(kills)); } catch (e) {} }
   $('#ov-nights').textContent = nights; $('#ov-kills').textContent = kills; $('#ov-best').textContent = best;
+  $('#ov-acc').textContent = accuracy(G.hits, G.shots);
   $('#ov-newbest').hidden = !newBest;
   $('#ov-special').innerHTML = SPECIALS.filter(([k]) => G.gameSpecial[k]).map(([k, label]) =>
     `<span class="chip${k === 'alpha' ? '' : ' rare'}"><b>${STR[LANG].sp[k] || label}</b> ×${G.gameSpecial[k]}</span>`).join('');
@@ -633,7 +638,7 @@ function renderSpecials() {
 }
 function renderNextLine() { $('#sp-next-line').innerHTML = tr('nextBegins', { n: `<b>${G.night + 1}</b>` }); }
 function startRound(n) {
-  G.night = n; G.nightKills = 0; G.time = n % BOSS_EVERY === 0 ? BOSS_TIME : ROUND_TIME; G.nightSpecial = {}; G.escapeT = 0;
+  G.night = n; G.nightKills = 0; G.nightShots = G.nightHits = 0; G.time = n % BOSS_EVERY === 0 ? BOSS_TIME : ROUND_TIME; G.nightSpecial = {}; G.escapeT = 0;
   G.rats = []; G.parts = []; G.decals = []; G.puffs = []; G.tails = [];
   G.spawnT = 1.2; G.lastShot = -9; G.armed = false; G.nade = null; G.throwT = -9; G.wpn = 0;
   for (const o of G.obs) o.broken = false;   // a fresh empty bottle each night
@@ -694,6 +699,7 @@ function endRound(early = false, why = 'ammo') {
   $('#sp-night').textContent = G.night;
   $('#sp-kills').textContent = G.nightKills;
   $('#sp-total').textContent = G.kills;
+  $('#sp-acc').textContent = accuracy(G.nightHits, G.nightShots);
   renderSpecials();
   renderNextLine();
   $('#sp-count').textContent = BREAK_TIME;
@@ -759,7 +765,7 @@ function startGame(night) {
   sendRats();   // anything left from a previous game
   let first = 0; try { if (!localStorage.getItem('rs-played')) { localStorage.setItem('rs-played', '1'); first = 1; } } catch (e) {}
   count({ games: 1, players: first });   // first game on this device
-  G.kills = 0; G.killsSent = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
+  G.kills = 0; G.killsSent = 0; G.shots = G.hits = 0; G.aimY = 650; G.voicedNight = 0; G.spawnCount = 0; G.rareCount = 0; G.firstNight = night;
   startRound(night);
 }
 $('#go').addEventListener('click', () => startGame(1));

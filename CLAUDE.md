@@ -211,6 +211,10 @@ Gameplay
   blocks shots. Dies rolled onto its back. Code: `spawnBoar`, `boarTick`, `boarHead`, `boarHit`, `shootBoar`,
   `drawBoar`, `drawBoarAt`, `sfxBoar`, `sfxSqueal`.
 - Rats counted per night and per game; special kills shown as badges on the cleared and game over screens.
+- Accuracy (v0.0.37): bullets that hit an animal ÷ bullets fired, as a whole percent (`accuracy()`; counted in `fire()`
+  as `G.shots`/`G.hits` per game and `G.nightShots`/`G.nightHits` per night). Any animal hit counts, including tail
+  snips and the owl; shots into clutter or empty ground miss; grenades don't count. Shown as "Total N · Accuracy X%"
+  on the night results and as a fourth stat on the game over screen ("–" before the first shot).
 
 Economy (tuned with the bot, v0.0.14)
 - Start 15 bullets. Every shot costs 1. Bounty in coins: rat 1, alpha 2, rare 3, jackal 2, boar 5, UFO 5, king 10, +1 head shot.
