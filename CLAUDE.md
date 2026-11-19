@@ -85,6 +85,7 @@ Owner preferences:
 - Keep replies plain and concise; the owner plays on an Android phone in landscape.
 - Git on the owner's Windows PC: `C:\Program Files\Git\cmd\git.exe` (not on PATH in Windows PowerShell 5).
   Pushes use the saved GitHub sign-in; if a sign-in prompt is needed, run the push in a visible terminal.
+- Node.js is installed at `C:\Program Files\nodejs\node.exe` (may not be on PATH in shells opened before the install).
 - Commit identity used: `omerv85 <omerv85@users.noreply.github.com>` (keeps the real email private).
 
 ## Testing
