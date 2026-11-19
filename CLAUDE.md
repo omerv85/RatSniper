@@ -21,9 +21,11 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
 ## Files
 
 - `index.html`: **the entire game** in one file: HTML, CSS and one inline script (canvas 2D graphics,
-  Web Audio sound, everything generated in code). Recorded voice clips are embedded as base64 WAV in
-  `VOICE_DATA`. No build step, no dependencies besides Google Fonts
+  Web Audio sound, everything generated in code). No build step, no dependencies besides Google Fonts
   (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew), plus the counter below.
+- `voice/<lang>/<clip>.wav`: the announcer's recorded clips (en, he; clips listed in `VOICE_CLIPS`). Until v0.0.31
+  they were embedded in `index.html` as base64 (`VOICE_DATA`, ~600 KB); since v0.0.32 `loadClips()` fetches them when
+  the audio starts (first game), only for the language in use, and again on a language switch.
 - `worker/worker.js`, `worker/schema.sql`: the game's counter (v0.0.22, replaced GoatCounter from v0.0.21).
   A Cloudflare Worker at https://ratsniper-counter.o-vertman.workers.dev on the owner's Cloudflare account, with a D1
   database `rat_sniper` bound as `DB` (table `counters(name, value)`; all-time rows plus daily rows `name:YYYY-MM-DD`,
@@ -192,7 +194,8 @@ Presentation
   Exact recipe (matches the existing clips sample for sample): English = System.Speech, "Microsoft David Desktop", Rate -3,
   SSML prosody pitch x-low, 22050 Hz 16-bit mono. Hebrew = WinRT SpeechSynthesizer, Asaf, Options.SpeakingRate 0.8,
   Options.AudioPitch 0.5, 16 kHz 16-bit mono. Both trimmed to the voiced part plus 0.05 s before and 0.1 s after.
-  Clips: round, head, king, noAmmo, noTime. The end of a night says "Round cleared" then why it ended
+  Clips (files in `voice/en/`, `voice/he/`): round, head, king, noAmmo, noTime. Python 3.13 is installed on the owner's PC
+  (`%LOCALAPPDATA%\Programs\Python\Python313\python.exe`; the bare `python` command may hit the Microsoft Store alias). The end of a night says "Round cleared" then why it ended
   ("Ran out of ammo" / "Ran out of time"; nothing extra when the king dies).
 
 ## Ideas discussed but not built
