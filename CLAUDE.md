@@ -25,10 +25,10 @@ afford more (see Economy). Plays in landscape on phones; desktop works with a mo
   `VOICE_DATA`. No build step, no dependencies besides Google Fonts
   (Big Shoulders Stencil Display, Share Tech Mono, Rubik for Cyrillic/Hebrew), plus the counter below.
 - `worker/worker.js`, `worker/schema.sql`: the game's counter (v0.0.22, replaced GoatCounter from v0.0.21).
-  A Cloudflare Worker at https://rat-sniper.o-vertman.workers.dev on the owner's Cloudflare account, with a D1
+  A Cloudflare Worker at https://ratsniper-counter.o-vertman.workers.dev on the owner's Cloudflare account, with a D1
   database `rat_sniper` bound as `DB` (table `counters(name, value)`; all-time rows plus daily rows `name:YYYY-MM-DD`,
   UTC). The repo copy is the source; the owner deploys it by pasting it into the Cloudflare dashboard
-  (Workers & Pages → rat-sniper → Edit code → Deploy), so tell them when it changes.
+  (Workers & Pages → ratsniper-counter → Edit code → Deploy), so tell them when it changes.
   - `POST /add` with a JSON body of numbers, e.g. `{"rats":12,"nights":1}`. Only the names in `ALLOWED` count,
     each capped per message (rats 300). Only accepted from the game's origin (and localhost, for tests).
   - `GET /totals` (cached 60 s) feeds the start screen; `GET /stats` is the owner's page: all-time and last 30 days.

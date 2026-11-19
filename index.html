@@ -327,7 +327,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 <section class="screen" id="start">
   <div class="stack">
     <h1 class="title">RAT<br>SNIPER</h1>
-    <div class="ver" id="ver">version 0.0.25</div>
+    <div class="ver" id="ver">version 0.0.26</div>
     <button class="btn btn-update" id="update" type="button" hidden></button>
     <p class="lede" data-i18n="tagline">Let's go get them rats!</p>
     <div class="rules">
@@ -432,7 +432,7 @@ body.has-nade #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 104px); }
 'use strict';
 
 /* ---------- languages: every word the player sees or hears ---------- */
-const VERSION = '0.0.25';
+const VERSION = '0.0.26';
 const LANGS = [['en', 'English'], ['ru', 'Русский'], ['es', 'Español'], ['fr', 'Français'], ['he', 'עברית']];
 const STR = {
   en: {
@@ -590,7 +590,7 @@ const $ = s => document.querySelector(s);
 // Game counters, kept by the owner's Cloudflare Worker (source in worker/): count({ rats: 12, nights: 1 }) adds to
 // the all-time and daily totals. Only numbers are sent, nothing about the player. Sent with sendBeacon so it still
 // goes out while the page is closing; failures are ignored. Local copies don't count unless window.__countLocal is set.
-const COUNTER = 'https://rat-sniper.o-vertman.workers.dev';
+const COUNTER = 'https://ratsniper-counter.o-vertman.workers.dev';
 function count(nums) {
   try {
     if (/^(localhost|127\.|\[::1\])/.test(location.hostname) && !window.__countLocal) return;
